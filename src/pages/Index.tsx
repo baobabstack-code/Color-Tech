@@ -1,26 +1,30 @@
 
 import { Car, Paintbrush, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import HeroCarousel from "../components/HeroCarousel";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="pt-24 pb-12 px-4 bg-gradient-to-b from-background to-background-alt">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-primary mb-6 animate-fade-up">
-            Transform Your Vehicle
-          </h1>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: "0.2s" }}>
-            Expert panel beating and spray painting services for a flawless finish every time.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200 animate-fade-up"
-            style={{ animationDelay: "0.4s" }}
-          >
-            Get a Quote
-          </Link>
+      <section className="relative">
+        <HeroCarousel />
+        <div className="absolute inset-0 flex items-center justify-center z-30">
+          <div className="text-center px-4">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-up drop-shadow-lg">
+              Transform Your Vehicle
+            </h1>
+            <p className="text-lg md:text-xl text-white mb-8 max-w-2xl mx-auto animate-fade-up drop-shadow-md" style={{ animationDelay: "0.2s" }}>
+              Expert panel beating and spray painting services for a flawless finish every time.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200 animate-fade-up"
+              style={{ animationDelay: "0.4s" }}
+            >
+              Get a Quote
+            </Link>
+          </div>
         </div>
       </section>
 
