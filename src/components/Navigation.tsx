@@ -39,6 +39,18 @@ const Navigation = () => {
             ))}
           </div>
 
+          {/* Search Bar */}
+          <div className="hidden md:flex items-center">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="border border-gray-300 rounded-md px-3 py-1 mr-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+            />
+            <button className="bg-secondary text-white rounded-md px-3 py-1 hover:bg-primary transition-colors duration-200">
+              Search
+            </button>
+          </div>
+
           {/* Mobile Navigation Button */}
           <button
             className="md:hidden text-gray-600"
@@ -63,6 +75,17 @@ const Navigation = () => {
                 {link.title}
               </Link>
             ))}
+            {/* Search Bar */}
+            <div className="mt-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border border-gray-300 rounded-md px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-secondary"
+              />
+              <button className="bg-secondary text-white rounded-md px-3 py-1 mt-2 hover:bg-primary transition-colors duration-200 w-full">
+                Search
+              </button>
+            </div>
           </div>
         </div>
       )}
