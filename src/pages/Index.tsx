@@ -1,5 +1,5 @@
 
-import { Car, Spray, ShieldCheck } from "lucide-react";
+import { Car, Paintbrush, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -35,7 +35,7 @@ const Index = () => {
               <p className="text-gray-600">Expert repair and restoration of damaged vehicle panels.</p>
             </div>
             <div className="p-6 rounded-lg bg-background-alt hover:shadow-lg transition-shadow duration-200">
-              <Spray className="w-12 h-12 text-secondary mb-4" />
+              <Paintbrush className="w-12 h-12 text-secondary mb-4" />
               <h3 className="text-xl font-semibold mb-2">Spray Painting</h3>
               <p className="text-gray-600">Professional automotive painting with premium finishes.</p>
             </div>
