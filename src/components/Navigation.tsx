@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
@@ -10,6 +9,7 @@ const Navigation = () => {
     { title: "Home", path: "/" },
     { title: "Services", path: "/services" },
     { title: "Gallery", path: "/gallery" },
+    { title: "Blog", path: "/blog" },
     { title: "About", path: "/about" },
     { title: "Contact", path: "/contact" },
   ];
