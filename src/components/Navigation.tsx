@@ -19,7 +19,11 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-primary">Color-tech</span>
+            <span className="relative px-4 py-2 rounded-lg bg-white/30 backdrop-blur-sm border border-white/20 shadow-lg">
+              <span className="text-xl font-bold bg-gradient-to-r from-[#F97316] via-[#8B5CF6] to-[#0EA5E9] bg-clip-text text-transparent animate-fade-in hover:scale-105 transition-transform duration-200">
+                Color-tech
+              </span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
