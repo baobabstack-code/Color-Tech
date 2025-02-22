@@ -19,33 +19,13 @@ const HeroCarousel = () => {
         className="w-full"
       >
         <CarouselContent>
-          {/* Car Paint Transformation */}
+          {/* Colorful Car Art */}
           <CarouselItem className="relative h-[600px] w-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFE29F] to-[#FF719A] opacity-40"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FF719A] to-[#8B5CF6] opacity-30"></div>
             <img
-              src="/lovable-uploads/fdf5c8c9-a1c3-41da-8d25-1a26353ee2b9.png"
-              alt="Colorful car transformation"
-              className="w-full h-full object-cover"
-            />
-          </CarouselItem>
-          
-          {/* Professional Work */}
-          <CarouselItem className="relative h-[600px] w-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] opacity-40"></div>
-            <img
-              src="/lovable-uploads/f52a2ef2-7bdc-4481-8eac-b1904e23a0db.png"
-              alt="Professional panel beating"
-              className="w-full h-full object-cover"
-            />
-          </CarouselItem>
-
-          {/* Quality Service */}
-          <CarouselItem className="relative h-[600px] w-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#F97316] to-[#D946EF] opacity-40"></div>
-            <img
-              src="/lovable-uploads/4b9c7bef-370d-4883-bfc7-2cd569e958bc.png"
-              alt="Quality service"
-              className="w-full h-full object-cover"
+              src="/lovable-uploads/830e13d0-5772-46d2-b986-7f8e3a6961b8.png"
+              alt="Artistic colorful car design"
+              className="w-full h-full object-cover bg-black"
             />
           </CarouselItem>
         </CarouselContent>
