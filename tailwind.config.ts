@@ -21,11 +21,31 @@ export default {
     extend: {
       colors: {
         border: "hsl(var(--border))",
-        primary: "#1A1F2C",
-        secondary: "#F97316",
-        accent: "#E2E8F0",
-        background: "#FFFFFF",
-        "background-alt": "#F8FAFC",
+        foreground: "hsl(var(--foreground))",
+        background: {
+          DEFAULT: "hsl(var(--background))",
+          alt: "#F8FAFC",
+        },
+        primary: {
+          DEFAULT: "#1A1F2C",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "#F97316",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        accent: {
+          DEFAULT: "#E2E8F0",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
