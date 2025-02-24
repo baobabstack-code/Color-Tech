@@ -1,18 +1,21 @@
 import { FC } from 'react';
+import { useState } from 'react';
 
 interface LogoProps {
   className?: string;
 }
 
 const Logo: FC<LogoProps> = ({ className = "h-8 w-auto" }) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <img
-      src="/images/logo/color-tech-logo.png"
+      src={imageError ? 'https://placehold.co/64x64/F97316/ffffff?text=CT' : '/images/logo/color-tech-logo.png'}
       alt="Color-tech Panel Beaters"
       className={className}
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        target.src = 'https://placehold.co/64x64/F97316/ffffff?text=CT';
+      onError={() => {
+        setImageError(true);
+        console.error('Failed to load logo image');
       }}
     />
   );

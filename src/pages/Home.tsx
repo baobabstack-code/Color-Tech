@@ -130,7 +130,7 @@ export default function Home() {
         <div 
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: "url('/lovable-uploads/830e13d0-5772-46d2-b986-7f8e3a6961b8.png')",
+            backgroundImage: `url('/Color-Tech/images/hero/colorful-car.png')`,
             backgroundPosition: "center",
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
