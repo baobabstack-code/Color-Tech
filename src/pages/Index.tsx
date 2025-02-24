@@ -1,14 +1,52 @@
-
 import { Car, Paintbrush, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-import HeroCarousel from "../components/HeroCarousel";
+import { useState } from "react";
 
 const Index = () => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative">
-        <HeroCarousel />
+      <section
+        className="relative"
+        style={{
+          backgroundColor: '#0f172a', // Fallback background color
+          minHeight: '600px',
+        }}
+      >
+        {/* Background container */}
+        <div className="absolute inset-0 z-0">
+          {!imageError && (
+            <img
+              src="/Color-Tech/images/hero/colorful-car.jpg"
+              alt="Colorful Car"
+              className={`w-full h-full object-cover transition-opacity duration-500 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setImageLoaded(true)}
+              onError={(e) => {
+                setImageError(true);
+                const target = e.target as HTMLImageElement;
+                target.src = 'https://placehold.co/1920x1080/0f172a/ffffff?text=Color-tech';
+                console.error('Failed to load hero image');
+              }}
+            />
+          )}
+        </div>
+
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10"></div>
+
+        <div 
+          className="absolute inset-0 mix-blend-overlay opacity-30 z-20"
+          style={{
+            background: 'linear-gradient(45deg, #FF719A, #8B5CF6, #00C853, #FF6D00)',
+          }}
+        />
+
+        {/* Content */}
         <div className="absolute inset-0 flex items-center justify-center z-30">
           <div className="text-center px-4">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-up drop-shadow-lg">
