@@ -3,38 +3,83 @@ import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings } from 'lucide
 import CostCalculator from '../components/CostCalculator';
 import ProgressTracker from '../components/ProgressTracker';
 import VirtualTour from '../components/VirtualTour';
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
 
 const Services = () => {
   const services = [
     {
-      icon: <Wrench className="w-12 h-12 text-secondary" />,
+      icon: <Wrench className="h-12 w-12 text-primary" />,
       title: "Panel Beating",
-      description: "Expert repair and restoration of damaged vehicle panels, ensuring perfect alignment and structural integrity."
+      description: "Expert repair of dents, scratches, and collision damage",
+      features: [
+        "Dent removal",
+        "Panel replacement",
+        "Frame straightening",
+        "Collision repair"
+      ]
     },
     {
-      icon: <Paintbrush className="w-12 h-12 text-secondary" />,
+      icon: <Paintbrush className="h-12 w-12 text-primary" />,
       title: "Spray Painting",
-      description: "Professional automotive painting with premium finishes, color matching, and long-lasting protection."
+      description: "Professional automotive painting and color matching",
+      features: [
+        "Color matching",
+        "Full resprays",
+        "Partial resprays",
+        "Clear coat finish"
+      ]
     },
     {
-      icon: <Car className="w-12 h-12 text-secondary" />,
-      title: "Dent Removal",
-      description: "Specialized dent removal services using advanced techniques to restore your vehicle's appearance."
+      icon: <Shield className="h-12 w-12 text-primary" />,
+      title: "Rust Protection",
+      description: "Comprehensive rust treatment and prevention",
+      features: [
+        "Rust removal",
+        "Anti-rust coating",
+        "Cavity protection",
+        "Undercoating"
+      ]
+    }
+  ];
+
+  // Define stages for ProgressTracker
+  const repairStages = [
+    {
+      title: "Vehicle Check-in",
+      description: "Initial inspection and documentation",
+      status: "completed",
+      date: "2024-03-10",
+      details: "Vehicle received and documented"
     },
     {
-      icon: <Shield className="w-12 h-12 text-secondary" />,
-      title: "Quality Guarantee",
-      description: "Our work is backed by our commitment to excellence and customer satisfaction guarantee."
+      title: "Damage Assessment",
+      description: "Detailed evaluation of repairs needed",
+      status: "completed",
+      date: "2024-03-11",
+      details: "Full assessment completed"
     },
     {
-      icon: <Hammer className="w-12 h-12 text-secondary" />,
-      title: "Accident Repairs",
-      description: "Comprehensive accident repair services to restore your vehicle to its pre-accident condition."
+      title: "Repair Work",
+      description: "Active repair and restoration",
+      status: "in-progress",
+      date: "2024-03-12",
+      details: "Panel beating in progress"
     },
     {
-      icon: <Clock className="w-12 h-12 text-secondary" />,
-      title: "Quick Turnaround",
-      description: "Efficient service delivery with quick turnaround times without compromising on quality."
+      title: "Quality Check",
+      description: "Final inspection and testing",
+      status: "pending",
+      date: "2024-03-13",
+      details: "Awaiting completion"
+    },
+    {
+      title: "Ready for Pickup",
+      description: "Vehicle ready for collection",
+      status: "pending",
+      date: "2024-03-14",
+      details: "Not started"
     }
   ];
 
@@ -52,33 +97,25 @@ const Services = () => {
       </div>
 
       <div className="container mx-auto">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Services Grid */}
-          <div className="lg:col-span-2">
-            <div className="grid md:grid-cols-2 gap-8">
-              {services.map((service, index) => (
-                <div 
-                  key={index}
-                  className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className="mb-4">
-                    {service.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-primary mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600">
-                    {service.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Cost Calculator */}
-          <div className="lg:col-span-1">
-            <CostCalculator />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map((service, index) => (
+            <Card key={index} className="p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4">{service.icon}</div>
+                <h2 className="text-2xl font-semibold mb-2">{service.title}</h2>
+                <p className="text-gray-600 mb-6">{service.description}</p>
+                <ul className="space-y-2 text-left w-full mb-6">
+                  {service.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button className="w-full">Learn More</Button>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
 
@@ -109,7 +146,10 @@ const Services = () => {
             Stay informed about your vehicle's repair status with our real-time progress tracking system.
           </p>
         </div>
-        <ProgressTracker />
+        <ProgressTracker 
+          stages={repairStages} 
+          currentStage={2} // Index of the current stage (0-based)
+        />
       </div>
 
       {/* Virtual Tour Section */}

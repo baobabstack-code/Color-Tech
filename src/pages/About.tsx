@@ -156,12 +156,12 @@ const About = () => {
           <div className="md:flex">
             <div className="md:w-1/2">
               <img
-                src="/about/workshop.jpg"
+                src="/images/about/workshop.jpg"
                 alt="Our Workshop"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = 'https://source.unsplash.com/random/800x600?auto-workshop';
+                  target.src = 'https://placehold.co/800x600/F97316/ffffff?text=Workshop';
                 }}
               />
             </div>

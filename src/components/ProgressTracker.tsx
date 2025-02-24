@@ -4,6 +4,7 @@ import {
   AlertCircle, Loader, Car, ImageIcon, Phone, Truck, 
   ShieldAlert, ArrowRight, MessageSquare
 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 interface RepairStage {
   id: number;
@@ -42,7 +43,20 @@ interface TowingService {
   eta: string;
 }
 
-const ProgressTracker = () => {
+interface Stage {
+  id: number;
+  title: string;
+  description: string;
+  status: 'completed' | 'in-progress' | 'pending';
+  date?: string;
+}
+
+interface ProgressTrackerProps {
+  stages: Stage[];
+  currentStage: number;
+}
+
+const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
   const [activeStage, setActiveStage] = useState<number>(0);
   const [showEmergencyInfo, setShowEmergencyInfo] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -134,12 +148,12 @@ const ProgressTracker = () => {
     }
   ];
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: Stage['status']) => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="w-6 h-6 text-green-500" />;
       case 'in-progress':
-        return <Loader className="w-6 h-6 text-secondary animate-spin" />;
+        return <Clock className="w-6 h-6 text-secondary" />;
       default:
         return <AlertCircle className="w-6 h-6 text-gray-300" />;
     }
@@ -283,20 +297,19 @@ const ProgressTracker = () => {
       {/* Progress Timeline */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="space-y-6">
-          {repairProgress.stages.map((stage, index) => (
+          {stages.map((stage, index) => (
             <div 
               key={stage.id}
               className={`relative flex items-start ${
-                index !== repairProgress.stages.length - 1 ? 'pb-6' : ''
+                index !== stages.length - 1 ? 'pb-6' : ''
               }`}
             >
               {/* Connector Line */}
-              {index !== repairProgress.stages.length - 1 && (
+              {index !== stages.length - 1 && (
                 <div 
-                  className="absolute top-10 left-4 w-0.5 h-full bg-gray-200"
-                  style={{
-                    background: stage.status === 'completed' ? 'linear-gradient(to bottom, #10B981, #E5E7EB)' : '#E5E7EB'
-                  }}
+                  className={`h-full w-0.5 absolute ml-3 top-6 bottom-0 ${
+                    stage.status === 'completed' ? 'bg-green-500' : 'bg-gray-200'
+                  }`} 
                 />
               )}
 

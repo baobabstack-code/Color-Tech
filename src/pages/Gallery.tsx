@@ -7,84 +7,99 @@ const Gallery = () => {
 
   const galleryImages = [
     {
-      src: "https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
       alt: "Car Spray Painting Process",
-      category: "Spray Painting"
+      category: "Spray Painting",
+      fallback: "https://images.unsplash.com/photo-1589758438368-0ad531db3366"
     },
     {
-      src: "https://images.unsplash.com/photo-1632823471406-462e45297d86?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1625047509168-a7026f36de04",
       alt: "Panel Beating Work",
-      category: "Panel Beating"
+      category: "Panel Beating",
+      fallback: "https://images.unsplash.com/photo-1589758443949-f377a77072f5"
     },
     {
-      src: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e",
       alt: "Car Paint Finishing",
-      category: "Paint Finishing"
+      category: "Paint Finishing",
+      fallback: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9"
     },
     {
-      src: "https://images.unsplash.com/photo-1599256872237-5dcc0fbe9668?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1599256872237-5dcc0fbe9668",
       alt: "Auto Body Repair",
-      category: "Body Repair"
+      category: "Body Repair",
+      fallback: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85"
     },
     {
-      src: "https://images.unsplash.com/photo-1635764751197-c8c6b3e81c0a?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1635764751197-c8c6b3e81c0a",
       alt: "Paint Color Matching",
-      category: "Color Matching"
+      category: "Color Matching",
+      fallback: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9"
     },
     {
-      src: "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1507136566006-cfc505b114fc",
       alt: "Professional Auto Workshop",
-      category: "Workshop"
+      category: "Workshop",
+      fallback: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c"
     },
     {
-      src: "https://images.unsplash.com/photo-1600661653561-629509216228?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1600661653561-629509216228",
       alt: "Luxury Car Detailing",
-      category: "Detailing"
+      category: "Detailing",
+      fallback: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785"
     },
     {
-      src: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068",
       alt: "Paint Booth Process",
-      category: "Paint Booth"
+      category: "Paint Booth",
+      fallback: "https://images.unsplash.com/photo-1589758438368-0ad531db3366"
     },
     {
-      src: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85",
       alt: "Quality Inspection",
-      category: "Quality Control"
+      category: "Quality Control",
+      fallback: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c"
     },
     {
-      src: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1589758443949-f377a77072f5",
       alt: "Before and After Restoration",
-      category: "Before & After"
+      category: "Before & After",
+      fallback: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85"
     },
     {
-      src: "https://images.unsplash.com/photo-1589758443949-f377a77072f5?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
       alt: "Collision Repair",
-      category: "Collision Repair"
+      category: "Collision Repair",
+      fallback: "https://images.unsplash.com/photo-1589758443949-f377a77072f5"
     },
     {
-      src: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?w=800&h=600&fit=crop",
+      src: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c",
       alt: "Custom Paint Job",
-      category: "Custom Paint"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1493238792000-8113da705763?w=800&h=600&fit=crop",
-      alt: "Car Body Restoration",
-      category: "Restoration"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&h=600&fit=crop",
-      alt: "Finished Projects",
-      category: "Completed Work"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1553590854-47c1079f9438?w=800&h=600&fit=crop",
-      alt: "Classic Car Restoration",
-      category: "Classic Cars"
+      category: "Custom Paint",
+      fallback: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e"
     }
   ];
 
   // Filter categories for the filter buttons
   const categories = Array.from(new Set(galleryImages.map(img => img.category)));
+
+  // Update BeforeAfterSlider images
+  const transformations = [
+    {
+      beforeImage: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
+      afterImage: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85",
+      title: "Complete Body Restoration",
+      description: "Major collision damage repair and full body restoration",
+      duration: "2 weeks"
+    },
+    {
+      beforeImage: "https://images.unsplash.com/photo-1589758438368-0ad531db3366",
+      afterImage: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
+      title: "Paint Correction",
+      description: "Professional paint correction and ceramic coating",
+      duration: "3 days"
+    }
+  ];
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">
@@ -109,20 +124,16 @@ const Gallery = () => {
         </p>
         
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <BeforeAfterSlider
-            beforeImage="https://images.unsplash.com/photo-1578844251758-2f71da64c96f?w=800"
-            afterImage="https://images.unsplash.com/photo-1562141961-b5d30fcb1f85?w=800"
-            title="Complete Body Restoration"
-            description="Major collision damage repair and full body restoration"
-            duration="2 weeks"
-          />
-          <BeforeAfterSlider
-            beforeImage="https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=800"
-            afterImage="https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9?w=800"
-            title="Paint Correction"
-            description="Professional paint correction and ceramic coating"
-            duration="3 days"
-          />
+          {transformations.map((transform, index) => (
+            <BeforeAfterSlider
+              key={index}
+              beforeImage={transform.beforeImage}
+              afterImage={transform.afterImage}
+              title={transform.title}
+              description={transform.description}
+              duration={transform.duration}
+            />
+          ))}
         </div>
       </div>
 
@@ -142,7 +153,7 @@ const Gallery = () => {
                   className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = 'https://source.unsplash.com/800x600/?' + image.category.toLowerCase().replace(' ', '-');
+                    target.src = image.fallback;
                   }}
                 />
               </div>
