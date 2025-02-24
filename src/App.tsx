@@ -42,7 +42,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router>
+        <Router basename="/Color-Tech/">
           <LayoutWrapper>
             <Routes>
               {/* Public Routes */}

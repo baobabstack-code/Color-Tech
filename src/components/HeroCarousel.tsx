@@ -9,25 +9,25 @@ import {
 const HeroCarousel = () => {
   const slides = [
     {
-      image: "/images/hero/car-1.jpg",
+      image: "/Color-Tech/images/hero/car-1.jpg",
       gradientFrom: "#FF719A",
       gradientTo: "#8B5CF6",
       alt: "Sleek black sports car with dramatic lighting"
     },
     {
-      image: "/images/hero/car-2.jpg",
+      image: "/Color-Tech/images/hero/car-2.jpg",
       gradientFrom: "#00C853",
       gradientTo: "#2196F3",
       alt: "Modern luxury vehicle in showroom"
     },
     {
-      image: "/images/hero/car-3.jpg",
+      image: "/Color-Tech/images/hero/car-3.jpg",
       gradientFrom: "#FF6D00",
       gradientTo: "#F50057",
       alt: "Classic red sports car on display"
     },
     {
-      image: "/images/hero/car-4.jpg",
+      image: "/Color-Tech/images/hero/car-4.jpg",
       gradientFrom: "#6200EA",
       gradientTo: "#00BFA5",
       alt: "Metallic luxury sedan in studio"
@@ -72,7 +72,7 @@ const HeroCarousel = () => {
                 className="w-full h-full object-cover object-center transition-transform duration-1000 hover:scale-105"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = "/images/hero/fallback.jpg"; // Local fallback image
+                  target.src = "/Color-Tech/images/hero/fallback.jpg"; // Local fallback image
                   console.error(`Failed to load image: ${slide.image}`);
                 }}
               />
