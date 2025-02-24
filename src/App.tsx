@@ -14,6 +14,7 @@ import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -54,11 +55,25 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               
-              {/* Admin Routes */}
-              <Route path="/admin/*" element={<AdminRoutes />} />
+              {/* Protected Admin Routes */}
+              <Route 
+                path="/admin/*" 
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminRoutes />
+                  </ProtectedRoute>
+                } 
+              />
               
-              {/* Client Routes */}
-              <Route path="/client/*" element={<ClientRoutes />} />
+              {/* Protected Client Routes */}
+              <Route 
+                path="/client/*" 
+                element={
+                  <ProtectedRoute allowedRoles={['client']}>
+                    <ClientRoutes />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
             <Toaster />
           </LayoutWrapper>

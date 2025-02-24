@@ -1,10 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import api from '@/services/api';
+import type { AuthResponse } from '@/lib/types/auth';
 
 interface User {
   id: string;
-  name: string;
   email: string;
-  role: 'client' | 'admin';
+  fullName: string;
+  role: string;
 }
 
 interface AuthContextType {
@@ -21,39 +23,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Verify token and get user data
+      api.get<{ user: User }>('/users/me')
+        .then(response => {
+          setUser(response.data.user);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+        });
     }
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      // Client login
-      if (email === 'test@example.com' && password === 'password123') {
-        const mockUser: User = {
-          id: '1',
-          name: 'John Doe',
-          email: email,
-          role: 'client'
-        };
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-      }
-      // Admin login
-      else if (email.startsWith('admin@') && password === 'admin123') {
-        const mockUser: User = {
-          id: '3',
-          name: 'Admin User',
-          email: email,
-          role: 'admin'
-        };
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-      }
-      else {
-        throw new Error('Invalid credentials');
-      }
+      const response = await api.post<AuthResponse>('/users/login', {
+        email,
+        password
+      });
+      
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
     } catch (error) {
       throw error;
     }
@@ -61,18 +53,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
-  };
-
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    login,
-    logout
+    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
