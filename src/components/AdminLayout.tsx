@@ -144,54 +144,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
       </aside>
 
-      {/* Main Content Wrapper */}
-      <div 
-        className={`flex-1 flex flex-col min-h-screen ${
-          isSidebarOpen ? 'ml-64' : 'ml-0'
-        } transition-all duration-300`}
-      >
-        {/* Top Header */}
-        <header 
-          className="bg-white border-b border-gray-200 h-16 fixed top-0 z-30 flex items-center justify-between px-4 right-0" 
-          style={{ left: isSidebarOpen ? '16rem' : '0' }}
+      {/* Main content */}
+      <main className={`flex-1 transition-margin ${
+        isSidebarOpen ? 'ml-64' : 'ml-0'
+      }`}>
+        {children}
+      </main>
+
+      {/* Mobile menu button */}
+      {!isSidebarOpen && (
+        <button
+          className="fixed top-4 left-4 z-50 lg:hidden"
+          onClick={() => setSidebarOpen(true)}
         >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(true)}
-            className={isSidebarOpen ? 'hidden' : 'block'}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2">
-                  <span>{user?.name || 'Admin'}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logout()}>
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 p-6 pt-24">
-          {children}
-        </main>
-      </div>
+          <Menu className="h-6 w-6" />
+        </button>
+      )}
     </div>
   );
 } 

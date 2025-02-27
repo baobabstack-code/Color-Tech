@@ -37,6 +37,8 @@ const ClientDashboard = () => {
     },
   ]);
 
+  const firstName = user?.fullName.split(' ')[0];
+
   // Mock repair stages - this would come from your API
   const repairStages = [
     {
@@ -124,6 +126,15 @@ const ClientDashboard = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Welcome, {firstName}! 🚗
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Track your vehicle services and appointments
+        </p>
+      </div>
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Welcome Back, {user?.name}</h1>
         <Button variant="outline" onClick={() => window.location.href = '/client/bookings'}>

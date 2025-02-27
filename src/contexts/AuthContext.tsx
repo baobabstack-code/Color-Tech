@@ -37,18 +37,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await api.post<AuthResponse>('/users/login', {
-        email,
-        password
-      });
-      
-      const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      setUser(user);
-    } catch (error) {
-      throw error;
-    }
+    // Temporary: Accept any login attempt
+    const firstName = email.split('@')[0]; // Extract name from email temporarily
+    const mockUser = {
+      id: '1',
+      email: email,
+      fullName: firstName.charAt(0).toUpperCase() + firstName.slice(1), // Capitalize first letter
+      role: email.includes('admin@') ? 'admin' : 'client'
+    };
+    
+    // Mock token
+    const mockToken = 'mock_token_' + Date.now();
+    
+    // Store token
+    localStorage.setItem('token', mockToken);
+    setUser(mockUser);
   };
 
   const logout = () => {

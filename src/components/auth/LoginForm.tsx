@@ -28,24 +28,13 @@ interface LoginFormProps {
 
 const getLoginSchema = (type: 'client' | 'admin') => {
   const baseSchema = {
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(1, "Password is required"),
   };
 
-  switch (type) {
-    case 'admin':
-      return z.object({
-        email: z
-          .string()
-          .email("Please enter a valid email")
-          .regex(/^admin@/, "Please use an admin email"),
-        ...baseSchema,
-      });
-    default:
-      return z.object({
-        email: z.string().email("Please enter a valid email"),
-        ...baseSchema,
-      });
-  }
+  return z.object({
+    email: z.string().email("Please enter a valid email"),
+    ...baseSchema,
+  });
 };
 
 export default function LoginForm({ type, redirectPath }: LoginFormProps) {
