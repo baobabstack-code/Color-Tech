@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Eye, EyeOff, Mail, Lock, 
-  Loader2, User, Shield, Briefcase 
+  Loader2, User, Shield, Briefcase, AlertCircle
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface LoginFormProps {
   type: 'client' | 'admin';
@@ -39,12 +40,12 @@ const getLoginSchema = (type: 'client' | 'admin') => {
 
 export default function LoginForm({ type, redirectPath }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isLoading, error } = useAuth();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof getLoginSchema>>({
+  const form = useForm<z.infer<ReturnType<typeof getLoginSchema>>>({
     resolver: zodResolver(getLoginSchema(type)),
     defaultValues: {
       email: "",
@@ -70,8 +71,8 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof getLoginSchema>) => {
-    setIsLoading(true);
+  const onSubmit = async (values: z.infer<ReturnType<typeof getLoginSchema>>) => {
+    setLoginError(null);
     try {
       await login(values.email, values.password);
       toast({
@@ -79,14 +80,10 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
         description: "Successfully logged in",
       });
       navigate(redirectPath);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: "Please check your credentials and try again",
-      });
-    } finally {
-      setIsLoading(false);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 
+                          "Login failed. Please check your credentials and try again.";
+      setLoginError(errorMessage);
     }
   };
 
@@ -105,6 +102,14 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
           </p>
         </div>
 
+        {loginError && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Authentication Error</AlertTitle>
+            <AlertDescription>{loginError}</AlertDescription>
+          </Alert>
+        )}
+
         <Card className="mt-8 p-6 shadow-lg">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -121,6 +126,7 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
                           {...field}
                           placeholder="Enter your email"
                           className="pl-10"
+                          disabled={isLoading}
                         />
                       </div>
                     </FormControl>
@@ -143,11 +149,13 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
                           className="pl-10"
+                          disabled={isLoading}
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                          disabled={isLoading}
                         >
                           {showPassword ? (
                             <EyeOff className="h-5 w-5" />
@@ -169,6 +177,7 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
                     name="remember-me"
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    disabled={isLoading}
                   />
                   <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                     Remember me

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Calculator, DollarSign } from 'lucide-react';
 
 interface ServiceRate {
@@ -8,46 +8,31 @@ interface ServiceRate {
 }
 
 const CostCalculator = () => {
-  const [selectedService, setSelectedService] = useState('');
-  const [vehicleType, setVehicleType] = useState('sedan');
-  const [damageLevel, setDamageLevel] = useState('minor');
+  const [selectedService, setSelectedService] = useState<string>('');
+  const [vehicleType, setVehicleType] = useState<string>('');
+  const [damageLevel, setDamageLevel] = useState<string>('');
   const [estimatedCost, setEstimatedCost] = useState<number | null>(null);
 
-  const serviceRates: ServiceRate[] = [
-    {
-      service: 'Panel Beating',
-      baseRate: 150,
-      description: 'Repair and restoration of damaged panels'
-    },
-    {
-      service: 'Spray Painting',
-      baseRate: 200,
-      description: 'Full vehicle paint job with premium materials'
-    },
-    {
-      service: 'Dent Removal',
-      baseRate: 80,
-      description: 'Paintless dent removal for minor damages'
-    },
-    {
-      service: 'Color Matching',
-      baseRate: 100,
-      description: 'Precise color matching and blending'
-    }
-  ];
+  const serviceRates = useMemo(() => [
+    { service: 'Paint Touch-Up', baseRate: 150, description: 'Small area paint repair' },
+    { service: 'Panel Repainting', baseRate: 350, description: 'Full panel repainting' },
+    { service: 'Full Respray', baseRate: 2500, description: 'Complete vehicle respray' },
+    { service: 'Scratch Repair', baseRate: 200, description: 'Surface scratch removal' },
+    { service: 'Dent Repair', baseRate: 250, description: 'Small to medium dent repair' }
+  ], []);
 
-  const vehicleMultipliers = {
+  const vehicleMultipliers = useMemo(() => ({
     sedan: 1,
     suv: 1.3,
     truck: 1.5,
     luxury: 1.8
-  };
+  }), []);
 
-  const damageLevelMultipliers = {
+  const damageLevelMultipliers = useMemo(() => ({
     minor: 1,
     moderate: 1.5,
     severe: 2.5
-  };
+  }), []);
 
   useEffect(() => {
     if (selectedService && vehicleType && damageLevel) {
@@ -60,7 +45,7 @@ const CostCalculator = () => {
     } else {
       setEstimatedCost(null);
     }
-  }, [selectedService, vehicleType, damageLevel]);
+  }, [selectedService, vehicleType, damageLevel, serviceRates, vehicleMultipliers, damageLevelMultipliers]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-8">

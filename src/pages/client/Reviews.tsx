@@ -1,178 +1,336 @@
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
-import { Star, ThumbsUp, Calendar } from 'lucide-react';
-import ReviewForm from '@/components/ReviewForm';
-import { useAuth } from '@/contexts/AuthContext';
+import { Button } from "@/components/ui/button";
+import { Star, Edit2, Trash2, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { 
+  getMyReviews, 
+  createReview, 
+  updateReview, 
+  deleteReview,
+  Review,
+  CreateReviewData,
+  UpdateReviewData
+} from '@/services/reviewService';
+import { getAllServices, Service } from '@/services/serviceService';
 
-interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  serviceId: string;
-  serviceName: string;
-  rating: number;
-  comment: string;
-  date: string;
-  likes: number;
-  userHasLiked?: boolean;
-}
-
-const Reviews = () => {
-  const { user } = useAuth();
+const ClientReviews = () => {
+  const { toast } = useToast();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [userServices, setUserServices] = useState<{ id: string; name: string }[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [rating, setRating] = useState<number>(5);
+  const [comment, setComment] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Mock data - replace with API calls
   useEffect(() => {
-    // Fetch user's completed services
-    setUserServices([
-      { id: '1', name: 'Panel Beating Service - Feb 2024' },
-      { id: '2', name: 'Spray Painting Service - Jan 2024' },
-    ]);
-
-    // Fetch existing reviews
-    setReviews([
-      {
-        id: '1',
-        userId: '1',
-        userName: 'John Doe',
-        serviceId: '1',
-        serviceName: 'Panel Beating Service',
-        rating: 5,
-        comment: 'Excellent service! The team did a fantastic job.',
-        date: '2024-02-15',
-        likes: 3,
-        userHasLiked: false,
-      },
-      // Add more mock reviews...
-    ]);
+    fetchReviews();
+    fetchServices();
   }, []);
 
-  const handleSubmitReview = async (reviewData: {
-    rating: number;
-    comment: string;
-    serviceId: string;
-  }) => {
-    // Mock API call - replace with actual API
-    const newReview: Review = {
-      id: Date.now().toString(),
-      userId: user?.id || '',
-      userName: user?.name || '',
-      serviceId: reviewData.serviceId,
-      serviceName: userServices.find(s => s.id === reviewData.serviceId)?.name || '',
-      rating: reviewData.rating,
-      comment: reviewData.comment,
-      date: new Date().toISOString(),
-      likes: 0,
-      userHasLiked: false,
-    };
-
-    setReviews(prev => [newReview, ...prev]);
+  const fetchReviews = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getMyReviews();
+      setReviews(data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load your reviews. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleLikeReview = async (reviewId: string) => {
-    setReviews(prev =>
-      prev.map(review =>
-        review.id === reviewId
-          ? {
-              ...review,
-              likes: review.userHasLiked ? review.likes - 1 : review.likes + 1,
-              userHasLiked: !review.userHasLiked,
-            }
-          : review
-      )
-    );
+  const fetchServices = async () => {
+    try {
+      const data = await getAllServices();
+      setServices(data);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load services. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCreateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedService) {
+      toast({
+        title: "Error",
+        description: "Please select a service to review",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    const reviewData: CreateReviewData = {
+      serviceId: selectedService,
+      rating,
+      comment,
+    };
+    
+    try {
+      const newReview = await createReview(reviewData);
+      setReviews([...reviews, newReview]);
+      setIsDialogOpen(false);
+      resetForm();
+      toast({
+        title: "Success",
+        description: "Your review has been submitted",
+      });
+    } catch (error) {
+      console.error('Error creating review:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit your review. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingReview) return;
+    
+    setIsSubmitting(true);
+    
+    const reviewData: UpdateReviewData = {
+      rating,
+      comment,
+    };
+    
+    try {
+      const updatedReview = await updateReview(editingReview.id, reviewData);
+      setReviews(reviews.map(review => 
+        review.id === updatedReview.id ? updatedReview : review
+      ));
+      setIsDialogOpen(false);
+      resetForm();
+      toast({
+        title: "Success",
+        description: "Your review has been updated",
+      });
+    } catch (error) {
+      console.error('Error updating review:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update your review. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+    
+    try {
+      await deleteReview(id);
+      setReviews(reviews.filter(review => review.id !== id));
+      toast({
+        title: "Success",
+        description: "Your review has been deleted",
+      });
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete your review. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openEditDialog = (review: Review) => {
+    setEditingReview(review);
+    setRating(review.rating);
+    setComment(review.comment);
+    setIsDialogOpen(true);
+  };
+
+  const resetForm = () => {
+    setEditingReview(null);
+    setSelectedService(null);
+    setRating(5);
+    setComment('');
+  };
+
+  const renderStars = (count: number) => {
+    return Array(5).fill(0).map((_, i) => (
+      <Star 
+        key={i} 
+        className={`h-5 w-5 ${i < count ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} 
+      />
+    ));
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Reviews & Testimonials</h1>
-
-      {/* Review Form Section */}
-      {userServices.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Leave a Review</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Select Service</h3>
-              <div className="space-y-2">
-                {userServices.map(service => (
-                  <button
-                    key={service.id}
-                    onClick={() => setSelectedService(service.id)}
-                    className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                      selectedService === service.id
-                        ? 'bg-secondary text-white'
-                        : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">My Reviews</h1>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) resetForm();
+        }}>
+          <DialogTrigger asChild>
+            <Button>Write a Review</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>
+                {editingReview ? 'Edit Your Review' : 'Write a Review'}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={editingReview ? handleUpdateReview : handleCreateReview} className="space-y-4">
+              {!editingReview && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Select Service</label>
+                  <Select 
+                    value={selectedService || ''} 
+                    onValueChange={setSelectedService}
                   >
-                    {service.name}
-                  </button>
-                ))}
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map(service => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Rating</label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="focus:outline-none"
+                    >
+                      <Star 
+                        className={`h-6 w-6 ${star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} 
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Your Review</label>
+                <Textarea 
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Share your experience with this service..."
+                  rows={4}
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {editingReview ? 'Update Review' : 'Submit Review'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {reviews.map((review) => (
+            <Card key={review.id} className="p-6">
+              <div className="flex justify-between">
+                <h3 className="font-semibold text-lg">{review.serviceName || 'Service'}</h3>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => openEditDialog(review)}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleDeleteReview(review.id)}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-center mt-2">
+                {renderStars(review.rating)}
+                <span className="ml-2 text-sm text-gray-500">
+                  {new Date(review.date || review.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              
+              <p className="mt-4 text-gray-700">{review.comment}</p>
+              
+              {review.status === 'pending' && (
+                <div className="mt-2 text-sm text-amber-600">
+                  Pending approval
+                </div>
+              )}
             </Card>
-            {selectedService && (
-              <ReviewForm
-                serviceId={selectedService}
-                onSubmit={handleSubmitReview}
-              />
-            )}
-          </div>
+          ))}
+          
+          {reviews.length === 0 && (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500">You haven't written any reviews yet. Share your experience with our services!</p>
+            </div>
+          )}
         </div>
       )}
-
-      {/* Reviews List */}
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold">Recent Reviews</h2>
-        {reviews.map(review => (
-          <Card key={review.id} className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="font-medium">{review.userName}</span>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < review.rating
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-2">{review.comment}</p>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {new Date(review.date).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handleLikeReview(review.id)}
-                      className={`flex items-center space-x-1 ${
-                        review.userHasLiked ? 'text-secondary' : ''
-                      }`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                      <span>{review.likes}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-500">
-                {review.serviceName}
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
     </div>
   );
 };
 
-export default Reviews; 
+export default ClientReviews; 

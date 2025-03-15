@@ -11,7 +11,7 @@ const Logo: FC<LogoProps> = ({ className = "h-8 w-auto" }) => {
   return (
     <img
       src={imageError ? 'https://placehold.co/64x64/F97316/ffffff?text=CT' : '/images/logo/color-tech-logo.png'}
-      alt="Color-tech Panel Beaters"
+      alt="Color Tech Panel Beaters"
       className={className}
       onError={() => {
         setImageError(true);

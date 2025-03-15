@@ -5,6 +5,7 @@ import { config } from '@/config';
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
+    id?: string; // Add id as an alias for userId for backward compatibility
     role?: string;  // Make role optional since it's not in the token
   };
 }
@@ -20,6 +21,7 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction) 
     const decoded = jwt.verify(token, config.jwtSecret) as { userId: string };
     req.user = {
       userId: decoded.userId,
+      id: decoded.userId, // Set id as an alias for userId
       role: undefined // Role will be fetched from database when needed
     };
     next();

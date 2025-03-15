@@ -146,8 +146,8 @@ const Navigation = () => {
   const shieldIcon = <ShieldCheck className="h-4 w-4 text-primary" />;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
-      <div className="container mx-auto px-4">
+    <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-100 h-16 shadow-sm">
+      <div className="container mx-auto px-4 h-full">
         <div className="flex justify-between items-center h-16">
           {/* Logo Container */}
           <Link to="/" className="flex items-center">
@@ -157,7 +157,7 @@ const Navigation = () => {
                 <div className="flex items-center space-x-2">
                   <Logo className="h-8 w-auto" />
                   <span className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-secondary bg-clip-text text-transparent">
-                    Color-tech
+                    Color Tech
                   </span>
                 </div>
               </div>
@@ -201,7 +201,7 @@ const Navigation = () => {
                   >
                     <DropdownMenuLabel>
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user?.name}</p>
+                        <p className="text-sm font-medium leading-none">{user?.fullName}</p>
                         <p className="text-xs leading-none text-gray-500">{user?.email}</p>
                       </div>
                     </DropdownMenuLabel>

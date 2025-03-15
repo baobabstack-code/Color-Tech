@@ -24,17 +24,12 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isClientRoute = location.pathname.startsWith('/client');
 
-  // Only use admin layout for admin routes
-  if (isAdminRoute) {
-    return (
-      <>
-        <Navigation />
-        {children}
-      </>
-    );
+  // Only render children for admin and client routes (they have their own layouts)
+  if (isAdminRoute || isClientRoute) {
+    return <>{children}</>;
   }
 
-  // Use full layout (with footer) for public and client routes
+  // Use full layout (with footer) for public routes
   return <Layout>{children}</Layout>;
 }
 

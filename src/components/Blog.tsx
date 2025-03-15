@@ -16,8 +16,8 @@ const Blog = () => {
   const blogPosts: BlogPost[] = [
     {
       id: '1',
-      title: 'Essential Tips for Maintaining Your Car's Paint',
-      excerpt: 'Learn the best practices for keeping your vehicle's paint looking fresh and protected from environmental damage.',
+      title: 'Essential Tips for Maintaining Your Car\'s Paint',
+      excerpt: 'Learn the best practices for keeping your vehicle\'s paint looking fresh and protected from environmental damage.',
       category: 'Car Care Tips',
       author: 'James Thompson',
       date: '2024-02-15',

@@ -15,7 +15,9 @@ import {
   Menu,
   X,
   ChevronDown,
-  Bell
+  Bell,
+  UserCircle,
+  LogOut
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -147,17 +149,59 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main content */}
       <main className={`flex-1 transition-margin ${
         isSidebarOpen ? 'ml-64' : 'ml-0'
-      }`}>
-        {children}
+      } md:ml-64`}>
+        <div className="p-4 pt-6">
+          {/* Header */}
+          <header className="bg-white p-4 mb-6 rounded-lg shadow-sm flex justify-between items-center sticky top-0 z-10">
+            <h1 className="text-xl font-semibold text-gray-800">
+              {(() => {
+                const pathSegment = location.pathname.split('/').pop() || '';
+                return pathSegment 
+                  ? pathSegment.charAt(0).toUpperCase() + pathSegment.slice(1)
+                  : 'Dashboard';
+              })()}
+            </h1>
+            <div className="flex items-center space-x-4">
+              <button className="p-2 text-gray-500 hover:text-primary">
+                <Bell className="h-5 w-5" />
+              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center space-x-2 text-gray-700 hover:text-primary">
+                    <UserCircle className="h-6 w-6" />
+                    <span>{user?.fullName || 'Admin'}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Link to="/admin/settings" className="flex items-center w-full">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </header>
+          {children}
+        </div>
       </main>
 
       {/* Mobile menu button */}
       {!isSidebarOpen && (
         <button
-          className="fixed top-4 left-4 z-50 lg:hidden"
+          className="fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md"
           onClick={() => setSidebarOpen(true)}
+          aria-label="Open menu"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-6 w-6 text-primary" />
         </button>
       )}
     </div>
