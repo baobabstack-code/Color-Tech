@@ -1,16 +1,15 @@
 import type { Config } from "tailwindcss";
-import animate from "tailwindcss-animate";
+import animate from "tailwindcss-animate"; // This was already here, so we keep it
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ["class"], // This was from the original, keep it
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}", // Next.js specific for pages router (if used)
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}", // Common for components
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}", // Next.js specific for app router
   ],
-  prefix: "",
-  theme: {
+  prefix: "", // From original, keep it
+  theme: { // Keep the entire original theme
     container: {
       center: true,
       padding: "2rem",
@@ -89,7 +88,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [animate],
+  plugins: [animate], // Keep original plugins
 };
 
 export default config;
