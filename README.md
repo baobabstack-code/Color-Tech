@@ -1,95 +1,36 @@
-# Color-Tech
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A vehicle service booking and management application built with Node.js, Express, TypeScript, and PostgreSQL.
+## Getting Started
 
-## Prerequisites
+First, run the development server:
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- PostgreSQL (v12 or higher)
-
-## Setup
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/color-tech.git
-   cd color-tech
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Create a `.env` file in the root directory with the following content (adjust as needed):
-   ```
-   # Server Configuration
-   PORT=3000
-   NODE_ENV=development
-
-   # Database Configuration
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=your_password
-   DB_NAME=color_tech_db
-
-   # JWT Configuration
-   JWT_SECRET=your_secret_key_change_this_in_production
-   JWT_EXPIRES_IN=24h
-
-   # Logging Configuration
-   LOG_LEVEL=info
-   LOG_FILE=./logs/app.log
-
-   # CORS Configuration
-   CORS_ORIGIN=*
-   CORS_METHODS=GET,HEAD,PUT,PATCH,POST,DELETE
-
-   # File Upload Configuration
-   MAX_FILE_SIZE=5242880
-   UPLOAD_DIR=./uploads
-   ```
-
-4. Create the PostgreSQL database:
-   ```
-   npm run db:create
-   ```
-
-5. Seed the database with sample data:
-   ```
-   npm run db:seed
-   ```
-
-## Running the Application
-
-### Development Mode
-
-```
+```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-### Production Mode
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```
-npm run build
-npm start
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## API Documentation
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-See the [API_DOCUMENTATION.md](API_DOCUMENTATION.md) file for detailed API documentation.
+## Learn More
 
-## Setup and Deployment
+To learn more about Next.js, take a look at the following resources:
 
-See the [SETUP_DEPLOYMENT.md](SETUP_DEPLOYMENT.md) file for detailed setup and deployment instructions.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Testing
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-```
-npm test
-```
+## Deploy on Vercel
 
-## License
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
