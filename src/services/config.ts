@@ -1,5 +1,5 @@
 // Frontend-compatible configuration
-export const config = {
+export const serviceConfig = {
   // API configuration
   apiUrl: 'http://localhost:3000/api',
   
@@ -9,4 +9,4 @@ export const config = {
   },
 };
 
-export default config; 
+export default serviceConfig;
