@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import pool from '@/lib/db'; // Assuming db.ts is correctly set up in lib
 import { config } from '@/config'; // Assuming config.ts is correctly set up
 
@@ -39,8 +39,8 @@ export async function POST(request: Request) {
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      config.jwtSecret,
-      { expiresIn: config.jwtExpiresIn }
+      config.jwtSecret as string,
+      { expiresIn: config.jwtExpiresIn } as jwt.SignOptions
     );
 
     // Return user info without password

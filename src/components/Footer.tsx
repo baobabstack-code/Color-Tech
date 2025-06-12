@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { 
   Facebook, 
   Twitter, 
@@ -77,7 +77,7 @@ export default function Footer() {
               {quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link 
-                    to={link.path}
+                    href={link.path}
                     className="hover:text-primary transition-colors"
                   >
                     {link.title}
@@ -94,7 +94,7 @@ export default function Footer() {
               {services.map((service) => (
                 <li key={service.path}>
                   <Link 
-                    to={service.path}
+                    href={service.path}
                     className="hover:text-primary transition-colors"
                   >
                     {service.title}
@@ -137,13 +137,13 @@ export default function Footer() {
               © {new Date().getFullYear()} Color-Tech Panel & Paint. All rights reserved.
             </div>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-sm hover:text-primary transition-colors">
+              <Link href="/privacy" className="text-sm hover:text-primary transition-colors">
                 Privacy Policy
               </Link>
-              <Link to="/terms" className="text-sm hover:text-primary transition-colors">
+              <Link href="/terms" className="text-sm hover:text-primary transition-colors">
                 Terms of Service
               </Link>
-              <Link to="/sitemap" className="text-sm hover:text-primary transition-colors">
+              <Link href="/sitemap" className="text-sm hover:text-primary transition-colors">
                 Sitemap
               </Link>
             </div>

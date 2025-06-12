@@ -43,12 +43,15 @@ interface TowingService {
   eta: string;
 }
 
-interface Stage {
+export interface Stage {
   id: number;
   title: string;
   description: string;
   status: 'completed' | 'in-progress' | 'pending';
   date?: string;
+  details?: string;
+  photos?: string[];
+  notes?: string;
 }
 
 interface ProgressTrackerProps {

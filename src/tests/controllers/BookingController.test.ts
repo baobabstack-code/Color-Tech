@@ -152,7 +152,7 @@ describe('BookingController', () => {
       expect(VehicleModel.findById).toHaveBeenCalledWith(1);
       expect(ServiceModel.findById).toHaveBeenCalledWith(1);
       expect(BookingModel.create).toHaveBeenCalled();
-      expect(BookingModel.addServices).toHaveBeenCalledWith(bookingId, [1]);
+      expect(BookingModel.addService).toHaveBeenCalledWith(bookingId, [1]);
       expect(createAuditLog).toHaveBeenCalled();
     });
 

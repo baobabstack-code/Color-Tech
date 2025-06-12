@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
@@ -8,16 +8,19 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isAuthenticated } = useAuth();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   if (!isAuthenticated) {
     // Redirect to login page but save the attempted location
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    router.replace(`/login?from=${encodeURIComponent(pathname || '')}`);
+    return null; // Return null or a loading indicator while redirecting
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
     // Redirect unauthorized users to home page
-    return <Navigate to="/" replace />;
+    router.replace('/');
+    return null; // Return null or a loading indicator while redirecting
   }
 
   return <>{children}</>;

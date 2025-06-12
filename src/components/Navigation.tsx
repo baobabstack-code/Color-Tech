@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { 
   LayoutDashboard, 
   Wrench, 
@@ -150,7 +152,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4 h-full">
         <div className="flex justify-between items-center h-16">
           {/* Logo Container */}
-          <Link to="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-secondary/50 rounded-lg blur-sm group-hover:blur opacity-75 transition-all duration-300 group-hover:opacity-100"></div>
               <div className="relative px-4 py-2 bg-white rounded-lg border border-gray-100 shadow-lg group-hover:shadow-xl transition-all duration-300">
@@ -169,7 +171,7 @@ const Navigation = () => {
             {publicLinks.map((link) => (
               <Link
                 key={link.title}
-                to={link.path}
+                href={link.path}
                 className="text-gray-600 hover:text-secondary transition-colors duration-200"
               >
                 {link.title}
@@ -211,7 +213,7 @@ const Navigation = () => {
                     {getNavLinks().map((link) => (
                       <DropdownMenuItem key={link.path} asChild>
                         <Link 
-                          to={link.path}
+                          href={link.path}
                           className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
                         >
                           {link.icon && <span className="mr-2">{link.icon}</span>}
@@ -272,13 +274,13 @@ const Navigation = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 bg-white shadow-lg border-gray-200">
                     <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
-                      <Link to="/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
+                      <Link href="/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
                         {userIcon}
                         <span>Client Login</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
-                      <Link to="/admin/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
+                      <Link href="/admin/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
                         {shieldIcon}
                         <span>Admin Login</span>
                       </Link>
@@ -322,7 +324,7 @@ const Navigation = () => {
               {publicLinks.map((link) => (
                 <Link
                   key={link.title}
-                  to={link.path}
+                  href={link.path}
                   className="text-gray-600 hover:text-secondary transition-colors duration-200 px-4 py-2"
                   onClick={() => setIsOpen(false)}
                 >
@@ -335,7 +337,7 @@ const Navigation = () => {
                     {getNavLinks().map((link) => (
                       <Link
                         key={link.title}
-                        to={link.path}
+                        href={link.path}
                         className="block px-4 py-2 text-gray-600 hover:text-secondary"
                         onClick={() => setIsOpen(false)}
                       >
@@ -356,7 +358,7 @@ const Navigation = () => {
               ) : (
                 <div className="border-t border-gray-100 pt-4 px-4 space-y-2">
                   <Link
-                    to="/login"
+                    href="/login"
                     className="flex items-center space-x-2 text-gray-600 hover:text-secondary py-2"
                     onClick={() => setIsOpen(false)}
                   >
@@ -364,7 +366,7 @@ const Navigation = () => {
                     <span>Client Portal</span>
                   </Link>
                   <Link
-                    to="/admin/login"
+                    href="/admin/login"
                     className="flex items-center space-x-2 text-gray-600 hover:text-secondary py-2"
                     onClick={() => setIsOpen(false)}
                   >

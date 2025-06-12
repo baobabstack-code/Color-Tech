@@ -1,15 +1,16 @@
-import React from 'react';
-import Link from "next/link"; // Changed from react-router-dom
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings, CheckCircle, ArrowRight
-} from 'lucide-react';
-import CostCalculator from '@/components/CostCalculator'; // Updated path
-import ProgressTracker from '@/components/ProgressTracker'; // Updated path
-import VirtualTour from '@/components/VirtualTour';       // Updated path
+"use client";
 
-export default function ServicesPage() {
+import React from 'react';
+import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings } from 'lucide-react';
+import CostCalculator from '@/components/CostCalculator'; // Adjusted import path
+import ProgressTracker from '@/components/ProgressTracker'; // Adjusted import path
+import VirtualTour from '@/components/VirtualTour'; // Adjusted import path
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CheckCircle } from "lucide-react";
+import Link from "next/link"; // Import Link from next/link
+
+const Services = () => {
   const services = [
     {
       icon: <Wrench className="h-12 w-12 text-primary" />,
@@ -86,14 +87,14 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4"> {/* Assuming pt-20 is for navbar height */}
+    <div className="min-h-screen pt-20 pb-12 px-4">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-primary text-center mb-6">
           Our Services
         </h1>
         <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto">
-          We offer a comprehensive range of automotive repair and refinishing services,
+          We offer a comprehensive range of automotive repair and refinishing services, 
           delivered by our team of experienced professionals using state-of-the-art equipment.
         </p>
       </div>
@@ -114,10 +115,7 @@ export default function ServicesPage() {
                     </li>
                   ))}
                 </ul>
-                {/* Assuming Learn More button will link to a more detailed service page or section later */}
-                <Button asChild className="w-full">
-                  <Link href={`/services/${service.link}`}>Learn More</Link>
-                </Button>
+                <Button className="w-full">Learn More</Button>
               </div>
             </Card>
           ))}
@@ -131,12 +129,15 @@ export default function ServicesPage() {
             Ready to Transform Your Vehicle?
           </h2>
           <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Contact us today for a consultation and quote. Our team is ready to help restore
+            Contact us today for a consultation and quote. Our team is ready to help restore 
             your vehicle to its former glory.
           </p>
-          <Button asChild size="lg" variant="secondary" className="hover:bg-opacity-90">
-            <Link href="/contact">Get a Quote</Link>
-          </Button>
+          <Link
+            href="/contact"
+            className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200"
+          >
+            Get a Quote
+          </Link>
         </div>
       </div>
 
@@ -148,8 +149,8 @@ export default function ServicesPage() {
             Stay informed about your vehicle's repair status with our real-time progress tracking system.
           </p>
         </div>
-        <ProgressTracker
-          stages={repairStages}
+        <ProgressTracker 
+          stages={repairStages} 
           currentStage={2} // Index of the current stage (0-based)
         />
       </div>
@@ -166,4 +167,6 @@ export default function ServicesPage() {
       </div>
     </div>
   );
-}
+};
+
+export default Services;

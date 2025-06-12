@@ -8,7 +8,7 @@ import {
   Wrench, Car, Star, Clock,
   CheckCircle, PhoneCall, Users,
   Shield, ArrowRight, Quote,
-  Camera, Settings, Tool, Paintbrush
+  Camera, Settings, Hammer, Paintbrush
 } from "lucide-react";
 
 export default function HomePage() {

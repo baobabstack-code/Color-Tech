@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Heart } from "lucide-react";
 
 export default function AdminFooter() {
@@ -12,14 +12,14 @@ export default function AdminFooter() {
         </div>
         
         <div className="flex items-center space-x-6 mt-4 md:mt-0">
-          <Link 
-            to="/admin/help"
+          <Link
+            href="/admin/help"
             className="text-sm text-gray-600 hover:text-primary transition-colors"
           >
             Help Center
           </Link>
-          <Link 
-            to="/admin/documentation"
+          <Link
+            href="/admin/documentation"
             className="text-sm text-gray-600 hover:text-primary transition-colors"
           >
             Documentation

@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Log request information
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.http(`${req.method} ${req.url}`);
   next();
 });
@@ -46,7 +46,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.status(200).json({ status: 'ok', environment: config.server.env });
 });
 
@@ -55,7 +55,7 @@ app.use(express.static(path.join(__dirname, '../dist')));
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res, next) => {
+app.get('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   } else {
@@ -64,7 +64,7 @@ app.get('*', (req, res, next) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
   logger.warn(`Route not found: ${req.method} ${req.url}`);
   res.status(404).json({ message: 'Route not found' });
 });
@@ -82,7 +82,21 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT} in ${config.server.env} mode`);
   logger.info(`Database connected to ${config.db.host}:${config.db.port}/${config.db.database}`);
-  
+
+  // Check database connection periodically
+  const checkDatabaseConnection = async () => {
+    try {
+      await db.query('SELECT 1');
+      logger.debug('Database connection is healthy');
+    } catch (error) {
+      logger.error('Database connection check failed:', error);
+      logger.warn('Potential database connectivity issues detected');
+    }
+  };
+
+  // Run the database connection check every 5 minutes
+  setInterval(checkDatabaseConnection, 5 * 60 * 1000);
+
   // Verify JWT configuration
   try {
     const jwtVerification = verifyJwtConfig();

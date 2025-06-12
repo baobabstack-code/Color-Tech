@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -26,7 +27,7 @@ import {
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const { user, logout } = useAuth();
-  const location = useLocation();
+  const pathname = usePathname();
 
   const navItems = [
     { 
@@ -73,9 +74,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           {navItems.map((item) => (
             <Link
               key={item.path}
-              to={item.path}
+              href={item.path}
               className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                location.pathname === item.path
+                pathname === item.path
                   ? 'bg-primary text-white'
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -96,7 +97,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <header className="bg-white p-4 mb-6 rounded-lg shadow-sm flex justify-between items-center sticky top-0 z-10">
             <h1 className="text-xl font-semibold text-gray-800">
               {(() => {
-                const pathSegment = location.pathname.split('/').pop() || '';
+                const pathSegment = (pathname || '').split('/').pop() || '';
                 return pathSegment 
                   ? pathSegment.charAt(0).toUpperCase() + pathSegment.slice(1)
                   : 'Dashboard';
@@ -117,7 +118,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Link to="/client/profile" className="flex items-center w-full">
+                    <Link href="/client/profile" className="flex items-center w-full">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
