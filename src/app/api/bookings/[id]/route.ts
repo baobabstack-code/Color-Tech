@@ -1,200 +1,284 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server';
+import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { createAuditLog } from '@/utils/auditLogger';
 
-interface BookingParams {
-  params: {
-    id: string;
-  };
+// Helper for validation (can be moved to a separate utils file if needed)
+function validateRequiredFields(data: any, fields: string[]): string | null {
+  for (const field of fields) {
+    if (!data[field]) {
+      return `${field} is required`;
+    }
+  }
+  return null;
 }
 
-// GET /api/bookings/[id]
-export async function GET(request: NextRequest, { params }: BookingParams) {
+function validateEnum(value: string, allowedValues: string[]): boolean {
+  return allowedValues.includes(value);
+}
+
+export async function GET(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
     }
 
     const { id } = params;
-    const userId = authenticatedUser.id;
-    const isAdmin = authenticatedUser.role === 'admin';
+    const bookingId = parseInt(id);
+    const userId = request.user?.id;
+    const userRole = request.user?.role;
 
-    let queryText = `
-      SELECT b.*, u.full_name as client_name, s.name as service_name,
-             v.make as vehicle_make, v.model as vehicle_model, v.year as vehicle_year, v.license_plate as vehicle_license_plate
-      FROM bookings b
-      JOIN users u ON b.user_id = u.id
-      JOIN services s ON b.service_id = s.id
-      JOIN vehicles v ON b.vehicle_id = v.id
-      WHERE b.id = $1
-    `;
-    const queryParams: any[] = [id];
-
-    if (!isAdmin) {
-      queryText += ' AND b.user_id = $2';
-      queryParams.push(userId);
+    if (isNaN(bookingId)) {
+      return NextResponse.json({ message: 'Invalid booking ID' }, { status: 400 });
     }
 
-    const result = await pool.query(queryText, queryParams);
+    const bookingResult = await pool.query(
+      `SELECT 
+        b.id, b.user_id, b.vehicle_id, b.booking_date, b.start_time, b.end_time, 
+        b.total_price, b.status, b.notes, b.created_at, b.updated_at,
+        u.email AS user_email, u.first_name AS user_first_name, u.last_name AS user_last_name,
+        v.make, v.model, v.year, v.license_plate,
+        json_agg(s.name) AS service_names
+       FROM bookings b
+       JOIN users u ON b.user_id = u.id
+       JOIN vehicles v ON b.vehicle_id = v.id
+       LEFT JOIN booking_services bs ON b.id = bs.booking_id
+       LEFT JOIN services s ON bs.service_id = s.id
+       WHERE b.id = $1
+       GROUP BY b.id, u.id, v.id`,
+      [bookingId]
+    );
 
-    if (result.rows.length === 0) {
-      return NextResponse.json({ message: 'Booking not found or not authorized' }, { status: 404 });
-    }
+    const booking = bookingResult.rows[0];
 
-    return NextResponse.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching booking:', error);
-    return NextResponse.json({ message: 'Server error while fetching booking' }, { status: 500 });
-  }
-}
-
-interface UpdateBookingPayload {
-  scheduledDate?: string;
-  scheduledTime?: string;
-  status?: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  notes?: string;
-  serviceId?: string;
-  vehicleId?: string;
-  // Admin specific fields if any
-  staff_id?: string;
-}
-
-// PUT /api/bookings/[id]
-export async function PUT(request: NextRequest, { params }: BookingParams) {
-  try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { id: bookingId } = params;
-    const userId = authenticatedUser.id;
-    const isAdmin = authenticatedUser.role === 'admin';
-    const body = await request.json() as UpdateBookingPayload;
-
-    // Fetch the booking to check ownership and current status
-    const bookingCheckResult = await pool.query('SELECT * FROM bookings WHERE id = $1', [bookingId]);
-    if (bookingCheckResult.rows.length === 0) {
-      return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
-    }
-    const currentBooking = bookingCheckResult.rows[0];
-
-    if (!isAdmin && currentBooking.user_id !== userId) {
-      return NextResponse.json({ message: 'Not authorized to update this booking' }, { status: 403 });
-    }
-
-    // Clients can only cancel their bookings, or update notes/schedule if pending
-    if (!isAdmin) {
-      if (body.status && body.status !== 'cancelled') {
-        return NextResponse.json({ message: 'Clients can only cancel bookings or update notes/schedule for pending bookings.' }, { status: 403 });
-      }
-      if ((body.scheduledDate || body.scheduledTime || body.serviceId || body.vehicleId) && currentBooking.status !== 'pending') {
-        return NextResponse.json({ message: 'Cannot modify details of a non-pending booking.' }, { status: 403 });
-      }
-       // Prevent clients from updating staff_id
-      if (body.staff_id) {
-        return NextResponse.json({ message: 'Clients cannot assign staff.' }, { status: 403 });
-      }
-    }
-
-    const updates: string[] = [];
-    const queryParams: any[] = [];
-    let paramCounter = 1;
-
-    if (body.scheduledDate) {
-      updates.push(`scheduled_date = $${paramCounter++}`);
-      queryParams.push(body.scheduledDate);
-    }
-    if (body.scheduledTime) {
-      updates.push(`scheduled_time = $${paramCounter++}`);
-      queryParams.push(body.scheduledTime);
-    }
-    if (body.status) {
-      updates.push(`status = $${paramCounter++}`);
-      queryParams.push(body.status);
-    }
-    if (body.notes !== undefined) { // Allow setting notes to empty string
-      updates.push(`notes = $${paramCounter++}`);
-      queryParams.push(body.notes);
-    }
-    if (body.serviceId && (isAdmin || currentBooking.status === 'pending')) {
-        updates.push(`service_id = $${paramCounter++}`);
-        queryParams.push(body.serviceId);
-    }
-    if (body.vehicleId && (isAdmin || currentBooking.status === 'pending')) {
-        updates.push(`vehicle_id = $${paramCounter++}`);
-        queryParams.push(body.vehicleId);
-    }
-    if (body.staff_id && isAdmin) { // Only admin can update staff_id
-        updates.push(`staff_id = $${paramCounter++}`);
-        queryParams.push(body.staff_id);
-    }
-
-
-    if (updates.length === 0) {
-      return NextResponse.json({ message: 'No update fields provided' }, { status: 400 });
-    }
-
-    updates.push(`updated_at = NOW()`);
-    queryParams.push(bookingId);
-
-    const updateQuery = `UPDATE bookings SET ${updates.join(', ')} WHERE id = $${paramCounter} RETURNING *`;
-    const result = await pool.query(updateQuery, queryParams);
-
-    if (result.rows.length === 0) {
-      // This case should ideally not be reached if bookingCheckResult found a row
-      return NextResponse.json({ message: 'Failed to update booking' }, { status: 500 });
-    }
-
-    return NextResponse.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error updating booking:', error);
-    if (error instanceof Error && 'code' in error && (error as any).code === '23503') { // Foreign key violation
-        return NextResponse.json({ message: 'Invalid service_id or vehicle_id provided.' }, { status: 400 });
-    }
-    return NextResponse.json({ message: 'Server error while updating booking' }, { status: 500 });
-  }
-}
-
-// DELETE /api/bookings/[id]
-export async function DELETE(request: NextRequest, { params }: BookingParams) {
-  try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { id: bookingId } = params;
-    const userId = authenticatedUser.id;
-    const isAdmin = authenticatedUser.role === 'admin';
-
-    const bookingCheckResult = await pool.query('SELECT user_id, status FROM bookings WHERE id = $1', [bookingId]);
-
-    if (bookingCheckResult.rows.length === 0) {
+    if (!booking) {
       return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
     }
 
-    const booking = bookingCheckResult.rows[0];
-
-    if (!isAdmin && booking.user_id !== userId) {
-      return NextResponse.json({ message: 'Not authorized to delete this booking' }, { status: 403 });
+    // Check if user has permission to view this booking
+    if (userRole !== 'admin' && userRole !== 'staff' && booking.user_id !== userId) {
+      return NextResponse.json({ message: 'You do not have permission to view this booking' }, { status: 403 });
     }
 
-    // Original logic: For non-admin users, only allow deletion of pending bookings
-    // This seems to be a business rule. In many systems, users can only cancel, not delete.
-    // If deletion means actual row removal, this rule is fine.
-    // If "delete" means "cancel", then the PUT endpoint with status 'cancelled' is more appropriate.
-    // Assuming actual deletion for now as per original route.
-    if (!isAdmin && booking.status !== 'pending') {
-      return NextResponse.json({ message: 'Cannot delete bookings that are not in pending status. Please cancel instead.' }, { status: 403 });
+    return NextResponse.json(booking);
+  } catch (error) {
+    return handleApiError(error, 'Error fetching booking');
+  }
+}
+
+export async function PUT(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
+  try {
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
     }
 
+    const { id } = params;
+    const bookingId = parseInt(id);
+    const userId = request.user?.id;
+    const userRole = request.user?.role;
+
+    if (isNaN(bookingId)) {
+      return NextResponse.json({ message: 'Invalid booking ID' }, { status: 400 });
+    }
+
+    // Get current booking
+    const currentBookingResult = await pool.query('SELECT * FROM bookings WHERE id = $1', [bookingId]);
+    const currentBooking = currentBookingResult.rows[0];
+
+    if (!currentBooking) {
+      return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
+    }
+
+    // Check if user has permission to update this booking
+    if (userRole !== 'admin' && userRole !== 'staff' && currentBooking.user_id !== userId) {
+      return NextResponse.json({ message: 'You do not have permission to update this booking' }, { status: 403 });
+    }
+
+    // Regular users can only update pending bookings
+    if (userRole !== 'admin' && userRole !== 'staff' && currentBooking.status !== 'pending') {
+      return NextResponse.json({ message: 'You can only update pending bookings' }, { status: 403 });
+    }
+
+    const { scheduled_date, scheduled_time, notes, status, staff_id, service_ids } = await request.json();
+
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
+    let paramIndex = 1;
+
+    if (scheduled_date !== undefined) {
+      updateFields.push(`booking_date = $${paramIndex++}`);
+      updateValues.push(scheduled_date);
+    }
+    if (scheduled_time !== undefined) {
+      updateFields.push(`start_time = $${paramIndex++}`);
+      updateValues.push(scheduled_time);
+
+      // Recalculate end time if services are provided or already exist
+      let totalDuration = 0;
+      if (Array.isArray(service_ids) && service_ids.length > 0) {
+        for (const serviceId of service_ids) {
+          const serviceResult = await pool.query('SELECT duration_minutes FROM services WHERE id = $1', [serviceId]);
+          if (serviceResult.rows.length > 0) {
+            totalDuration += serviceResult.rows[0].duration_minutes;
+          }
+        }
+      } else {
+        // If no new service_ids, try to get existing services for duration calculation
+        const existingServicesResult = await pool.query(
+          `SELECT s.duration_minutes FROM booking_services bs JOIN services s ON bs.service_id = s.id WHERE bs.booking_id = $1`,
+          [bookingId]
+        );
+        totalDuration = existingServicesResult.rows.reduce((sum: number, s: any) => sum + s.duration_minutes, 0);
+      }
+
+      const [startHours, startMinutes] = scheduled_time.split(':').map(Number);
+      const startTimeInMinutes = startHours * 60 + startMinutes;
+      const endTimeInMinutes = startTimeInMinutes + totalDuration;
+
+      const endHours = Math.floor(endTimeInMinutes / 60);
+      const endMinutes = endTimeInMinutes % 60;
+      const end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+      updateFields.push(`end_time = $${paramIndex++}`);
+      updateValues.push(end_time);
+    }
+
+    if (notes !== undefined) {
+      updateFields.push(`notes = $${paramIndex++}`);
+      updateValues.push(notes);
+    }
+
+    // Only admin/staff can update status and staff_id
+    if ((userRole === 'admin' || userRole === 'staff') && status !== undefined) {
+      if (!validateEnum(status, ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'])) {
+        return NextResponse.json({ message: 'Invalid status value' }, { status: 400 });
+      }
+      updateFields.push(`status = $${paramIndex++}`);
+      updateValues.push(status);
+    }
+
+    if (userRole === 'admin' && staff_id !== undefined) {
+      updateFields.push(`staff_id = $${paramIndex++}`);
+      updateValues.push(staff_id);
+    }
+
+    if (updateFields.length === 0 && (!Array.isArray(service_ids) || service_ids.length === 0)) {
+      return NextResponse.json({ message: 'No fields to update' }, { status: 400 });
+    }
+
+    // Update booking details
+    if (updateFields.length > 0) {
+      const updateQuery = `UPDATE bookings SET ${updateFields.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex++}`;
+      updateValues.push(bookingId);
+      await pool.query(updateQuery, updateValues);
+    }
+
+    // Update services if provided
+    if (Array.isArray(service_ids) && service_ids.length > 0) {
+      let newTotalPrice = 0;
+      const newServiceDetails: any[] = [];
+
+      for (const serviceId of service_ids) {
+        const serviceResult = await pool.query('SELECT id, price FROM services WHERE id = $1', [serviceId]);
+        const service = serviceResult.rows[0];
+        if (!service) {
+          return NextResponse.json({ message: `Service with ID ${serviceId} not found` }, { status: 404 });
+        }
+        newTotalPrice += service.price;
+        newServiceDetails.push(service);
+      }
+
+      // Remove existing services for this booking
+      await pool.query('DELETE FROM booking_services WHERE booking_id = $1', [bookingId]);
+
+      // Add new services
+      for (const service of newServiceDetails) {
+        await pool.query(
+          `INSERT INTO booking_services (booking_id, service_id, quantity, price_at_booking)
+           VALUES ($1, $2, $3, $4)`,
+          [bookingId, service.id, 1, service.price]
+        );
+      }
+
+      // Update total price of the booking
+      await pool.query('UPDATE bookings SET total_price = $1 WHERE id = $2', [newTotalPrice, bookingId]);
+    }
+
+    // Log the action
+    await createAuditLog({
+      user_id: userId!, // Non-null assertion as authenticateApi ensures userId is present
+      action: 'update',
+      table_name: 'bookings',
+      record_id: bookingId,
+      old_values: currentBooking, // Pass the original booking for old_values
+      new_values: { ...currentBooking, ...await request.json() }, // This is a simplification, ideally construct based on actual updates
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      metadata: {
+        services_updated: Array.isArray(service_ids),
+        admin_action: userRole === 'admin' || userRole === 'staff'
+      }
+    });
+
+    return NextResponse.json({
+      message: 'Booking updated successfully'
+    });
+
+  } catch (error) {
+    return handleApiError(error, 'Error updating booking');
+  }
+}
+
+export async function DELETE(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
+  try {
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
+    }
+
+    const authorizeResult = await authorizeApi(['admin'])(request);
+    if (authorizeResult) {
+      return authorizeResult; // Not authorized as admin
+    }
+
+    const { id } = params;
+    const bookingId = parseInt(id);
+    const userId = request.user?.id;
+
+    if (isNaN(bookingId)) {
+      return NextResponse.json({ message: 'Invalid booking ID' }, { status: 400 });
+    }
+
+    // Get current booking for audit log
+    const currentBookingResult = await pool.query('SELECT * FROM bookings WHERE id = $1', [bookingId]);
+    const currentBooking = currentBookingResult.rows[0];
+
+    if (!currentBooking) {
+      return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
+    }
+
+    // Delete booking services first due to foreign key constraints
+    await pool.query('DELETE FROM booking_services WHERE booking_id = $1', [bookingId]);
+    // Then delete the booking
     await pool.query('DELETE FROM bookings WHERE id = $1', [bookingId]);
 
-    return NextResponse.json({ message: 'Booking deleted successfully' });
+    // Log the action
+    await createAuditLog({
+      user_id: userId!, // Non-null assertion as authenticateApi ensures userId is present
+      action: 'delete',
+      table_name: 'bookings',
+      record_id: bookingId,
+      old_values: currentBooking,
+      new_values: null,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      metadata: { admin_action: true }
+    });
+
+    return NextResponse.json({
+      message: 'Booking deleted successfully'
+    });
+
   } catch (error) {
-    console.error('Error deleting booking:', error);
-    return NextResponse.json({ message: 'Server error while deleting booking' }, { status: 500 });
+    return handleApiError(error, 'Error deleting booking');
   }
 }

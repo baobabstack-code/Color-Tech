@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import { authenticateApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { handleApiError } from '@/lib/apiAuth';
 import { getPaginationParams } from '@/lib/utils';
 
-export async function GET(request: AuthenticatedRequest) {
+export async function GET(request: Request, { params }: { params: { serviceId: string } }) {
   try {
-    const authResult = await authenticateApi(request);
-    if (authResult) {
-      return authResult;
-    }
+    const { serviceId } = params;
+    const serviceIdNum = parseInt(serviceId);
 
-    const userId = request.user?.id;
-    if (!userId) {
-      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
+    if (isNaN(serviceIdNum)) {
+      return NextResponse.json({ message: 'Invalid service ID' }, { status: 400 });
     }
 
     const { page, limit, offset } = getPaginationParams(request);
@@ -25,16 +22,16 @@ export async function GET(request: AuthenticatedRequest) {
       FROM reviews r
       JOIN users u ON r.user_id = u.id
       JOIN services s ON r.service_id = s.id
-      WHERE r.user_id = $1
+      WHERE r.service_id = $1 AND r.status = 'approved'
       ORDER BY r.created_at DESC
       LIMIT $2 OFFSET $3
     `;
-    const queryParams = [userId, limit, offset];
+    const queryParams = [serviceIdNum, limit, offset];
 
     const reviewsResult = await pool.query(query, queryParams);
 
-    const countQuery = `SELECT COUNT(*) FROM reviews WHERE user_id = $1`;
-    const totalResult = await pool.query(countQuery, [userId]);
+    const countQuery = `SELECT COUNT(*) FROM reviews WHERE service_id = $1 AND status = 'approved'`;
+    const totalResult = await pool.query(countQuery, [serviceIdNum]);
     const total = parseInt(totalResult.rows[0].count, 10);
 
     return NextResponse.json({
@@ -47,6 +44,6 @@ export async function GET(request: AuthenticatedRequest) {
       }
     });
   } catch (error) {
-    return handleApiError(error, 'Error fetching user reviews');
+    return handleApiError(error, 'Error fetching reviews by service ID');
   }
 }

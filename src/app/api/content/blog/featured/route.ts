@@ -1,22 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import ContentModel from '@/models/Content'; // Assuming ContentModel.ts is in models/
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { handleApiError } from '@/lib/apiAuth';
 
-// GET /api/content/blog/featured
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const limitParam = url.searchParams.get('limit');
-    const limit = limitParam ? parseInt(limitParam, 10) : 3; // Default to 3 if not specified
+    const limit = parseInt(url.searchParams.get('limit') || '3', 10);
 
-    if (isNaN(limit) || limit <= 0) {
-      return NextResponse.json({ message: 'Invalid limit parameter' }, { status: 400 });
-    }
+    const query = `
+      SELECT * FROM content
+      WHERE content_type = 'blog' AND is_published = TRUE AND is_featured = TRUE
+      ORDER BY created_at DESC
+      LIMIT $1
+    `;
+    const featuredPostsResult = await pool.query(query, [limit]);
 
-    const featuredPosts = await ContentModel.findFeaturedBlogPosts(limit);
-
-    return NextResponse.json({ featuredPosts });
+    return NextResponse.json({ featuredPosts: featuredPostsResult.rows });
   } catch (error) {
-    console.error('Error fetching featured blog posts:', error);
-    return NextResponse.json({ message: 'Server error while fetching featured blog posts' }, { status: 500 });
+    return handleApiError(error, 'Error fetching featured blog posts');
   }
 }

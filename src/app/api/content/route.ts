@@ -1,114 +1,172 @@
-import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db'; // Assuming db.ts is in lib
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server'; // Assuming this utility exists
-import ContentModel from '@/models/Content'; // Assuming ContentModel.ts is in models/
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { getPaginationParams } from '@/lib/utils';
+import { createAuditLog } from '@/utils/auditLogger';
 
-// Helper for pagination (simplified)
-function getPaginationParams(request: NextRequest) {
-  const url = new URL(request.url);
-  const page = parseInt(url.searchParams.get('page') || '1', 10);
-  const limit = parseInt(url.searchParams.get('limit') || '10', 10);
-  const offset = (page - 1) * limit;
-  return { page, limit, offset };
+// Helper for validation (can be moved to a separate utils file if needed)
+function validateRequiredFields(data: any, fields: string[]): string | null {
+  for (const field of fields) {
+    if (data[field] === undefined || data[field] === null || data[field] === '') {
+      return `${field} is required`;
+    }
+  }
+  return null;
 }
 
-// GET /api/content
-export async function GET(request: NextRequest) {
+function validateString(value: any, minLength: number, maxLength?: number): string | null {
+  if (typeof value !== 'string') {
+    return 'Must be a string';
+  }
+  if (value.length < minLength) {
+    return `Must be at least ${minLength} characters long`;
+  }
+  if (maxLength !== undefined && value.length > maxLength) {
+    return `Must be at most ${maxLength} characters long`;
+  }
+  return null;
+}
+
+function validateEnum(value: string, allowedValues: string[]): boolean {
+  return allowedValues.includes(value);
+}
+
+export async function GET(request: AuthenticatedRequest) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    const { limit, offset } = getPaginationParams(request);
+    const authHeader = request.headers.get('Authorization');
+    const isAuthenticated = authHeader && authHeader.startsWith('Bearer ');
+
+    const { page, limit, offset } = getPaginationParams(request);
     const url = new URL(request.url);
-    const type = url.searchParams.get('type') || undefined;
-    const isPublishedParam = url.searchParams.get('is_published');
+    const type = url.searchParams.get('type');
+    const isPublished = url.searchParams.get('is_published');
 
-    let isPublished: boolean | undefined = undefined;
-    if (isPublishedParam === 'true') {
-      isPublished = true;
-    } else if (isPublishedParam === 'false') {
-      isPublished = false;
-    }
+    let query = `
+      SELECT * FROM content WHERE 1=1
+    `;
+    const queryParams: (string | number | boolean)[] = [];
+    let paramIndex = 1;
 
-    let content;
-    let totalCount;
-
-    if (authenticatedUser && (authenticatedUser.role === 'admin' || authenticatedUser.role === 'staff')) {
-      // Admin/Staff can see all content, filterable by published status
-      content = await ContentModel.findAll(limit, offset, type, isPublished);
-      totalCount = await ContentModel.countAll(type, isPublished);
+    if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
+      // Public view: only published content
+      query += ` AND is_published = TRUE`;
     } else {
-      // Public users only see published content
-      content = await ContentModel.findPublished(limit, offset, type);
-      totalCount = await ContentModel.countPublished(type);
+      // Admin/Staff view: can filter by published status
+      if (isPublished !== null) {
+        query += ` AND is_published = $${paramIndex++}`;
+        queryParams.push(isPublished === 'true');
+      }
     }
 
-    const totalPages = Math.ceil(totalCount / limit);
+    if (type) {
+      query += ` AND content_type = $${paramIndex++}`;
+      queryParams.push(type);
+    }
+
+    query += `
+      ORDER BY created_at DESC
+      LIMIT $${paramIndex++} OFFSET $${paramIndex++}
+    `;
+    queryParams.push(limit, offset);
+
+    const contentResult = await pool.query(query, queryParams);
+
+    let countQuery = `SELECT COUNT(*) FROM content WHERE 1=1`;
+    const countParams: (string | number | boolean)[] = [];
+    let countParamIndex = 1;
+
+    if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
+      countQuery += ` AND is_published = TRUE`;
+    } else {
+      if (isPublished !== null) {
+        countQuery += ` AND is_published = $${countParamIndex++}`;
+        countParams.push(isPublished === 'true');
+      }
+    }
+
+    if (type) {
+      countQuery += ` AND content_type = $${countParamIndex++}`;
+      countParams.push(type);
+    }
+    const totalResult = await pool.query(countQuery, countParams);
+    const total = parseInt(totalResult.rows[0].count, 10);
 
     return NextResponse.json({
-      data: content,
+      content: contentResult.rows,
       pagination: {
-        page: offset / limit + 1,
+        total,
+        page,
         limit,
-        totalItems: totalCount,
-        totalPages,
-      },
+        pages: Math.ceil(total / limit)
+      }
     });
   } catch (error) {
-    console.error('Error fetching content:', error);
-    return NextResponse.json({ message: 'Server error while fetching content' }, { status: 500 });
+    return handleApiError(error, 'Error fetching content');
   }
 }
 
-interface CreateContentPayload {
-  title: string;
-  content_type: 'blog' | 'gallery' | 'testimonial' | 'faq' | 'page'; // Added 'page' as a common type
-  body: string; // Assuming 'content' from model maps to 'body' in request
-  meta_description?: string;
-  meta_keywords?: string;
-  slug?: string;
-  is_published?: boolean;
-}
-
-// POST /api/content (admin/staff only)
-export async function POST(request: NextRequest) {
+export async function POST(request: AuthenticatedRequest) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser || (authenticatedUser.role !== 'admin' && authenticatedUser.role !== 'staff')) {
-      return NextResponse.json({ message: 'Unauthorized: Admin or staff access required' }, { status: 403 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
     }
 
-    const payload = await request.json() as CreateContentPayload;
-    const { title, content_type, body, meta_description, meta_keywords, slug, is_published } = payload;
-
-    // Basic validation (Zod would be better here)
-    if (!title || !content_type || !body) {
-      return NextResponse.json({ message: 'Missing required fields: title, content_type, body' }, { status: 400 });
-    }
-    const validTypes = ['blog', 'gallery', 'testimonial', 'faq', 'page'];
-    if (!validTypes.includes(content_type)) {
-        return NextResponse.json({ message: `Invalid content_type. Must be one of: ${validTypes.join(', ')}` }, { status: 400 });
+    const authorizeResult = await authorizeApi(['admin', 'staff'])(request);
+    if (authorizeResult) {
+      return authorizeResult;
     }
 
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
+    }
 
-    const contentData = {
-      title,
-      type: content_type,
-      content: body, // Mapping 'body' from request to 'content' in model
-      meta_description,
-      meta_keywords,
-      slug,
-      is_published: is_published !== undefined ? is_published : false, // Default to false if not provided
-      created_by: parseInt(authenticatedUser.id, 10), // Assuming user ID is numeric
-      updated_by: parseInt(authenticatedUser.id, 10),
-    };
+    const { title, content_type, body, image_url, is_published, tags, author } = await request.json();
 
-    const newContent = await ContentModel.create(contentData);
+    // Validation
+    const requiredFieldsError = validateRequiredFields(
+      { title, content_type, body },
+      ['title', 'content_type', 'body']
+    );
+    if (requiredFieldsError) {
+      return NextResponse.json({ message: requiredFieldsError }, { status: 400 });
+    }
 
-    // TODO: Add audit logging if required
-    // await createAuditLog({ ... });
+    const titleError = validateString(title, 1, 255);
+    if (titleError) {
+      return NextResponse.json({ message: `Title: ${titleError}` }, { status: 400 });
+    }
+    if (!validateEnum(content_type, ['blog', 'gallery', 'testimonial', 'faq'])) {
+      return NextResponse.json({ message: 'Invalid content_type' }, { status: 400 });
+    }
+    const bodyError = validateString(body, 1);
+    if (bodyError) {
+      return NextResponse.json({ message: `Body: ${bodyError}` }, { status: 400 });
+    }
 
-    return NextResponse.json({ message: 'Content created successfully', content: newContent }, { status: 201 });
+    const contentResult = await pool.query(
+      `INSERT INTO content (title, content_type, body, image_url, is_published, tags, author, created_by, updated_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW()) RETURNING *`,
+      [title, content_type, body, image_url || null, is_published ?? false, tags || null, author || null, userId, userId]
+    );
+    const content = contentResult.rows[0];
+
+    await createAuditLog({
+      user_id: userId!,
+      action: 'insert',
+      table_name: 'content',
+      record_id: content.id,
+      new_values: content,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
+
+    return NextResponse.json({
+      message: 'Content created successfully',
+      content
+    }, { status: 201 });
+
   } catch (error) {
-    console.error('Error creating content:', error);
-    return NextResponse.json({ message: 'Server error while creating content' }, { status: 500 });
+    return handleApiError(error, 'Error creating content');
   }
 }

@@ -1,16 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
-import pool from '@/lib/db'; // Assuming db.ts is in lib, though ContentModel abstracts it
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server';
-import ContentModel from '@/models/Content'; // Assuming ContentModel.ts is in models/
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { createAuditLog } from '@/utils/auditLogger';
 
-interface ContentParams {
-  params: {
-    id: string;
-  };
+// Helper for validation (can be moved to a separate utils file if needed)
+function validateRequiredFields(data: any, fields: string[]): string | null {
+  for (const field of fields) {
+    if (data[field] === undefined || data[field] === null || data[field] === '') {
+      return `${field} is required`;
+    }
+  }
+  return null;
 }
 
-// GET /api/content/[id]
-export async function GET(request: NextRequest, { params }: ContentParams) {
+function validateString(value: any, minLength: number, maxLength?: number): string | null {
+  if (typeof value !== 'string') {
+    return 'Must be a string';
+  }
+  if (value.length < minLength) {
+    return `Must be at least ${minLength} characters long`;
+  }
+  if (maxLength !== undefined && value.length > maxLength) {
+    return `Must be at most ${maxLength} characters long`;
+  }
+  return null;
+}
+
+function validateEnum(value: string, allowedValues: string[]): boolean {
+  return allowedValues.includes(value);
+}
+
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
     const contentId = parseInt(id);
@@ -19,43 +39,39 @@ export async function GET(request: NextRequest, { params }: ContentParams) {
       return NextResponse.json({ message: 'Invalid content ID' }, { status: 400 });
     }
 
-    const content = await ContentModel.findById(contentId);
+    const contentResult = await pool.query('SELECT * FROM content WHERE id = $1', [contentId]);
+    const content = contentResult.rows[0];
 
     if (!content) {
       return NextResponse.json({ message: 'Content not found' }, { status: 404 });
     }
 
-    // If content is not published, only admins/staff should see it
+    // For public routes, only return published content
     if (!content.is_published) {
-      const authenticatedUser = await authenticateRequest(request);
-      if (!authenticatedUser || (authenticatedUser.role !== 'admin' && authenticatedUser.role !== 'staff')) {
-        return NextResponse.json({ message: 'Content not found or not published' }, { status: 404 });
-      }
+      return NextResponse.json({ message: 'Content not found or not published' }, { status: 404 });
     }
 
     return NextResponse.json({ content });
   } catch (error) {
-    console.error('Error fetching content by ID:', error);
-    return NextResponse.json({ message: 'Server error while fetching content' }, { status: 500 });
+    return handleApiError(error, 'Error fetching content by ID');
   }
 }
 
-interface UpdateContentPayload {
-  title?: string;
-  content_type?: 'blog' | 'gallery' | 'testimonial' | 'faq' | 'page';
-  body?: string;
-  meta_description?: string;
-  meta_keywords?: string;
-  slug?: string;
-  is_published?: boolean; // This should ideally be handled by publish/unpublish routes
-}
-
-// PUT /api/content/[id] (admin/staff only)
-export async function PUT(request: NextRequest, { params }: ContentParams) {
+export async function PUT(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser || (authenticatedUser.role !== 'admin' && authenticatedUser.role !== 'staff')) {
-      return NextResponse.json({ message: 'Unauthorized: Admin or staff access required' }, { status: 403 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
+    }
+
+    const authorizeResult = await authorizeApi(['admin', 'staff'])(request);
+    if (authorizeResult) {
+      return authorizeResult;
+    }
+
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
     const { id } = params;
@@ -65,57 +81,104 @@ export async function PUT(request: NextRequest, { params }: ContentParams) {
       return NextResponse.json({ message: 'Invalid content ID' }, { status: 400 });
     }
 
-    const payload = await request.json() as UpdateContentPayload;
-
-    // Prevent direct update of is_published here if using separate publish/unpublish routes
-    // However, the original controller allowed it, so we can keep it for now but it's less clean.
-    // For consistency with the original, we allow it.
-    const { title, content_type, body, meta_description, meta_keywords, slug, is_published } = payload;
-
-
-    const contentData: Partial<Parameters<typeof ContentModel.update>[1]> = {
-        updated_by: parseInt(authenticatedUser.id, 10)
-    };
-
-    if (title !== undefined) contentData.title = title;
-    if (content_type !== undefined) contentData.type = content_type;
-    if (body !== undefined) contentData.content = body; // map body to content
-    if (meta_description !== undefined) contentData.meta_description = meta_description;
-    if (meta_keywords !== undefined) contentData.meta_keywords = meta_keywords;
-    if (slug !== undefined) contentData.slug = slug;
-    if (is_published !== undefined) contentData.is_published = is_published;
-
-
-    if (Object.keys(contentData).length === 1 && contentData.updated_by !== undefined) { // Only updated_by means no actual data change
-        const currentContent = await ContentModel.findById(contentId);
-        if (!currentContent) {
-            return NextResponse.json({ message: 'Content not found' }, { status: 404 });
-        }
-        return NextResponse.json({ message: 'No fields to update or values are the same as current.', content: currentContent });
+    // Get original content for audit logging
+    const originalContentResult = await pool.query('SELECT * FROM content WHERE id = $1', [contentId]);
+    const originalContent = originalContentResult.rows[0];
+    if (!originalContent) {
+      return NextResponse.json({ message: 'Content not found' }, { status: 404 });
     }
 
-    const updatedContent = await ContentModel.update(contentId, contentData);
+    const { title, content_type, body, image_url, is_published, tags, author } = await request.json();
 
-    if (!updatedContent) {
-      return NextResponse.json({ message: 'Content not found or update failed' }, { status: 404 });
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
+    let paramIndex = 1;
+
+    if (title !== undefined) {
+      const titleError = validateString(title, 1, 255);
+      if (titleError) return NextResponse.json({ message: `Title: ${titleError}` }, { status: 400 });
+      updateFields.push(`title = $${paramIndex++}`);
+      updateValues.push(title);
+    }
+    if (content_type !== undefined) {
+      if (!validateEnum(content_type, ['blog', 'gallery', 'testimonial', 'faq'])) {
+        return NextResponse.json({ message: 'Invalid content_type' }, { status: 400 });
+      }
+      updateFields.push(`content_type = $${paramIndex++}`);
+      updateValues.push(content_type);
+    }
+    if (body !== undefined) {
+      const bodyError = validateString(body, 1);
+      if (bodyError) return NextResponse.json({ message: `Body: ${bodyError}` }, { status: 400 });
+      updateFields.push(`body = $${paramIndex++}`);
+      updateValues.push(body);
+    }
+    if (image_url !== undefined) {
+      updateFields.push(`image_url = $${paramIndex++}`);
+      updateValues.push(image_url);
+    }
+    if (is_published !== undefined) {
+      updateFields.push(`is_published = $${paramIndex++}`);
+      updateValues.push(is_published);
+    }
+    if (tags !== undefined) {
+      updateFields.push(`tags = $${paramIndex++}`);
+      updateValues.push(tags);
+    }
+    if (author !== undefined) {
+      updateFields.push(`author = $${paramIndex++}`);
+      updateValues.push(author);
     }
 
-    // TODO: Add audit logging if required
-    // await createAuditLog({ ... });
+    if (updateFields.length === 0) {
+      return NextResponse.json({ message: 'No fields to update' }, { status: 400 });
+    }
 
-    return NextResponse.json({ message: 'Content updated successfully', content: updatedContent });
+    updateFields.push(`updated_by = $${paramIndex++}`);
+    updateValues.push(userId);
+    updateFields.push(`updated_at = NOW()`);
+
+    const updateQuery = `UPDATE content SET ${updateFields.join(', ')} WHERE id = $${paramIndex++} RETURNING *`;
+    updateValues.push(contentId);
+
+    const updatedContentResult = await pool.query(updateQuery, updateValues);
+    const updatedContent = updatedContentResult.rows[0];
+
+    await createAuditLog({
+      user_id: userId!,
+      action: 'update',
+      table_name: 'content',
+      record_id: contentId,
+      old_values: originalContent,
+      new_values: updatedContent,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
+
+    return NextResponse.json({
+      message: 'Content updated successfully',
+      content: updatedContent
+    });
+
   } catch (error) {
-    console.error('Error updating content:', error);
-    return NextResponse.json({ message: 'Server error while updating content' }, { status: 500 });
+    return handleApiError(error, 'Error updating content');
   }
 }
 
-// DELETE /api/content/[id] (admin only)
-export async function DELETE(request: NextRequest, { params }: ContentParams) {
+export async function DELETE(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser || authenticatedUser.role !== 'admin') {
-      return NextResponse.json({ message: 'Unauthorized: Admin access required' }, { status: 403 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
+    }
+
+    const authorizeResult = await authorizeApi(['admin'])(request);
+    if (authorizeResult) {
+      return authorizeResult;
+    }
+
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
     const { id } = params;
@@ -125,23 +188,27 @@ export async function DELETE(request: NextRequest, { params }: ContentParams) {
       return NextResponse.json({ message: 'Invalid content ID' }, { status: 400 });
     }
 
-    const content = await ContentModel.findById(contentId);
+    // Get original content for audit logging
+    const contentResult = await pool.query('SELECT * FROM content WHERE id = $1', [contentId]);
+    const content = contentResult.rows[0];
     if (!content) {
       return NextResponse.json({ message: 'Content not found' }, { status: 404 });
     }
 
-    const deleted = await ContentModel.delete(contentId);
+    await pool.query('DELETE FROM content WHERE id = $1', [contentId]);
 
-    if (!deleted) {
-        return NextResponse.json({ message: 'Failed to delete content' }, { status: 500 });
-    }
-
-    // TODO: Add audit logging if required
-    // await createAuditLog({ ... });
+    await createAuditLog({
+      user_id: userId!,
+      action: 'delete',
+      table_name: 'content',
+      record_id: contentId,
+      old_values: content,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
 
     return NextResponse.json({ message: 'Content deleted successfully' });
+
   } catch (error) {
-    console.error('Error deleting content:', error);
-    return NextResponse.json({ message: 'Server error while deleting content' }, { status: 500 });
+    return handleApiError(error, 'Error deleting content');
   }
 }

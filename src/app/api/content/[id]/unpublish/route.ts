@@ -1,19 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server';
-import ContentModel from '@/models/Content';
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { createAuditLog } from '@/utils/auditLogger';
 
-interface ContentParams {
-  params: {
-    id: string;
-  };
-}
-
-// PUT /api/content/[id]/unpublish (admin only)
-export async function PUT(request: NextRequest, { params }: ContentParams) {
+export async function PUT(request: AuthenticatedRequest, { params }: { params: { id: string } }) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser || authenticatedUser.role !== 'admin') {
-      return NextResponse.json({ message: 'Unauthorized: Admin access required' }, { status: 403 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
+    }
+
+    const authorizeResult = await authorizeApi(['admin'])(request);
+    if (authorizeResult) {
+      return authorizeResult;
+    }
+
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
     const { id } = params;
@@ -23,27 +27,35 @@ export async function PUT(request: NextRequest, { params }: ContentParams) {
       return NextResponse.json({ message: 'Invalid content ID' }, { status: 400 });
     }
 
-    const content = await ContentModel.findById(contentId);
-    if (!content) {
+    // Get original content for audit logging
+    const originalContentResult = await pool.query('SELECT * FROM content WHERE id = $1', [contentId]);
+    const originalContent = originalContentResult.rows[0];
+    if (!originalContent) {
       return NextResponse.json({ message: 'Content not found' }, { status: 404 });
     }
 
-    if (!content.is_published) {
-      return NextResponse.json({ message: 'Content is already unpublished', content }, { status: 200 });
-    }
+    const updatedContentResult = await pool.query(
+      `UPDATE content SET is_published = FALSE, updated_by = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+      [userId, contentId]
+    );
+    const updatedContent = updatedContentResult.rows[0];
 
-    const updatedContent = await ContentModel.updatePublishStatus(contentId, false, parseInt(authenticatedUser.id, 10));
+    await createAuditLog({
+      user_id: userId!,
+      action: 'update',
+      table_name: 'content',
+      record_id: contentId,
+      old_values: { is_published: originalContent.is_published },
+      new_values: { is_published: false },
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
 
-    if (!updatedContent) {
-      return NextResponse.json({ message: 'Failed to unpublish content' }, { status: 500 });
-    }
+    return NextResponse.json({
+      message: 'Content unpublished successfully',
+      content: updatedContent
+    });
 
-    // TODO: Add audit logging if required
-    // await createAuditLog({ ... });
-
-    return NextResponse.json({ message: 'Content unpublished successfully', content: updatedContent });
   } catch (error) {
-    console.error('Error unpublishing content:', error);
-    return NextResponse.json({ message: 'Server error while unpublishing content' }, { status: 500 });
+    return handleApiError(error, 'Error unpublishing content');
   }
 }

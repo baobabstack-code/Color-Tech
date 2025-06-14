@@ -1,79 +1,83 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server';
-import ContentModel from '@/models/Content';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { createAuditLog } from '@/utils/auditLogger';
 
-// Ensure the uploads directory exists (basic check, ideally done at server start)
-// For serverless functions, writing to filesystem needs care, consider cloud storage for production
-const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads/gallery');
-// Ensure this directory exists or is created, and is writable.
-// For this example, we'll assume it exists. A robust solution would create it.
+// Helper for validation (can be moved to a separate utils file if needed)
+function validateRequiredFields(data: any, fields: string[]): string | null {
+  for (const field of fields) {
+    if (data[field] === undefined || data[field] === null || data[field] === '') {
+      return `${field} is required`;
+    }
+  }
+  return null;
+}
 
-// POST /api/content/gallery/upload (admin/staff only)
-export async function POST(request: NextRequest) {
+export async function POST(request: AuthenticatedRequest) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser || (authenticatedUser.role !== 'admin' && authenticatedUser.role !== 'staff')) {
-      return NextResponse.json({ message: 'Unauthorized: Admin or staff access required' }, { status: 403 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult;
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-    const title = formData.get('title') as string | null;
-    const is_published_str = formData.get('is_published') as string | null;
-    const is_published = is_published_str === 'true';
-
-
-    if (!file) {
-      return NextResponse.json({ message: 'No file uploaded' }, { status: 400 });
+    const authorizeResult = await authorizeApi(['admin', 'staff'])(request);
+    if (authorizeResult) {
+      return authorizeResult;
     }
 
-    // Basic validation for file type and size can be added here if needed
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Create a unique filename to avoid collisions
-    const filename = `${Date.now()}-${file.name}`;
-    const filePath = path.join(UPLOAD_DIR, filename);
-    const publicPath = `/uploads/gallery/${filename}`; // Path accessible via web
-
-    // Create directory if it doesn't exist (important for serverless environments where /tmp might be ephemeral)
-    // For a persistent solution, ensure UPLOAD_DIR is writable or use cloud storage.
-    // This is a simplified example; robust error handling for fs operations is needed.
-    try {
-        await require('fs').promises.mkdir(UPLOAD_DIR, { recursive: true });
-    } catch (mkdirError) {
-        console.error("Error creating upload directory:", mkdirError);
-        // Potentially ignore if directory already exists, or handle specific errors
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
-    await writeFile(filePath, buffer);
-    console.log(`File uploaded to ${filePath}`);
+    // Assuming file_path, original_name, mime_type, size are provided in the request body
+    const { title, file_path, original_name, mime_type, size, is_published } = await request.json();
 
+    const validationError = validateRequiredFields(
+      { title, file_path, original_name, mime_type, size },
+      ['title', 'file_path', 'original_name', 'mime_type', 'size']
+    );
+    if (validationError) {
+      return NextResponse.json({ message: validationError }, { status: 400 });
+    }
 
     const contentData = {
-      title: title || file.name,
-      type: 'gallery' as 'gallery', // Type assertion
-      content: JSON.stringify({
-        file_path: publicPath, // Store the web-accessible path
-        original_name: file.name,
-        mime_type: file.type,
-        size: file.size,
+      title: title,
+      content_type: 'gallery',
+      body: JSON.stringify({
+        file_path: file_path,
+        original_name: original_name,
+        mime_type: mime_type,
+        size: size
       }),
-      is_published: is_published !== undefined ? is_published : false,
-      created_by: parseInt(authenticatedUser.id, 10),
-      updated_by: parseInt(authenticatedUser.id, 10),
+      image_url: file_path, // Assuming image_url stores the file_path
+      is_published: is_published ?? false,
+      created_by: userId,
+      updated_by: userId
     };
 
-    const newContent = await ContentModel.create(contentData);
+    const contentResult = await pool.query(
+      `INSERT INTO content (title, content_type, body, image_url, is_published, created_by, updated_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
+      [contentData.title, contentData.content_type, contentData.body, contentData.image_url, contentData.is_published, contentData.created_by, contentData.updated_by]
+    );
+    const content = contentResult.rows[0];
 
-    // TODO: Add audit logging if required
+    await createAuditLog({
+      user_id: userId!,
+      action: 'insert',
+      table_name: 'content',
+      record_id: content.id,
+      new_values: content,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+    });
 
-    return NextResponse.json({ message: 'Gallery image uploaded successfully', content: newContent }, { status: 201 });
+    return NextResponse.json({
+      message: 'Gallery image uploaded successfully',
+      content
+    }, { status: 201 });
+
   } catch (error) {
-    console.error('Error uploading gallery image:', error);
-    return NextResponse.json({ message: 'Server error while uploading gallery image' }, { status: 500 });
+    return handleApiError(error, 'Error uploading gallery image');
   }
 }

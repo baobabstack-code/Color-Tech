@@ -1,13 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import ContentModel from '@/models/Content'; // Assuming ContentModel.ts is in models/
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+import { handleApiError } from '@/lib/apiAuth';
 
-// GET /api/content/faq/categories
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const categories = await ContentModel.getFaqCategories();
+    const categoriesResult = await pool.query(`
+      SELECT DISTINCT tags AS category_name
+      FROM content
+      WHERE content_type = 'faq' AND tags IS NOT NULL AND tags != ''
+      ORDER BY category_name
+    `);
+
+    // The tags column might store a single tag or a comma-separated string of tags.
+    // If it's a comma-separated string, we need to split and flatten.
+    const categories = categoriesResult.rows.flatMap(row => 
+      typeof row.category_name === 'string' ? row.category_name.split(',').map((tag: string) => tag.trim()) : []
+    ).filter((value, index, self) => self.indexOf(value) === index); // Get unique categories
+
     return NextResponse.json({ categories });
   } catch (error) {
-    console.error('Error fetching FAQ categories:', error);
-    return NextResponse.json({ message: 'Server error while fetching FAQ categories' }, { status: 500 });
+    return handleApiError(error, 'Error fetching FAQ categories');
   }
 }

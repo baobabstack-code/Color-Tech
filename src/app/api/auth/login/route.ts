@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import pool from '@/lib/db'; // Assuming db.ts is correctly set up in lib
-import { config } from '@/config'; // Assuming config.ts is correctly set up
+import { jwtConfig } from '@/config/jwt'; // Use centralized JWT configuration
 
 export async function POST(request: Request) {
   try {
@@ -39,17 +39,27 @@ export async function POST(request: Request) {
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      config.jwtSecret as string,
-      { expiresIn: config.jwtExpiresIn } as jwt.SignOptions
+      jwtConfig.getSecret(),
+      { expiresIn: jwtConfig.getExpiresIn() } as jwt.SignOptions
     );
 
-    // Return user info without password
-    const { password: _, ...userWithoutPassword } = user;
+    // Record login session
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    return NextResponse.json({
-      user: userWithoutPassword,
-      token
-    });
+    await pool.query(
+      `INSERT INTO user_sessions (user_id, token, expires_at, ip_address, user_agent)
+       VALUES ($1, $2, NOW() + INTERVAL '${jwtConfig.getExpiresIn()}', $3, $4)`,
+      [user.id, token, ipAddress, userAgent]
+    );
+ 
+     // Return user info without password
+     const { password: _, ...userWithoutPassword } = user;
+ 
+     return NextResponse.json({
+       user: userWithoutPassword,
+       token
+     });
 
   } catch (error) {
     console.error('Login error:', error);

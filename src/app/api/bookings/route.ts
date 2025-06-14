@@ -1,82 +1,221 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import { authenticateRequest, AuthenticatedUser } from '@/lib/authUtils.server';
+import { authenticateApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
+import { getPaginationParams } from '@/lib/utils';
+import { createAuditLog } from '@/utils/auditLogger'; // Assuming auditLogger is compatible
 
-export async function GET(request: NextRequest) {
+// Helper for validation (can be moved to a separate utils file if needed)
+function validateRequiredFields(data: any, fields: string[]): string | null {
+  for (const field of fields) {
+    if (!data[field]) {
+      return `${field} is required`;
+    }
+  }
+  return null;
+}
+
+function validateDateFormat(date: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date);
+}
+
+export async function GET(request: AuthenticatedRequest) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult; // Not authenticated
     }
 
-    if (authenticatedUser.role !== 'admin') {
-      return NextResponse.json({ message: 'Forbidden: You do not have permission to view all bookings.' }, { status: 403 });
+    const userRole = request.user?.role;
+    if (userRole !== 'admin' && userRole !== 'staff') {
+      return NextResponse.json({ message: 'Forbidden: Insufficient permissions' }, { status: 403 });
     }
 
-    const result = await pool.query(`
-      SELECT b.*, u.full_name as client_name, s.name as service_name
+    const { page, limit, offset } = getPaginationParams(request);
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const date = url.searchParams.get('date');
+    const staffId = url.searchParams.get('staff_id');
+
+    let query = `
+      SELECT 
+        b.id, b.user_id, b.vehicle_id, b.booking_date, b.start_time, b.end_time, 
+        b.total_price, b.status, b.notes, b.created_at, b.updated_at,
+        u.email AS user_email, u.first_name AS user_first_name, u.last_name AS user_last_name,
+        v.make, v.model, v.year, v.license_plate,
+        json_agg(s.name) AS service_names
       FROM bookings b
       JOIN users u ON b.user_id = u.id
-      JOIN services s ON b.service_id = s.id
-      ORDER BY b.scheduled_date DESC, b.scheduled_time DESC
-    `);
+      JOIN vehicles v ON b.vehicle_id = v.id
+      LEFT JOIN booking_services bs ON b.id = bs.booking_id
+      LEFT JOIN services s ON bs.service_id = s.id
+      WHERE 1=1
+    `;
+    const queryParams: (string | number)[] = [];
+    let paramIndex = 1;
 
-    return NextResponse.json(result.rows);
+    if (status) {
+      query += ` AND b.status = $${paramIndex++}`;
+      queryParams.push(status);
+    }
+    if (date) {
+      query += ` AND b.booking_date = $${paramIndex++}`;
+      queryParams.push(date);
+    }
+    if (staffId) {
+      query += ` AND b.staff_id = $${paramIndex++}`;
+      queryParams.push(parseInt(staffId));
+    }
+
+    query += `
+      GROUP BY b.id, u.id, v.id
+      ORDER BY b.booking_date DESC, b.start_time DESC
+      LIMIT $${paramIndex++} OFFSET $${paramIndex++}
+    `;
+    queryParams.push(limit, offset);
+
+    const bookingsResult = await pool.query(query, queryParams);
+
+    let countQuery = `SELECT COUNT(*) FROM bookings WHERE 1=1`;
+    const countParams: (string | number)[] = [];
+    let countParamIndex = 1;
+    if (status) {
+      countQuery += ` AND status = $${countParamIndex++}`;
+      countParams.push(status);
+    }
+    if (date) {
+      countQuery += ` AND booking_date = $${countParamIndex++}`;
+      countParams.push(date);
+    }
+    if (staffId) {
+      countQuery += ` AND staff_id = $${countParamIndex++}`;
+      countParams.push(parseInt(staffId));
+    }
+    const totalResult = await pool.query(countQuery, countParams);
+    const total = parseInt(totalResult.rows[0].count, 10);
+
+    return NextResponse.json({
+      bookings: bookingsResult.rows,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
-    console.error('Error fetching bookings:', error);
-    return NextResponse.json({ message: 'Server error while fetching bookings' }, { status: 500 });
+    return handleApiError(error, 'Error fetching all bookings');
   }
 }
 
-interface CreateBookingPayload {
-  userId: string;
-  vehicleId: string;
-  serviceId: string;
-  scheduledDate: string; // Assuming YYYY-MM-DD format
-  scheduledTime: string; // Assuming HH:MM format
-  notes?: string;
-}
-
-export async function POST(request: NextRequest) {
+export async function POST(request: AuthenticatedRequest) {
   try {
-    const authenticatedUser = await authenticateRequest(request);
-    if (!authenticatedUser) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    const authResult = await authenticateApi(request);
+    if (authResult) {
+      return authResult; // Not authenticated
     }
 
-    const body = await request.json() as CreateBookingPayload;
-    const { userId, vehicleId, serviceId, scheduledDate, scheduledTime, notes } = body;
-
-    // Validate input
-    if (!userId || !vehicleId || !serviceId || !scheduledDate || !scheduledTime) {
-      return NextResponse.json({ message: 'Missing required fields: userId, vehicleId, serviceId, scheduledDate, scheduledTime' }, { status: 400 });
+    const userId = request.user?.id;
+    if (!userId) {
+      return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
-    // Ensure the user can only create bookings for themselves unless they're an admin
-    if (authenticatedUser.role !== 'admin' && authenticatedUser.id !== userId) {
-      return NextResponse.json({ message: 'Not authorized to create bookings for other users' }, { status: 403 });
-    }
+    const { vehicle_id, service_ids, scheduled_date, scheduled_time, notes } = await request.json();
 
-    // TODO: Add further validation (e.g., check if vehicleId and serviceId exist, date format, availability)
-
-    const result = await pool.query(
-      `INSERT INTO bookings (user_id, vehicle_id, service_id, scheduled_date, scheduled_time, notes, status)
-       VALUES ($1, $2, $3, $4, $5, $6, 'pending')
-       RETURNING *`,
-      [userId, vehicleId, serviceId, scheduledDate, scheduledTime, notes || null]
+    // Validation
+    const validationError = validateRequiredFields(
+      { vehicle_id, service_ids, scheduled_date, scheduled_time },
+      ['vehicle_id', 'service_ids', 'scheduled_date', 'scheduled_time']
     );
-
-    if (result.rows.length === 0) {
-        return NextResponse.json({ message: 'Failed to create booking' }, { status: 500 });
+    if (validationError) {
+      return NextResponse.json({ message: validationError }, { status: 400 });
+    }
+    if (!validateDateFormat(scheduled_date)) {
+      return NextResponse.json({ message: 'Invalid date format for scheduled_date. Use YYYY-MM-DD' }, { status: 400 });
+    }
+    if (!Array.isArray(service_ids) || service_ids.length === 0) {
+      return NextResponse.json({ message: 'At least one service must be selected' }, { status: 400 });
     }
 
-    return NextResponse.json(result.rows[0], { status: 201 });
+    // Verify vehicle belongs to user
+    const vehicleResult = await pool.query('SELECT user_id FROM vehicles WHERE id = $1', [vehicle_id]);
+    const vehicle = vehicleResult.rows[0];
+    if (!vehicle) {
+      return NextResponse.json({ message: 'Vehicle not found' }, { status: 404 });
+    }
+    if (vehicle.user_id !== userId) {
+      return NextResponse.json({ message: 'You do not have permission to book this vehicle' }, { status: 403 });
+    }
+
+    // Verify services exist and calculate total price/duration
+    let totalPrice = 0;
+    let totalDuration = 0;
+    const serviceDetails: any[] = [];
+
+    for (const serviceId of service_ids) {
+      const serviceResult = await pool.query('SELECT id, price, duration_minutes FROM services WHERE id = $1', [serviceId]);
+      const service = serviceResult.rows[0];
+      if (!service) {
+        return NextResponse.json({ message: `Service with ID ${serviceId} not found` }, { status: 404 });
+      }
+      totalPrice += service.price;
+      totalDuration += service.duration_minutes;
+      serviceDetails.push(service);
+    }
+
+    // Calculate end time
+    const [startHours, startMinutes] = scheduled_time.split(':').map(Number);
+    const startTimeInMinutes = startHours * 60 + startMinutes;
+    const endTimeInMinutes = startTimeInMinutes + totalDuration;
+
+    const endHours = Math.floor(endTimeInMinutes / 60);
+    const endMinutes = endTimeInMinutes % 60;
+    const end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+
+    // Create booking
+    const bookingResult = await pool.query(
+      `INSERT INTO bookings (user_id, vehicle_id, booking_date, start_time, end_time, total_price, notes, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+      [userId, vehicle_id, scheduled_date, scheduled_time, end_time, totalPrice, notes || null, 'pending']
+    );
+    const bookingId = bookingResult.rows[0].id;
+
+    // Add services to booking
+    for (const service of serviceDetails) {
+      await pool.query(
+        `INSERT INTO booking_services (booking_id, service_id, quantity, price_at_booking)
+         VALUES ($1, $2, $3, $4)`,
+        [bookingId, service.id, 1, service.price]
+      );
+    }
+
+    // Log the action
+    await createAuditLog({
+      user_id: userId,
+      action: 'insert',
+      table_name: 'bookings',
+      record_id: bookingId,
+      old_values: null,
+      new_values: {
+        user_id: userId,
+        vehicle_id,
+        booking_date: scheduled_date,
+        start_time: scheduled_time,
+        end_time,
+        total_price: totalPrice,
+        service_ids,
+        notes: notes || null,
+        status: 'pending'
+      },
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      metadata: null
+    });
+
+    return NextResponse.json({
+      message: 'Booking created successfully',
+      booking_id: bookingId
+    }, { status: 201 });
+
   } catch (error) {
-    console.error('Error creating booking:', error);
-    // Check for specific database errors if necessary, e.g., foreign key constraint
-    if (error instanceof Error && 'code' in error && (error as any).code === '23503') { // Foreign key violation
-        return NextResponse.json({ message: 'Invalid user_id, vehicle_id, or service_id provided.' }, { status: 400 });
-    }
-    return NextResponse.json({ message: 'Server error while creating booking' }, { status: 500 });
+    return handleApiError(error, 'Error creating booking');
   }
 }
