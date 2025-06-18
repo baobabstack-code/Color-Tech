@@ -66,6 +66,16 @@ export async function PUT(request: AuthenticatedRequest, { params }: { params: {
     if (name !== undefined) {
       const nameError = validateString(name, 2, 50);
       if (nameError) return NextResponse.json({ message: `Name: ${nameError}` }, { status: 400 });
+
+      // Check for duplicate category name, excluding the current category being updated
+      const existingCategoryByName = await pool.query(
+        'SELECT id FROM service_categories WHERE name = $1 AND id != $2',
+        [name, categoryId]
+      );
+      if (existingCategoryByName.rows.length > 0) {
+        return NextResponse.json({ message: 'Service category with this name already exists' }, { status: 409 });
+      }
+
       updateFields.push(`name = $${paramIndex++}`);
       updateValues.push(name);
     }

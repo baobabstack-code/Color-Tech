@@ -72,6 +72,12 @@ export async function POST(request: AuthenticatedRequest) {
       return NextResponse.json({ message: `Description: ${descriptionError}` }, { status: 400 });
     }
 
+    // Check for duplicate category name
+    const existingCategory = await pool.query('SELECT id FROM service_categories WHERE name = $1', [name]);
+    if (existingCategory.rows.length > 0) {
+      return NextResponse.json({ message: 'Service category with this name already exists' }, { status: 409 });
+    }
+
     const categoryResult = await pool.query(
       `INSERT INTO service_categories (name, description, created_at, updated_at)
        VALUES ($1, $2, NOW(), NOW()) RETURNING *`,

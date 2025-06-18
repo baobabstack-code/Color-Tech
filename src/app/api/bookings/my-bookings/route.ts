@@ -50,8 +50,9 @@ export async function GET(request: AuthenticatedRequest) {
 
     let countQuery = `SELECT COUNT(*) FROM bookings WHERE user_id = $1`;
     const countParams: (string | number)[] = [userId];
+    let countParamIndex = 2; // Start from 2 because $1 is already used for userId
     if (status) {
-      countQuery += ` AND status = $2`;
+      countQuery += ` AND status = $${countParamIndex++}`;
       countParams.push(status);
     }
     const totalResult = await pool.query(countQuery, countParams);

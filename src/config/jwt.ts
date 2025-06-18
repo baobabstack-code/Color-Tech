@@ -31,7 +31,30 @@ export const jwtConfig = {
    * Helper function to get the JWT expiration time
    * This ensures we always use the same expiration time throughout the application
    */
-  getExpiresIn: (): string => jwtConfig.expiresIn
+  getExpiresIn: (): string => jwtConfig.expiresIn,
+
+ /**
+  * Helper function to get the JWT expiration time in a format suitable for PostgreSQL INTERVAL.
+  * Converts '24h' to '24 hours', '7d' to '7 days', etc.
+  */
+ getExpiresInInterval: (): string => {
+   const expiresIn = jwtConfig.expiresIn;
+   const value = parseInt(expiresIn.slice(0, -1));
+   const unit = expiresIn.slice(-1);
+
+   switch (unit) {
+     case 'h':
+       return `${value} hours`;
+     case 'd':
+       return `${value} days`;
+     case 'm':
+       return `${value} minutes`;
+     case 's':
+       return `${value} seconds`;
+     default:
+       return '24 hours'; // Default to 24 hours if format is unknown
+   }
+ }
 };
 
 export default jwtConfig; 

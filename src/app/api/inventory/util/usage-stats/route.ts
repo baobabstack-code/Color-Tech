@@ -15,8 +15,16 @@ export async function GET(request: AuthenticatedRequest) {
     }
 
     const url = new URL(request.url);
+    const allowedTimeframes = ['day', 'week', 'month', 'year'];
     const timeframe = url.searchParams.get('timeframe') || 'month'; // day, week, month, year
+    if (!allowedTimeframes.includes(timeframe)) {
+      return NextResponse.json({ message: 'Invalid timeframe parameter. Must be one of: day, week, month, year.' }, { status: 400 });
+    }
+
     const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+    if (isNaN(limit) || limit <= 0) {
+      return NextResponse.json({ message: 'Invalid limit parameter. Must be a positive integer.' }, { status: 400 });
+    }
 
     let dateFilter = '';
     if (timeframe === 'day') {
@@ -32,8 +40,8 @@ export async function GET(request: AuthenticatedRequest) {
     const query = `
       SELECT 
         item_id,
-        SUM(CASE WHEN action = 'insert' THEN new_values->>'quantity'::numeric ELSE 0 END) AS quantity_added,
-        SUM(CASE WHEN action = 'update' AND old_values->>'quantity' IS NOT NULL AND new_values->>'quantity' IS NOT NULL THEN (new_values->>'quantity'::numeric - old_values->>'quantity'::numeric) ELSE 0 END) AS quantity_adjusted,
+        SUM(CASE WHEN action = 'insert' THEN (new_values->>'quantity')::numeric ELSE 0 END) AS quantity_added,
+        SUM(CASE WHEN action = 'update' AND old_values->>'quantity' IS NOT NULL AND new_values->>'quantity' IS NOT NULL THEN ((new_values->>'quantity')::numeric - (old_values->>'quantity')::numeric) ELSE 0 END) AS quantity_adjusted,
         COUNT(*) AS total_audits
       FROM audit_logs
       WHERE table_name = 'inventory' ${dateFilter}

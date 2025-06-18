@@ -30,10 +30,16 @@ export async function GET(request: AuthenticatedRequest) {
     let paramIndex = 1;
 
     if (startDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+        return NextResponse.json({ message: 'Invalid start_date format. Use YYYY-MM-DD' }, { status: 400 });
+      }
       query += ` AND booking_date >= $${paramIndex++}`;
       queryParams.push(startDate);
     }
     if (endDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+        return NextResponse.json({ message: 'Invalid end_date format. Use YYYY-MM-DD' }, { status: 400 });
+      }
       query += ` AND booking_date <= $${paramIndex++}`;
       queryParams.push(endDate);
     }
@@ -54,10 +60,12 @@ export async function GET(request: AuthenticatedRequest) {
     let totalOverallParamIndex = 1;
 
     if (startDate) {
+      // Validation already done above, just push the parameter
       totalOverallQuery += ` AND booking_date >= $${totalOverallParamIndex++}`;
       totalOverallParams.push(startDate);
     }
     if (endDate) {
+      // Validation already done above, just push the parameter
       totalOverallQuery += ` AND booking_date <= $${totalOverallParamIndex++}`;
       totalOverallParams.push(endDate);
     }

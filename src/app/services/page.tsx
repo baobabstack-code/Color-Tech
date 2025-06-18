@@ -1,53 +1,61 @@
-"use client";
-
 import React from 'react';
-import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings } from 'lucide-react';
-import CostCalculator from '@/components/CostCalculator'; // Adjusted import path
-import ProgressTracker from '@/components/ProgressTracker'; // Adjusted import path
-import VirtualTour from '@/components/VirtualTour'; // Adjusted import path
+import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings, CheckCircle, ArrowRight } from 'lucide-react';
+import CostCalculator from '@/components/CostCalculator';
+import ProgressTracker from '@/components/ProgressTracker';
+import VirtualTour from '@/components/VirtualTour';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
 
-const Services = () => {
-  const services = [
-    {
-      icon: <Wrench className="h-12 w-12 text-primary" />,
-      title: "Panel Beating",
-      description: "Expert repair of dents, scratches, and collision damage",
-      features: [
-        "Dent removal",
-        "Panel replacement",
-        "Frame straightening",
-        "Collision repair"
-      ]
-    },
-    {
-      icon: <Paintbrush className="h-12 w-12 text-primary" />,
-      title: "Spray Painting",
-      description: "Professional automotive painting and color matching",
-      features: [
-        "Color matching",
-        "Full resprays",
-        "Partial resprays",
-        "Clear coat finish"
-      ]
-    },
-    {
-      icon: <Shield className="h-12 w-12 text-primary" />,
-      title: "Rust Protection",
-      description: "Comprehensive rust treatment and prevention",
-      features: [
-        "Rust removal",
-        "Anti-rust coating",
-        "Cavity protection",
-        "Undercoating"
-      ]
-    }
-  ];
+// Define interfaces for fetched data
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  duration_minutes: number;
+  category_id: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category_name: string;
+}
 
-  // Define stages for ProgressTracker
+interface ServiceCategory {
+  id: number;
+  name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+async function getAllServices(): Promise<Service[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch services:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.services || [];
+}
+
+async function getServiceCategories(): Promise<ServiceCategory[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch service categories:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.categories || [];
+}
+
+const ServicesPage = async () => {
+  const [services, categories] = await Promise.all([
+    getAllServices(),
+    getServiceCategories()
+  ]);
+
+  // Define stages for ProgressTracker (can be fetched from API if dynamic)
   const repairStages = [
     {
       title: "Vehicle Check-in",
@@ -86,6 +94,24 @@ const Services = () => {
     }
   ];
 
+  // Map fetched services to the display format
+  const displayedServices = services.map(service => ({
+    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-primary" /> :
+          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-primary" /> :
+          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-primary" /> :
+          <Car className="h-12 w-12 text-primary" />, // Default icon
+    title: service.name,
+    description: service.description,
+    features: [
+      // Example features, ideally these would come from the service data itself
+      "Expert technicians",
+      "State-of-the-art equipment",
+      "Quality materials",
+      "Guaranteed results"
+    ],
+    link: service.name.toLowerCase().replace(/\s/g, '-')
+  }));
+
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">
       {/* Hero Section */}
@@ -101,7 +127,7 @@ const Services = () => {
 
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+          {displayedServices.map((service, index) => (
             <Card key={index} className="p-6">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-4">{service.icon}</div>
@@ -169,4 +195,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default ServicesPage;

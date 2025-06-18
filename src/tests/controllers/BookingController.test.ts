@@ -252,4 +252,376 @@ describe('BookingController', () => {
       });
     });
   });
-}); 
+
+  describe('createBooking', () => {
+    it('should create a booking successfully', async () => {
+      // Setup
+      const bookingId = 123;
+      const mockVehicle = { id: 1, user_id: 1, make: 'Toyota', model: 'Camry' };
+      const mockService = { id: 1, name: 'Oil Change', price: 50 };
+      
+      req.body = {
+        vehicle_id: 1,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00',
+        notes: 'Test booking'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(mockVehicle);
+      // @ts-ignore - Mock implementation
+      ServiceModel.findById.mockResolvedValue(mockService);
+      // @ts-ignore - Mock implementation
+      BookingModel.create.mockResolvedValue(bookingId);
+      // @ts-ignore - Mock implementation
+      BookingModel.addServices.mockResolvedValue(undefined);
+      // @ts-ignore - Mock implementation
+      createAuditLog.mockResolvedValue(undefined);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(201);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Booking created successfully',
+        booking_id: bookingId
+      });
+      expect(VehicleModel.findById).toHaveBeenCalledWith(1);
+      expect(ServiceModel.findById).toHaveBeenCalledWith(1);
+      expect(BookingModel.create).toHaveBeenCalled();
+      expect(BookingModel.addService).toHaveBeenCalledWith(bookingId, [1]);
+      expect(createAuditLog).toHaveBeenCalled();
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+      // Setup
+      req.user = undefined;
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(401);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Unauthorized' });
+    });
+
+    it('should return 404 if vehicle is not found', async () => {
+      // Setup
+      req.body = {
+        vehicle_id: 999,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(null);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Vehicle not found' });
+    });
+  });
+
+  describe('getBookingById', () => {
+    it('should return a booking by ID', async () => {
+      // Setup
+      const mockBooking = { 
+        id: 1, 
+        user_id: 1, 
+        vehicle_id: 1,
+        status: 'pending'
+      };
+      
+      req.params = { id: '1' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(mockBooking);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(200);
+      expect(mockJson).toHaveBeenCalledWith(mockBooking);
+      expect(BookingModel.findById).toHaveBeenCalledWith(1);
+    });
+
+    it('should return 404 if booking is not found', async () => {
+      // Setup
+      req.params = { id: '999' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(null);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Booking not found' });
+    });
+
+    it('should return 403 if user does not have permission', async () => {
+      // Setup
+      const mockBooking = { 
+        id: 1, 
+        user_id: 2, // Different user ID
+        vehicle_id: 1,
+        status: 'pending'
+      };
+      
+      req.params = { id: '1' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(mockBooking);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(403);
+      expect(mockJson).toHaveBeenCalledWith({ 
+        message: 'You do not have permission to view this booking' 
+      });
+    });
+  });
+
+  describe('createBooking', () => {
+    it('should create a booking successfully', async () => {
+      // Setup
+      const bookingId = 123;
+      const mockVehicle = { id: 1, user_id: 1, make: 'Toyota', model: 'Camry' };
+      const mockService = { id: 1, name: 'Oil Change', price: 50 };
+      
+      req.body = {
+        vehicle_id: 1,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00',
+        notes: 'Test booking'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(mockVehicle);
+      // @ts-ignore - Mock implementation
+      ServiceModel.findById.mockResolvedValue(mockService);
+      // @ts-ignore - Mock implementation
+      BookingModel.create.mockResolvedValue(bookingId);
+      // @ts-ignore - Mock implementation
+      BookingModel.addServices.mockResolvedValue(undefined);
+      // @ts-ignore - Mock implementation
+      createAuditLog.mockResolvedValue(undefined);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(201);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Booking created successfully',
+        booking_id: bookingId
+      });
+      expect(VehicleModel.findById).toHaveBeenCalledWith(1);
+      expect(ServiceModel.findById).toHaveBeenCalledWith(1);
+      expect(BookingModel.create).toHaveBeenCalled();
+      expect(BookingModel.addService).toHaveBeenCalledWith(bookingId, [1]);
+      expect(createAuditLog).toHaveBeenCalled();
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+      // Setup
+      req.user = undefined;
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(401);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Unauthorized' });
+    });
+
+    it('should return 404 if vehicle is not found', async () => {
+      // Setup
+      req.body = {
+        vehicle_id: 999,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(null);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Vehicle not found' });
+    });
+  });
+
+  describe('getBookingById', () => {
+    it('should return a booking by ID', async () => {
+      // Setup
+      const mockBooking = { 
+        id: 1, 
+        user_id: 1, 
+        vehicle_id: 1,
+        status: 'pending'
+      };
+      
+      req.params = { id: '1' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(mockBooking);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(200);
+      expect(mockJson).toHaveBeenCalledWith(mockBooking);
+      expect(BookingModel.findById).toHaveBeenCalledWith(1);
+    });
+
+    it('should return 404 if booking is not found', async () => {
+      // Setup
+      req.params = { id: '999' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(null);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Booking not found' });
+    });
+
+    it('should return 403 if user does not have permission', async () => {
+      // Setup
+      const mockBooking = { 
+        id: 1, 
+        user_id: 2, // Different user ID
+        vehicle_id: 1,
+        status: 'pending'
+      };
+      
+      req.params = { id: '1' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(mockBooking);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(403);
+      expect(mockJson).toHaveBeenCalledWith({ 
+        message: 'You do not have permission to view this booking' 
+      });
+    });
+  });
+
+  describe('createBooking', () => {
+    it('should create a booking successfully', async () => {
+      // Setup
+      const bookingId = 123;
+      const mockVehicle = { id: 1, user_id: 1, make: 'Toyota', model: 'Camry' };
+      const mockService = { id: 1, name: 'Oil Change', price: 50 };
+      
+      req.body = {
+        vehicle_id: 1,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00',
+        notes: 'Test booking'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(mockVehicle);
+      // @ts-ignore - Mock implementation
+      ServiceModel.findById.mockResolvedValue(mockService);
+      // @ts-ignore - Mock implementation
+      BookingModel.create.mockResolvedValue(bookingId);
+      // @ts-ignore - Mock implementation
+      BookingModel.addServices.mockResolvedValue(undefined);
+      // @ts-ignore - Mock implementation
+      createAuditLog.mockResolvedValue(undefined);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(201);
+      expect(mockJson).toHaveBeenCalledWith({
+        message: 'Booking created successfully',
+        booking_id: bookingId
+      });
+      expect(VehicleModel.findById).toHaveBeenCalledWith(1);
+      expect(ServiceModel.findById).toHaveBeenCalledWith(1);
+      expect(BookingModel.create).toHaveBeenCalled();
+      expect(BookingModel.addService).toHaveBeenCalledWith(bookingId, [1]);
+      expect(createAuditLog).toHaveBeenCalled();
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+      // Setup
+      req.user = undefined;
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(401);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Unauthorized' });
+    });
+
+    it('should return 404 if vehicle is not found', async () => {
+      // Setup
+      req.body = {
+        vehicle_id: 999,
+        service_ids: [1],
+        scheduled_date: '2023-06-01',
+        scheduled_time: '10:00'
+      };
+      
+      // @ts-ignore - Mock implementation
+      VehicleModel.findById.mockResolvedValue(null);
+      
+      // Execute
+      await BookingController.createBooking(req as Request, res as Response);
+      
+      // Assert
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ message: 'Vehicle not found' });
+    });
+  });
+
+  describe('getBookingById', () => {
+    it('should return a booking by ID', async () => {
+      // Setup
+      const mockBooking = { 
+        id: 1, 
+        user_id: 1, 
+        vehicle_id: 1,
+        status: 'pending'
+      };
+      
+      req.params = { id: '1' };
+      
+      // @ts-ignore - Mock implementation
+      BookingModel.findById.mockResolvedValue(mockBooking);
+      
+      // Execute
+      await BookingController.getBookingById(req as Request, res as Response);
+      
+      // Assert

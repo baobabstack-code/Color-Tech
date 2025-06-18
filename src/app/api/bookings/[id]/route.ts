@@ -135,9 +135,10 @@ export async function PUT(request: AuthenticatedRequest, { params }: { params: {
 
       const [startHours, startMinutes] = scheduled_time.split(':').map(Number);
       const startTimeInMinutes = startHours * 60 + startMinutes;
-      const endTimeInMinutes = startTimeInMinutes + totalDuration;
+      let endTimeInMinutes = startTimeInMinutes + totalDuration;
 
-      const endHours = Math.floor(endTimeInMinutes / 60);
+      // Handle time rollover for end_time
+      const endHours = Math.floor(endTimeInMinutes / 60) % 24; // Modulo 24 to handle next day
       const endMinutes = endTimeInMinutes % 60;
       const end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
       updateFields.push(`end_time = $${paramIndex++}`);
@@ -176,43 +177,65 @@ export async function PUT(request: AuthenticatedRequest, { params }: { params: {
 
     // Update services if provided
     if (Array.isArray(service_ids) && service_ids.length > 0) {
+      // Validate each service_id is a number and remove duplicates
+      const uniqueServiceIds = Array.from(new Set(service_ids.map(id => parseInt(id))));
+      if (uniqueServiceIds.some(isNaN)) {
+        return NextResponse.json({ message: 'Invalid service_id found in the list' }, { status: 400 });
+      }
+
       let newTotalPrice = 0;
       const newServiceDetails: any[] = [];
 
-      for (const serviceId of service_ids) {
-        const serviceResult = await pool.query('SELECT id, price FROM services WHERE id = $1', [serviceId]);
-        const service = serviceResult.rows[0];
-        if (!service) {
-          return NextResponse.json({ message: `Service with ID ${serviceId} not found` }, { status: 404 });
+      // Start a transaction for service updates
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+
+        for (const serviceId of uniqueServiceIds) {
+          const serviceResult = await client.query('SELECT id, price FROM services WHERE id = $1', [serviceId]);
+          const service = serviceResult.rows[0];
+          if (!service) {
+            await client.query('ROLLBACK');
+            return NextResponse.json({ message: `Service with ID ${serviceId} not found` }, { status: 404 });
+          }
+          newTotalPrice += service.price;
+          newServiceDetails.push(service);
         }
-        newTotalPrice += service.price;
-        newServiceDetails.push(service);
+
+        // Remove existing services for this booking
+        await client.query('DELETE FROM booking_services WHERE booking_id = $1', [bookingId]);
+
+        // Add new services
+        for (const service of newServiceDetails) {
+          await client.query(
+            `INSERT INTO booking_services (booking_id, service_id, quantity, price_at_booking)
+             VALUES ($1, $2, $3, $4)`,
+            [bookingId, service.id, 1, service.price]
+          );
+        }
+
+        // Update total price of the booking
+        await client.query('UPDATE bookings SET total_price = $1 WHERE id = $2', [newTotalPrice, bookingId]);
+
+        await client.query('COMMIT');
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error; // Re-throw to be caught by the outer catch block
+      } finally {
+        client.release();
       }
-
-      // Remove existing services for this booking
-      await pool.query('DELETE FROM booking_services WHERE booking_id = $1', [bookingId]);
-
-      // Add new services
-      for (const service of newServiceDetails) {
-        await pool.query(
-          `INSERT INTO booking_services (booking_id, service_id, quantity, price_at_booking)
-           VALUES ($1, $2, $3, $4)`,
-          [bookingId, service.id, 1, service.price]
-        );
-      }
-
-      // Update total price of the booking
-      await pool.query('UPDATE bookings SET total_price = $1 WHERE id = $2', [newTotalPrice, bookingId]);
     }
 
     // Log the action
+    // Re-read the request body to construct new_values for audit log
+    const requestBody = await request.json(); // This will re-read the stream
     await createAuditLog({
       user_id: userId!, // Non-null assertion as authenticateApi ensures userId is present
       action: 'update',
       table_name: 'bookings',
       record_id: bookingId,
       old_values: currentBooking, // Pass the original booking for old_values
-      new_values: { ...currentBooking, ...await request.json() }, // This is a simplification, ideally construct based on actual updates
+      new_values: { ...currentBooking, ...requestBody }, // Use the stored requestBody
       ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       metadata: {
         services_updated: Array.isArray(service_ids),
@@ -236,9 +259,9 @@ export async function DELETE(request: AuthenticatedRequest, { params }: { params
       return authResult;
     }
 
-    const authorizeResult = await authorizeApi(['admin'])(request);
+    const authorizeResult = await authorizeApi(['admin', 'staff'])(request); // Allow staff to delete
     if (authorizeResult) {
-      return authorizeResult; // Not authorized as admin
+      return authorizeResult; // Not authorized as admin or staff
     }
 
     const { id } = params;

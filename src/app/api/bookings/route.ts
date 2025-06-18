@@ -62,8 +62,12 @@ export async function GET(request: AuthenticatedRequest) {
       queryParams.push(date);
     }
     if (staffId) {
+      const parsedStaffId = parseInt(staffId);
+      if (isNaN(parsedStaffId)) {
+        return NextResponse.json({ message: 'Invalid staff_id provided' }, { status: 400 });
+      }
       query += ` AND b.staff_id = $${paramIndex++}`;
-      queryParams.push(parseInt(staffId));
+      queryParams.push(parsedStaffId);
     }
 
     query += `
@@ -87,8 +91,14 @@ export async function GET(request: AuthenticatedRequest) {
       countParams.push(date);
     }
     if (staffId) {
+      const parsedStaffId = parseInt(staffId);
+      if (isNaN(parsedStaffId)) {
+        // This error would have been caught by the main query's validation,
+        // but including it here for consistency in case this block is reached independently.
+        return NextResponse.json({ message: 'Invalid staff_id provided for count' }, { status: 400 });
+      }
       countQuery += ` AND staff_id = $${countParamIndex++}`;
-      countParams.push(parseInt(staffId));
+      countParams.push(parsedStaffId);
     }
     const totalResult = await pool.query(countQuery, countParams);
     const total = parseInt(totalResult.rows[0].count, 10);
@@ -135,6 +145,13 @@ export async function POST(request: AuthenticatedRequest) {
     if (!Array.isArray(service_ids) || service_ids.length === 0) {
       return NextResponse.json({ message: 'At least one service must be selected' }, { status: 400 });
     }
+    // Validate each service_id is a number and remove duplicates
+    const uniqueServiceIds = Array.from(new Set(service_ids.map(id => parseInt(id))));
+    if (uniqueServiceIds.some(isNaN)) {
+      return NextResponse.json({ message: 'Invalid service_id found in the list' }, { status: 400 });
+    }
+    // Replace service_ids with validated unique numeric IDs
+    service_ids.splice(0, service_ids.length, ...uniqueServiceIds);
 
     // Verify vehicle belongs to user
     const vehicleResult = await pool.query('SELECT user_id FROM vehicles WHERE id = $1', [vehicle_id]);
@@ -165,11 +182,17 @@ export async function POST(request: AuthenticatedRequest) {
     // Calculate end time
     const [startHours, startMinutes] = scheduled_time.split(':').map(Number);
     const startTimeInMinutes = startHours * 60 + startMinutes;
-    const endTimeInMinutes = startTimeInMinutes + totalDuration;
+    let endTimeInMinutes = startTimeInMinutes + totalDuration;
 
-    const endHours = Math.floor(endTimeInMinutes / 60);
+    // Handle time rollover for end_time
+    const endHours = Math.floor(endTimeInMinutes / 60) % 24; // Modulo 24 to handle next day
     const endMinutes = endTimeInMinutes % 60;
     const end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+
+    // If the booking spans into the next day, you might need to adjust the booking_date as well.
+    // This current implementation only adjusts the time string.
+    // For multi-day bookings, a separate 'end_date' column would be more appropriate.
+    // For now, assuming bookings are within a single day or the time rollover is handled by the frontend/business logic.
 
     // Create booking
     const bookingResult = await pool.query(

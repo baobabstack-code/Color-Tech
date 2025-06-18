@@ -1,99 +1,83 @@
-"use client";
-
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Keep useState for client-side interactivity
 import { Search, Tag, Calendar, Clock, User, ChevronRight } from 'lucide-react';
-import Link from "next/link"; // Import Link from next/link
+import Link from "next/link";
+import Image from "next/image"; // Import Image for optimized images
 
+// Define interfaces for fetched data
 interface BlogPost {
   id: number;
   title: string;
-  excerpt: string;
-  category: string;
-  author: string;
-  date: string;
-  readTime: string;
-  image: string;
-  featured?: boolean;
+  content_type: string;
+  body: string; // Full content, might need truncation for excerpt
+  image_url: string | null;
+  is_published: boolean;
+  tags: string | null; // Assuming tags can be used as categories
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
 }
 
-const Blog = () => {
+interface BlogCategory {
+  category_name: string;
+}
+
+async function getAllBlogPosts(): Promise<BlogPost[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=blog&is_published=true`, { next: { revalidate: 3600 } });
+  if (!res.ok) {
+    console.error('Failed to fetch blog posts:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.content || [];
+}
+
+async function getBlogCategories(): Promise<BlogCategory[]> {
+  // Assuming FAQ categories can be repurposed or a new API for blog categories is needed
+  // For now, using the existing FAQ categories API as a placeholder for blog categories
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/faq/categories`, { next: { revalidate: 3600 } });
+  if (!res.ok) {
+    console.error('Failed to fetch blog categories:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.categories.map((name: string) => ({ category_name: name })) || [];
+}
+
+const BlogPage = async () => {
+  const [allBlogPosts, allCategories] = await Promise.all([
+    getAllBlogPosts(),
+    getBlogCategories()
+  ]);
+
+  // Client-side state for search and filter
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const blogPosts: BlogPost[] = [
-    {
-      id: 1,
-      title: "Essential Car Paint Care Tips for Long-lasting Shine",
-      excerpt: "Learn the best practices for maintaining your car's paint and protecting it from environmental damage.",
-      category: "Car Care",
-      author: "John Smith",
-      date: "2024-02-15",
-      readTime: "5 min",
-      image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800",
-      featured: true
-    },
-    {
-      id: 2,
-      title: "Understanding Modern Auto Body Repair Techniques",
-      excerpt: "Discover how advanced technology is revolutionizing the auto body repair industry.",
-      category: "Industry News",
-      author: "Sarah Johnson",
-      date: "2024-02-12",
-      readTime: "7 min",
-      image: "https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=800"
-    },
-    {
-      id: 3,
-      title: "The Impact of Weather on Your Car's Paint",
-      excerpt: "How different weather conditions affect your vehicle's paint and what you can do about it.",
-      category: "Car Care",
-      author: "Mike Wilson",
-      date: "2024-02-10",
-      readTime: "4 min",
-      image: "https://images.unsplash.com/photo-1600661653561-629509216228?w=800"
-    },
-    {
-      id: 4,
-      title: "Latest Innovations in Auto Paint Technology",
-      excerpt: "Exploring cutting-edge developments in automotive paint and coating systems.",
-      category: "Industry News",
-      author: "Emily Brown",
-      date: "2024-02-08",
-      readTime: "6 min",
-      image: "https://images.unsplash.com/photo-1632823471406-462e45297d86?w=800"
-    },
-    {
-      id: 5,
-      title: "DIY Car Maintenance: What to Do and What to Avoid",
-      excerpt: "A comprehensive guide to safe DIY car maintenance and when to seek professional help.",
-      category: "Tips & Tricks",
-      author: "David Lee",
-      date: "2024-02-05",
-      readTime: "8 min",
-      image: "https://images.unsplash.com/photo-1493238792000-8113da705763?w=800"
-    },
-    {
-      id: 6,
-      title: "Sustainable Practices in Auto Body Repair",
-      excerpt: "How the industry is adopting eco-friendly methods and materials.",
-      category: "Industry News",
-      author: "Lisa Chen",
-      date: "2024-02-03",
-      readTime: "5 min",
-      image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800"
-    }
-  ];
+  // Process fetched data for display
+  const processedBlogPosts = allBlogPosts.map(post => ({
+    id: post.id,
+    title: post.title,
+    excerpt: post.body.substring(0, 150) + (post.body.length > 150 ? '...' : ''), // Truncate body for excerpt
+    category: post.tags ? post.tags.split(',')[0].trim() : 'Uncategorized', // Use first tag as category
+    author: post.author || 'Admin',
+    date: new Date(post.created_at).toISOString().split('T')[0], // Format date
+    readTime: `${Math.ceil(post.body.length / 200)} min`, // Estimate read time
+    image: post.image_url || 'https://via.placeholder.com/800x400?text=Blog+Image',
+    featured: post.tags?.includes('featured') || false // Assuming 'featured' tag
+  }));
 
-  const categories = Array.from(new Set(blogPosts.map(post => post.category)));
+  const categories = Array.from(new Set(processedBlogPosts.map(post => post.category)));
 
-  const filteredPosts = blogPosts.filter(post => {
+  const filteredPosts = processedBlogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPost = blogPosts.find(post => post.featured);
+  const featuredPost = filteredPosts.find(post => post.featured);
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">
@@ -111,9 +95,11 @@ const Blog = () => {
       {featuredPost && (
         <div className="container mx-auto mb-16">
           <div className="relative rounded-xl overflow-hidden">
-            <img
+            <Image
               src={featuredPost.image}
               alt={featuredPost.title}
+              width={800}
+              height={400}
               className="w-full h-[400px] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end">
@@ -184,9 +170,11 @@ const Blog = () => {
               className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <div className="relative h-48">
-                <img
+                <Image
                   src={post.image}
                   alt={post.title}
+                  width={800}
+                  height={400}
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm">
@@ -247,4 +235,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogPage;

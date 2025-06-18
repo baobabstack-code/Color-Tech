@@ -55,8 +55,12 @@ export async function GET(request: Request) {
     let paramIndex = 1;
 
     if (categoryId) {
+      const parsedCategoryId = parseInt(categoryId);
+      if (isNaN(parsedCategoryId)) {
+        return NextResponse.json({ message: 'Invalid category_id provided' }, { status: 400 });
+      }
       query += ` AND s.category_id = $${paramIndex++}`;
-      queryParams.push(parseInt(categoryId));
+      queryParams.push(parsedCategoryId);
     }
     if (isActive !== null) {
       query += ` AND s.is_active = $${paramIndex++}`;
@@ -79,8 +83,14 @@ export async function GET(request: Request) {
     let countParamIndex = 1;
 
     if (categoryId) {
+      const parsedCategoryId = parseInt(categoryId);
+      if (isNaN(parsedCategoryId)) {
+        // This error would have been caught by the main query's validation,
+        // but including it here for consistency in case this block is reached independently.
+        return NextResponse.json({ message: 'Invalid category_id provided for count' }, { status: 400 });
+      }
       countQuery += ` AND s.category_id = $${countParamIndex++}`;
-      countParams.push(parseInt(categoryId));
+      countParams.push(parsedCategoryId);
     }
     if (isActive !== null) {
       countQuery += ` AND s.is_active = $${countParamIndex++}`;

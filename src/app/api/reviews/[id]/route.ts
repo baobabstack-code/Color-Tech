@@ -136,8 +136,10 @@ export async function DELETE(request: AuthenticatedRequest, { params }: { params
     }
 
     // Check if the user owns this review
-    if (review.user_id !== userId) {
-      return NextResponse.json({ message: 'You can only delete your own reviews' }, { status: 403 });
+    // Allow admin or staff to delete any review, or the user to delete their own review
+    const userRole = request.user?.role;
+    if (userRole !== 'admin' && userRole !== 'staff' && review.user_id !== userId) {
+      return NextResponse.json({ message: 'You do not have permission to delete this review' }, { status: 403 });
     }
 
     await pool.query('DELETE FROM reviews WHERE id = $1', [reviewId]);

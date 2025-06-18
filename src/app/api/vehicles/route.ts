@@ -72,11 +72,34 @@ export async function POST(request: AuthenticatedRequest) {
     const { make, model, year, color, license_plate, vin, notes } = await request.json();
 
     const validationError = validateRequiredFields(
-      { make, model, year },
-      ['make', 'model', 'year']
+      { make, model, year, license_plate, vin }, // Added license_plate and vin to required fields
+      ['make', 'model', 'year', 'license_plate', 'vin']
     );
     if (validationError) {
       return NextResponse.json({ message: validationError }, { status: 400 });
+    }
+
+    // Specific validation for year, license_plate, and VIN
+    const currentYear = new Date().getFullYear();
+    if (isNaN(year) || year < 1900 || year > currentYear + 1) { // Assuming vehicles can't be from too far in the past or future
+      return NextResponse.json({ message: 'Invalid year. Must be a valid year.' }, { status: 400 });
+    }
+
+    if (license_plate && !/^[A-Z0-9]{1,10}$/i.test(license_plate)) { // Example regex for alphanumeric, 1-10 chars
+      return NextResponse.json({ message: 'Invalid license plate format.' }, { status: 400 });
+    }
+
+    if (vin && !/^[A-HJ-NPR-Z0-9]{17}$/i.test(vin)) { // Standard 17-character VIN format (excluding I, O, Q)
+      return NextResponse.json({ message: 'Invalid VIN format. Must be 17 alphanumeric characters (excluding I, O, Q).' }, { status: 400 });
+    }
+
+    // Check for duplicate license_plate or VIN
+    const existingVehicle = await pool.query(
+      'SELECT id FROM vehicles WHERE license_plate = $1 OR vin = $2',
+      [license_plate, vin]
+    );
+    if (existingVehicle.rows.length > 0) {
+      return NextResponse.json({ message: 'Vehicle with this license plate or VIN already exists.' }, { status: 409 });
     }
 
     const query = `

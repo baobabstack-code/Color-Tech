@@ -1,92 +1,57 @@
-"use client";
-
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Keep useState for client-side interactivity
 import { Image as ImageIcon, ZoomIn } from 'lucide-react';
-import BeforeAfterSlider from '@/components/BeforeAfterSlider'; // Adjusted import path
-import Link from "next/link"; // Import Link from next/link
+import BeforeAfterSlider from '@/components/BeforeAfterSlider';
+import Link from "next/link";
+import Image from "next/image"; // Import Image for optimized images
 
-const Gallery = () => {
+// Define interface for fetched data
+interface GalleryItem {
+  id: number;
+  title: string;
+  content_type: string;
+  body: string; // JSON string
+  image_url: string;
+  is_published: boolean;
+  tags: string | null;
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+async function getAllGalleryItems(): Promise<GalleryItem[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=gallery&is_published=true`, { next: { revalidate: 3600 } });
+  if (!res.ok) {
+    console.error('Failed to fetch gallery items:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.content || [];
+}
+
+const GalleryPage = async () => {
+  const allGalleryItems = await getAllGalleryItems();
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const galleryImages = [
-    {
-      src: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
-      alt: "Car Spray Painting Process",
-      category: "Spray Painting",
-      fallback: "https://images.unsplash.com/photo-1589758438368-0ad531db3366"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1625047509168-a7026f36de04",
-      alt: "Panel Beating Work",
-      category: "Panel Beating",
-      fallback: "https://images.unsplash.com/photo-1589758443949-f377a77072f5"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e",
-      alt: "Car Paint Finishing",
-      category: "Paint Finishing",
-      fallback: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1599256872237-5dcc0fbe9668",
-      alt: "Auto Body Repair",
-      category: "Body Repair",
-      fallback: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1635764751197-c8c6b3e81c0a",
-      alt: "Paint Color Matching",
-      category: "Color Matching",
-      fallback: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1507136566006-cfc505b114fc",
-      alt: "Professional Auto Workshop",
-      category: "Workshop",
-      fallback: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1600661653561-629509216228",
-      alt: "Luxury Car Detailing",
-      category: "Detailing",
-      fallback: "https://images.unsplash.com/photo-1601362840469-51e4d8d58785"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068",
-      alt: "Paint Booth Process",
-      category: "Paint Booth",
-      fallback: "https://images.unsplash.com/photo-1589758438368-0ad531db3366"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85",
-      alt: "Quality Inspection",
-      category: "Quality Control",
-      fallback: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1589758443949-f377a77072f5",
-      alt: "Before and After Restoration",
-      category: "Before & After",
-      fallback: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
-      alt: "Collision Repair",
-      category: "Collision Repair",
-      fallback: "https://images.unsplash.com/photo-1589758443949-f377a77072f5"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1613214149922-f1809c99b69c",
-      alt: "Custom Paint Job",
-      category: "Custom Paint",
-      fallback: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e"
+  // Process fetched data for display
+  const galleryImages = allGalleryItems.map(item => {
+    let bodyContent = { original_name: item.title };
+    try {
+      bodyContent = JSON.parse(item.body);
+    } catch (e) {
+      console.error("Failed to parse gallery item body:", e);
     }
-  ];
+    return {
+      src: item.image_url || "https://via.placeholder.com/600x450?text=Image",
+      alt: item.title,
+      category: item.tags ? item.tags.split(',')[0].trim() : 'Uncategorized', // Use first tag as category
+      fallback: "https://via.placeholder.com/600x450?text=Error" // Fallback image
+    };
+  });
 
-  // Filter categories for the filter buttons
-  const categories = Array.from(new Set(galleryImages.map(img => img.category)));
-
-  // Update BeforeAfterSlider images
+  // Update BeforeAfterSlider images (these are still hardcoded for now, can be fetched from API if needed)
   const transformations = [
     {
       beforeImage: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
@@ -150,9 +115,11 @@ const Gallery = () => {
               onClick={() => setSelectedImage(image.src)}
             >
               <div className="aspect-w-4 aspect-h-3">
-                <img
+                <Image
                   src={image.src}
                   alt={image.alt}
+                  width={600} // Adjust width/height as needed
+                  height={450} // Adjust width/height as needed
                   className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -222,4 +189,4 @@ const Gallery = () => {
   );
 };
 
-export default Gallery;
+export default GalleryPage;

@@ -47,15 +47,17 @@ function validateEnum(value: string, allowedValues: string[]): boolean {
 
 export async function GET(request: AuthenticatedRequest) {
   try {
-    const authHeader = request.headers.get('Authorization');
-    const isAuthenticated = authHeader && authHeader.startsWith('Bearer ');
+    // Attempt to authenticate the request. If successful, request.user will be populated.
+    // If not, authResult will contain a NextResponse, which means it's an unauthenticated request.
+    const authResult = await authenticateApi(request);
+    const isAuthenticated = !authResult; // If authResult is null, it means authentication passed.
 
     const { page, limit, offset } = getPaginationParams(request);
     const url = new URL(request.url);
     const status = url.searchParams.get('status'); // For admin/staff to filter all reviews
 
     let query = `
-      SELECT 
+      SELECT
         r.id, r.user_id, r.service_id, r.booking_id, r.rating, r.comment, r.status, r.created_at, r.updated_at,
         u.first_name AS user_first_name, u.last_name AS user_last_name, u.email AS user_email,
         s.name AS service_name
@@ -67,8 +69,8 @@ export async function GET(request: AuthenticatedRequest) {
     const queryParams: (string | number)[] = [];
     let paramIndex = 1;
 
+    // Public view: only approved reviews, or if authenticated but not admin/staff
     if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
-      // Public view: only approved reviews
       query += ` AND r.status = 'approved'`;
     } else {
       // Admin/Staff view: can filter by status
@@ -90,6 +92,7 @@ export async function GET(request: AuthenticatedRequest) {
     const countParams: (string | number)[] = [];
     let countParamIndex = 1;
 
+    // Public view: only approved reviews, or if authenticated but not admin/staff
     if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
       countQuery += ` AND r.status = 'approved'`;
     } else {

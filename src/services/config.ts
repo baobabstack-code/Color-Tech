@@ -1,7 +1,7 @@
 // Frontend-compatible configuration
 export const serviceConfig = {
   // API configuration
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: '/api', // Use relative path for Next.js API routes
   
   // JWT configuration
   jwt: {

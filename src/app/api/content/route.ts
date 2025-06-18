@@ -33,8 +33,10 @@ function validateEnum(value: string, allowedValues: string[]): boolean {
 
 export async function GET(request: AuthenticatedRequest) {
   try {
-    const authHeader = request.headers.get('Authorization');
-    const isAuthenticated = authHeader && authHeader.startsWith('Bearer ');
+    // Attempt to authenticate the request. If successful, request.user will be populated.
+    // If not, authResult will contain a NextResponse, which means it's an unauthenticated request.
+    const authResult = await authenticateApi(request);
+    const isAuthenticated = !authResult; // If authResult is null, it means authentication passed.
 
     const { page, limit, offset } = getPaginationParams(request);
     const url = new URL(request.url);
@@ -47,8 +49,8 @@ export async function GET(request: AuthenticatedRequest) {
     const queryParams: (string | number | boolean)[] = [];
     let paramIndex = 1;
 
+    // Public view: only published content, or if authenticated but not admin/staff
     if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
-      // Public view: only published content
       query += ` AND is_published = TRUE`;
     } else {
       // Admin/Staff view: can filter by published status
@@ -75,6 +77,7 @@ export async function GET(request: AuthenticatedRequest) {
     const countParams: (string | number | boolean)[] = [];
     let countParamIndex = 1;
 
+    // Public view: only published content, or if authenticated but not admin/staff
     if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
       countQuery += ` AND is_published = TRUE`;
     } else {

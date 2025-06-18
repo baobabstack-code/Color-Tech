@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
 import { createAuditLog } from '@/utils/auditLogger';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { config } from '@/config'; // Import config for upload directory
 
 // Helper for validation (can be moved to a separate utils file if needed)
 function validateRequiredFields(data: any, fields: string[]): string | null {
@@ -30,28 +33,59 @@ export async function POST(request: AuthenticatedRequest) {
       return NextResponse.json({ message: 'Unauthorized: User ID not found' }, { status: 401 });
     }
 
-    // Assuming file_path, original_name, mime_type, size are provided in the request body
-    const { title, file_path, original_name, mime_type, size, is_published } = await request.json();
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const file = formData.get('file') as File;
+    const is_published = formData.get('is_published') === 'true'; // Convert string to boolean
 
-    const validationError = validateRequiredFields(
-      { title, file_path, original_name, mime_type, size },
-      ['title', 'file_path', 'original_name', 'mime_type', 'size']
-    );
-    if (validationError) {
-      return NextResponse.json({ message: validationError }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ message: 'No file uploaded' }, { status: 400 });
     }
+    if (!title) {
+      return NextResponse.json({ message: 'Title is required' }, { status: 400 });
+    }
+
+    // File type validation
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.type)) {
+      return NextResponse.json({ message: `Invalid file type. Only ${allowedMimeTypes.join(', ')} are allowed.` }, { status: 400 });
+    }
+
+    // File size limit (e.g., 5MB)
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return NextResponse.json({ message: `File size exceeds the limit of ${MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB.` }, { status: 400 });
+    }
+
+    // Define upload directory (e.g., public/uploads)
+    // Ensure config.uploads.directory is relative to 'public' and doesn't start with './'
+    const baseUploadDir = config.uploads.directory.startsWith('./') ? config.uploads.directory.substring(2) : config.uploads.directory;
+    const uploadDir = path.join(process.cwd(), 'public', baseUploadDir);
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    // Generate a unique filename
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    const fileExtension = path.extname(file.name);
+    const filename = `${uniqueSuffix}${fileExtension}`;
+    const filePath = path.join(uploadDir, filename);
+    // Construct the URL-friendly path relative to the public directory
+    const relativeFilePath = path.posix.join('/', baseUploadDir, filename); // Use path.posix for URL-friendly paths
+
+    // Save the file
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await fs.writeFile(filePath, buffer);
 
     const contentData = {
       title: title,
       content_type: 'gallery',
       body: JSON.stringify({
-        file_path: file_path,
-        original_name: original_name,
-        mime_type: mime_type,
-        size: size
+        file_path: relativeFilePath,
+        original_name: file.name,
+        mime_type: file.type,
+        size: file.size
       }),
-      image_url: file_path, // Assuming image_url stores the file_path
-      is_published: is_published ?? false,
+      image_url: relativeFilePath, // Store the public URL path
+      is_published: is_published,
       created_by: userId,
       updated_by: userId
     };

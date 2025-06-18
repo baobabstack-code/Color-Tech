@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -11,7 +9,114 @@ import {
   Camera, Settings, Hammer, Paintbrush
 } from "lucide-react";
 
-export default function HomePage() {
+// Define interfaces for fetched data
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  duration_minutes: number;
+  category_id: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category_name: string;
+}
+
+interface Testimonial {
+  id: number;
+  user_id: number;
+  service_id: number;
+  booking_id: number;
+  rating: number;
+  comment: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  user_first_name: string;
+  user_last_name: string;
+  user_email: string;
+  service_name: string;
+}
+
+interface GalleryItem {
+  id: number;
+  title: string;
+  content_type: string;
+  body: string; // JSON string
+  image_url: string;
+  is_published: boolean;
+  tags: string | null;
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface BlogPost {
+  id: number;
+  title: string;
+  content_type: string;
+  body: string;
+  image_url: string | null;
+  is_published: boolean;
+  tags: string | null;
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
+}
+
+async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/blog/featured`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch featured blog posts:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.featuredPosts || [];
+}
+
+async function getTestimonials(): Promise<Testimonial[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews?status=approved&limit=3`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch testimonials:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.reviews || [];
+}
+
+async function getGalleryPreviews(): Promise<GalleryItem[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=gallery&is_published=true&limit=2`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch gallery previews:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.content || [];
+}
+
+async function getServices(): Promise<Service[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services?limit=3`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  if (!res.ok) {
+    console.error('Failed to fetch services:', res.status, res.statusText);
+    return [];
+  }
+  const data = await res.json();
+  return data.services || [];
+}
+
+export default async function HomePage() {
+  const [featuredPosts, testimonials, galleryPreviews, services] = await Promise.all([
+    getFeaturedBlogPosts(),
+    getTestimonials(),
+    getGalleryPreviews(),
+    getServices()
+  ]);
+
   const features = [
     {
       icon: <Wrench className="h-8 w-8 text-primary" />,
@@ -42,51 +147,6 @@ export default function HomePage() {
     { value: "100%", label: "Quality Guarantee" }
   ];
 
-  const services = [
-    {
-      icon: <Wrench className="h-10 w-10 text-primary" />,
-      title: "Panel Beating",
-      description: "Expert repair and restoration of damaged vehicle panels",
-      link: "panel-beating"
-    },
-    {
-      icon: <Car className="h-10 w-10 text-primary" />,
-      title: "Spray Painting",
-      description: "Professional automotive painting with premium finishes",
-      link: "spray-painting"
-    },
-    {
-      icon: <Shield className="h-10 w-10 text-primary" />,
-      title: "Quality Assurance",
-      description: "Comprehensive quality checks and guarantees",
-      link: "quality-assurance"
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "John Smith",
-      role: "BMW Owner",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a",
-      quote: "The quality of work is outstanding. My fleet vehicles have never looked better!",
-      rating: 5
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Mercedes Owner",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
-      quote: "Professional service from start to finish. Their attention to detail in paint matching is remarkable.",
-      rating: 5
-    },
-    {
-      name: "Mike Williams",
-      role: "Car Enthusiast",
-      image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36",
-      quote: "Their attention to detail is remarkable. Best panel beaters in town!",
-      rating: 5
-    }
-  ];
-
   const process = [
     {
       icon: <Camera className="h-12 w-12 text-primary" />,
@@ -110,20 +170,38 @@ export default function HomePage() {
     }
   ];
 
-  const galleryPreviews = [
-    {
-      before: "https://images.unsplash.com/photo-1589739900266-43b2843f4c12",
-      after: "https://images.unsplash.com/photo-1596883040737-6d38c9e905b0",
-      title: "Complete Body Restoration",
-      description: "Full restoration including panel beating and respraying"
-    },
-    {
-      before: "https://images.unsplash.com/photo-1591167866410-c15e4545a887",
-      after: "https://images.unsplash.com/photo-1611566026373-c6c8da0ea861",
-      title: "Custom Paint Job",
-      description: "Premium metallic paint finish with clear coat"
+  // Process data for rendering
+  const displayedServices = services.slice(0, 3).map(service => ({
+    icon: service.name.includes('Panel') ? <Wrench className="h-10 w-10 text-primary" /> :
+          service.name.includes('Paint') ? <Paintbrush className="h-10 w-10 text-primary" /> :
+          <Shield className="h-10 w-10 text-primary" />, // Default or more specific logic
+    title: service.name,
+    description: service.description,
+    link: service.name.toLowerCase().replace(/\s/g, '-') // Generate slug from name
+  }));
+
+  const displayedTestimonials = testimonials.slice(0, 3).map(t => ({
+    name: `${t.user_first_name} ${t.user_last_name}`,
+    role: t.user_email, // Or a more appropriate role if available
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a", // Placeholder, ideally fetch from user profile or content
+    quote: t.comment,
+    rating: t.rating
+  }));
+
+  const displayedGalleryPreviews = galleryPreviews.slice(0, 2).map(g => {
+    let bodyContent = { original_name: g.title };
+    try {
+      bodyContent = JSON.parse(g.body);
+    } catch (e) {
+      console.error("Failed to parse gallery item body:", e);
     }
-  ];
+    return {
+      before: g.image_url || "https://via.placeholder.com/600x338?text=Before",
+      after: g.image_url || "https://via.placeholder.com/600x338?text=After", // Assuming 'after' is the same as 'before' for now, or needs a separate field
+      title: g.title,
+      description: bodyContent.original_name || g.title
+    };
+  });
 
   return (
     <div className="min-h-screen">
@@ -197,7 +275,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {services.map((service, index) => (
+            {displayedServices.map((service, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md">
                 <div className="mb-4">
                   {service.icon}
@@ -259,7 +337,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
-            {galleryPreviews.map((preview, index) => (
+            {displayedGalleryPreviews.map((preview, index) => (
               <div key={index} className="group relative overflow-hidden rounded-lg">
                 <div className="aspect-video relative">
                   <Image
@@ -326,7 +404,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {displayedTestimonials.map((testimonial, index) => (
               <Card key={index} className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-20 h-20 rounded-full overflow-hidden mb-4 relative">

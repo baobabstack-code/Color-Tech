@@ -39,8 +39,9 @@ export async function GET(request: Request) {
     }
 
     const user = result.rows[0];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
+    // The password column is not selected in the query, so it won't exist on the user object.
+    // No need to destructure it.
+    const userWithoutPassword = user;
 
     return NextResponse.json({ user: userWithoutPassword });
   } catch (error) {

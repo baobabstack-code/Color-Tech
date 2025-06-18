@@ -55,8 +55,8 @@ export async function POST(request: Request) {
 
     await pool.query(
       `INSERT INTO user_sessions (user_id, token, expires_at, ip_address, user_agent)
-       VALUES ($1, $2, NOW() + INTERVAL '${jwtConfig.getExpiresIn()}', $3, $4)`,
-      [user.id, token, ipAddress, userAgent]
+       VALUES ($1, $2, NOW() + INTERVAL $3, $4, $5)`,
+      [user.id, token, jwtConfig.getExpiresInInterval(), ipAddress, userAgent]
     );
 
     return NextResponse.json({
