@@ -1,8 +1,8 @@
 // Mock environment variables
 process.env.JWT_SECRET = 'test-secret';
 process.env.JWT_EXPIRES_IN = '1h';
-process.env.NODE_ENV = 'test';
-process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000/api'; // Set API URL for tests
+// Set API URL for tests (relative for Next.js fullstack)
+process.env.NEXT_PUBLIC_API_URL = '/api';
 
 // Increase timeout for tests
 jest.setTimeout(10000);
@@ -28,4 +28,4 @@ jest.mock('../utils/logger', () => { // Keep this mock as logger is still used
 // Global teardown
 afterAll(async () => {
   // Clean up any resources if needed
-}); 
+});

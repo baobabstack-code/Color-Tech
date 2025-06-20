@@ -70,7 +70,7 @@ interface BlogPost {
 }
 
 async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/blog/featured`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  const res = await fetch('/api/content/blog/featured', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch featured blog posts:', res.status, res.statusText);
     return [];
@@ -80,7 +80,7 @@ async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
 }
 
 async function getTestimonials(): Promise<Testimonial[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews?status=approved&limit=3`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  const res = await fetch('/api/reviews?status=approved&limit=3', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch testimonials:', res.status, res.statusText);
     return [];
@@ -90,7 +90,7 @@ async function getTestimonials(): Promise<Testimonial[]> {
 }
 
 async function getGalleryPreviews(): Promise<GalleryItem[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=gallery&is_published=true&limit=2`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  const res = await fetch('/api/content?content_type=gallery&is_published=true&limit=2', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch gallery previews:', res.status, res.statusText);
     return [];
@@ -100,7 +100,7 @@ async function getGalleryPreviews(): Promise<GalleryItem[]> {
 }
 
 async function getServices(): Promise<Service[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services?limit=3`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  const res = await fetch('/api/services?limit=3', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch services:', res.status, res.statusText);
     return [];

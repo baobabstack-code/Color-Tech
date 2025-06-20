@@ -3,31 +3,28 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-// Frontend-compatible configuration
+// Centralized configuration for Next.js fullstack app
 export const config = {
-  // API configuration
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  
   // JWT configuration
   jwt: {
-    secret: import.meta.env.VITE_JWT_SECRET || 'your-secret-key',
-    expiresIn: '24h',
+    secret: process.env.JWT_SECRET || 'your_secret_key_change_this_in_production',
+    expiresIn: process.env.JWT_EXPIRES_IN || '24h',
   },
   
-  // Server configuration (for reference only in frontend)
+  // Server configuration
   server: {
-    port: import.meta.env.VITE_PORT || 3000,
-    env: import.meta.env.VITE_NODE_ENV || 'development',
+    port: process.env.PORT || 3000,
+    env: process.env.NODE_ENV || 'development',
   },
   
-  // Database configuration (for reference only in frontend)
+  // Database configuration
   db: {
-    host: import.meta.env.VITE_DB_HOST || 'localhost',
-    user: import.meta.env.VITE_DB_USER || 'postgres',
-    password: import.meta.env.VITE_DB_PASSWORD || '',
-    database: import.meta.env.VITE_DB_NAME || 'color_tech_db',
-    port: 5432,
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'color_tech_db',
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
   },
-};
+} as const;
 
-export default config; 
+export default config;

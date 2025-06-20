@@ -30,7 +30,8 @@ interface ServiceCategory {
 }
 
 async function getAllServices(): Promise<Service[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  // Use relative URL for Next.js fullstack
+  const res = await fetch('/api/services', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch services:', res.status, res.statusText);
     return [];
@@ -40,7 +41,8 @@ async function getAllServices(): Promise<Service[]> {
 }
 
 async function getServiceCategories(): Promise<ServiceCategory[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  // Use relative URL for Next.js fullstack
+  const res = await fetch('/api/services/categories', { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch service categories:', res.status, res.statusText);
     return [];

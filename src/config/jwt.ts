@@ -54,6 +54,36 @@ export const jwtConfig = {
      default:
        return '24 hours'; // Default to 24 hours if format is unknown
    }
+ },
+
+ /**
+  * Stores the JWT token in localStorage.
+  * @param token The JWT token to store.
+  */
+ setToken: (token: string): void => {
+   if (typeof window !== 'undefined') {
+     localStorage.setItem('jwtToken', token);
+   }
+ },
+
+ /**
+  * Retrieves the JWT token from localStorage.
+  * @returns The JWT token, or null if not found.
+  */
+ getToken: (): string | null => {
+   if (typeof window !== 'undefined') {
+     return localStorage.getItem('jwtToken');
+   }
+   return null;
+ },
+
+ /**
+  * Removes the JWT token from localStorage.
+  */
+ removeToken: (): void => {
+   if (typeof window !== 'undefined') {
+     localStorage.removeItem('jwtToken');
+   }
  }
 };
 

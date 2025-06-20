@@ -6,6 +6,8 @@ dotenv.config();
 // Configuration object
 export const config = {
   // Server configuration
+  apiUrl: '/api', // Use relative URL for Next.js fullstack
+  
   // File upload configuration
   uploads: {
     maxSize: parseInt(process.env.MAX_FILE_SIZE || '5242880'), // 5MB in bytes
@@ -19,4 +21,4 @@ export const config = {
   },
 };
 
-export default config; 
+export default config;

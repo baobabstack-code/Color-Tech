@@ -1,7 +1,7 @@
 // Frontend-compatible configuration
 export const serviceConfig = {
   // API configuration
-  apiUrl: '/api', // Use relative path for Next.js API routes
+  apiUrl: '/api', // Use relative URL for Next.js fullstack
   
   // JWT configuration
   jwt: {

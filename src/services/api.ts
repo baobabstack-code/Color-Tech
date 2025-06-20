@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from './config';
-import jwtConfig from '../lib/jwt';
+import jwtConfig from '../config/jwt';
 
 const api = axios.create({
   baseURL: config.apiUrl,

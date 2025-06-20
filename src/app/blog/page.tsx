@@ -24,7 +24,8 @@ interface BlogCategory {
 }
 
 async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=blog&is_published=true`, { next: { revalidate: 3600 } });
+  // Use relative URL for Next.js fullstack
+  const res = await fetch('/api/content?content_type=blog&is_published=true', { next: { revalidate: 3600 } });
   if (!res.ok) {
     console.error('Failed to fetch blog posts:', res.status, res.statusText);
     return [];
@@ -34,9 +35,8 @@ async function getAllBlogPosts(): Promise<BlogPost[]> {
 }
 
 async function getBlogCategories(): Promise<BlogCategory[]> {
-  // Assuming FAQ categories can be repurposed or a new API for blog categories is needed
-  // For now, using the existing FAQ categories API as a placeholder for blog categories
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/faq/categories`, { next: { revalidate: 3600 } });
+  // Use relative URL for Next.js fullstack
+  const res = await fetch('/api/content/faq/categories', { next: { revalidate: 3600 } });
   if (!res.ok) {
     console.error('Failed to fetch blog categories:', res.status, res.statusText);
     return [];

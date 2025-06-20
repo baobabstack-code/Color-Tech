@@ -21,7 +21,8 @@ interface GalleryItem {
 }
 
 async function getAllGalleryItems(): Promise<GalleryItem[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/content?content_type=gallery&is_published=true`, { next: { revalidate: 3600 } });
+  // Use relative URL for Next.js fullstack
+  const res = await fetch('/api/content?content_type=gallery&is_published=true', { next: { revalidate: 3600 } });
   if (!res.ok) {
     console.error('Failed to fetch gallery items:', res.status, res.statusText);
     return [];

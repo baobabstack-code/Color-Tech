@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: '/Color-Tech',
+  // basePath: '/Color-Tech', // Commented out for local development
   images: {
     remotePatterns: [
       {
