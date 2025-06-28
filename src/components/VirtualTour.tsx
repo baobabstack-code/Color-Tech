@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Info, Camera, Navigation } from 'lucide-react';
 
@@ -198,4 +200,4 @@ const VirtualTour = () => {
   );
 };
 
-export default VirtualTour; 
+export default VirtualTour;

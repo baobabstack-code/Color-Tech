@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/config/database';
 import { authenticateApi, authorizeApi, AuthenticatedRequest, handleApiError } from '@/lib/apiAuth';
 import { getPaginationParams } from '@/lib/utils';
 import { createAuditLog } from '@/utils/auditLogger';
@@ -47,70 +47,41 @@ function validateEnum(value: string, allowedValues: string[]): boolean {
 
 export async function GET(request: AuthenticatedRequest) {
   try {
-    // Attempt to authenticate the request. If successful, request.user will be populated.
-    // If not, authResult will contain a NextResponse, which means it's an unauthenticated request.
     const authResult = await authenticateApi(request);
-    const isAuthenticated = !authResult; // If authResult is null, it means authentication passed.
-
+    const isAuthenticated = !authResult;
     const { page, limit, offset } = getPaginationParams(request);
     const url = new URL(request.url);
-    const status = url.searchParams.get('status'); // For admin/staff to filter all reviews
+    const status = url.searchParams.get('status');
 
-    let query = `
-      SELECT
-        r.id, r.user_id, r.service_id, r.booking_id, r.rating, r.comment, r.status, r.created_at, r.updated_at,
-        u.first_name AS user_first_name, u.last_name AS user_last_name, u.email AS user_email,
-        s.name AS service_name
-      FROM reviews r
-      JOIN users u ON r.user_id = u.id
-      JOIN services s ON r.service_id = s.id
-      WHERE 1=1
-    `;
-    const queryParams: (string | number)[] = [];
-    let paramIndex = 1;
+    // Build Supabase query
+    let query = supabase
+      .from('reviews')
+      .select(`id, user_id, service_id, booking_id, rating, comment, status, created_at, updated_at, \
+        users!inner(first_name, last_name, email), \
+        services!inner(name)
+      `, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     // Public view: only approved reviews, or if authenticated but not admin/staff
     if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
-      query += ` AND r.status = 'approved'`;
+      query = query.eq('status', 'approved');
     } else {
-      // Admin/Staff view: can filter by status
       if (status) {
-        query += ` AND r.status = $${paramIndex++}`;
-        queryParams.push(status);
+        query = query.eq('status', status);
       }
     }
 
-    query += `
-      ORDER BY r.created_at DESC
-      LIMIT $${paramIndex++} OFFSET $${paramIndex++}
-    `;
-    queryParams.push(limit, offset);
-
-    const reviewsResult = await pool.query(query, queryParams);
-
-    let countQuery = `SELECT COUNT(*) FROM reviews r WHERE 1=1`;
-    const countParams: (string | number)[] = [];
-    let countParamIndex = 1;
-
-    // Public view: only approved reviews, or if authenticated but not admin/staff
-    if (!isAuthenticated || (isAuthenticated && request.user?.role !== 'admin' && request.user?.role !== 'staff')) {
-      countQuery += ` AND r.status = 'approved'`;
-    } else {
-      if (status) {
-        countQuery += ` AND r.status = $${countParamIndex++}`;
-        countParams.push(status);
-      }
-    }
-    const totalResult = await pool.query(countQuery, countParams);
-    const total = parseInt(totalResult.rows[0].count, 10);
+    const { data: reviews, count: total, error } = await query;
+    if (error) throw error;
 
     return NextResponse.json({
-      reviews: reviewsResult.rows,
+      reviews,
       pagination: {
-        total,
+        total: total || 0,
         page,
         limit,
-        pages: Math.ceil(total / limit)
+        pages: total ? Math.ceil(total / limit) : 1
       }
     });
   } catch (error) {
@@ -159,35 +130,58 @@ export async function POST(request: AuthenticatedRequest) {
     }
 
     // Check if booking exists and belongs to user
-    const bookingCheck = await pool.query('SELECT user_id FROM bookings WHERE id = $1', [booking_id]);
-    if (bookingCheck.rows.length === 0) {
+    const bookingCheck = await supabase
+      .from('bookings')
+      .select('user_id')
+      .eq('id', booking_id)
+      .single();
+    if (!bookingCheck.data) {
       return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
     }
-    if (bookingCheck.rows[0].user_id !== userId) {
+    if (bookingCheck.data.user_id !== userId) {
       return NextResponse.json({ message: 'You can only review your own bookings' }, { status: 403 });
     }
 
     // Check if service exists
-    const serviceCheck = await pool.query('SELECT id FROM services WHERE id = $1', [service_id]);
-    if (serviceCheck.rows.length === 0) {
+    const serviceCheck = await supabase
+      .from('services')
+      .select('id')
+      .eq('id', service_id)
+      .single();
+    if (!serviceCheck.data) {
       return NextResponse.json({ message: 'Service not found' }, { status: 404 });
     }
 
     // Check if a review already exists for this booking and service by this user
-    const existingReviewCheck = await pool.query(
-      'SELECT id FROM reviews WHERE user_id = $1 AND booking_id = $2 AND service_id = $3',
-      [userId, booking_id, service_id]
-    );
-    if (existingReviewCheck.rows.length > 0) {
+    const existingReviewCheck = await supabase
+      .from('reviews')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('booking_id', booking_id)
+      .eq('service_id', service_id)
+      .single();
+    if (existingReviewCheck.data) {
       return NextResponse.json({ message: 'You have already submitted a review for this booking and service.' }, { status: 409 });
     }
 
-    const reviewResult = await pool.query(
-      `INSERT INTO reviews (user_id, service_id, booking_id, rating, comment, status, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING *`,
-      [userId, service_id, booking_id, rating, comment, 'pending']
-    );
-    const review = reviewResult.rows[0];
+    const { data: review, error: reviewError } = await supabase
+      .from('reviews')
+      .insert({
+        user_id: userId,
+        service_id,
+        booking_id,
+        rating,
+        comment,
+        status: 'pending',
+        created_at: new Date(),
+        updated_at: new Date()
+      })
+      .select(`*`)
+      .single();
+
+    if (reviewError) {
+      throw reviewError;
+    }
 
     await createAuditLog({
       user_id: userId!,

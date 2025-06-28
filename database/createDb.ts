@@ -1,8 +1,8 @@
 import { Client } from 'pg';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { exec } from 'child_process';
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 // Load environment variables
 dotenv.config();
@@ -13,6 +13,13 @@ async function createDatabase() {
   const dbPassword = process.env.DB_PASSWORD || '';
   const dbHost = process.env.DB_HOST || 'localhost';
   const dbPort = parseInt(process.env.DB_PORT || '5432');
+
+  console.log('Database Connection Details:');
+  console.log(`DB_HOST: ${dbHost}`);
+  console.log(`DB_PORT: ${dbPort}`);
+  console.log(`DB_USER: ${dbUser}`);
+  console.log(`DB_NAME: ${dbName}`);
+  console.log(`DB_PASSWORD: ${dbPassword ? '********' : 'N/A'}`); // Mask password for security
 
   // Connect to PostgreSQL server (without specifying a database)
   const client = new Client({
@@ -77,7 +84,7 @@ async function createDatabase() {
 }
 
 // Run the function if this script is executed directly
-if (require.main === module) {
+if (import.meta.url === new URL(import.meta.url).href) {
   createDatabase()
     .then(success => {
       if (success) {
@@ -94,4 +101,4 @@ if (require.main === module) {
     });
 }
 
-export default createDatabase; 
+export default createDatabase;

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { 
   ClipboardCheck, Camera, Clock, Wrench, CheckCircle, 
@@ -182,8 +184,8 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
           
           {/* Emergency Contacts */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {emergencyContacts.map((contact, index) => (
-              <div key={index} className="bg-red-50 rounded-lg p-4">
+            {emergencyContacts.map((contact) => (
+              <div key={contact.number} className="bg-red-50 rounded-lg p-4">
                 <h3 className="font-semibold text-red-700 mb-2">{contact.title}</h3>
                 <div className="flex items-center mb-2">
                   <Phone className="w-5 h-5 text-red-600 mr-2" />
@@ -200,8 +202,8 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
           {/* Towing Services */}
           <h3 className="text-xl font-semibold text-primary mb-4">Towing Services</h3>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            {towingServices.map((service, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4">
+            {towingServices.map((service) => (
+              <div key={service.contact} className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-start">
                   <Truck className="w-5 h-5 text-secondary mt-1 mr-3" />
                   <div>
@@ -300,11 +302,11 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       {/* Progress Timeline */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="space-y-6">
-          {stages.map((stage, index) => (
+          {stages.map((stage) => (
             <div 
               key={stage.id}
               className={`relative flex items-start ${
-                index !== stages.length - 1 ? 'pb-6' : ''
+                /* ...existing code... */
               }`}
             >
               {/* Connector Line */}
@@ -350,8 +352,8 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                         </p>
                       )}
                       <div className="grid grid-cols-2 gap-4">
-                        {stage.photos?.map((photo, photoIndex) => (
-                          <div key={photoIndex} className="relative aspect-w-4 aspect-h-3">
+                        {stage.photos?.map((photo) => (
+                          <div key={photo} className="relative aspect-w-4 aspect-h-3">
                             <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                               <ImageIcon className="w-8 h-8 text-gray-300" />
                             </div>
@@ -404,4 +406,4 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
   );
 };
 
-export default ProgressTracker; 
+export default ProgressTracker;

@@ -2,6 +2,7 @@ import React, { useState } from 'react'; // Keep useState for client-side intera
 import { Search, Tag, Calendar, Clock, User, ChevronRight } from 'lucide-react';
 import Link from "next/link";
 import Image from "next/image"; // Import Image for optimized images
+import { headers } from 'next/headers';
 
 // Define interfaces for fetched data
 interface BlogPost {
@@ -35,8 +36,10 @@ async function getAllBlogPosts(): Promise<BlogPost[]> {
 }
 
 async function getBlogCategories(): Promise<BlogCategory[]> {
-  // Use relative URL for Next.js fullstack
-  const res = await fetch('/api/content/faq/categories', { next: { revalidate: 3600 } });
+  const host = headers().get('host');
+  const protocol = headers().get('x-forwarded-proto') || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const res = await fetch(`${baseUrl}/api/content/faq/categories`, { next: { revalidate: 3600 } });
   if (!res.ok) {
     console.error('Failed to fetch blog categories:', res.status, res.statusText);
     return [];

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // basePath: '/Color-Tech', // Commented out for local development
+  reactStrictMode: true, // Recommended for identifying potential problems
   images: {
     remotePatterns: [
       {
@@ -10,7 +11,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  /* config options here */
+  compiler: {
+    // Remove all console.log messages in production builds
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 };
 
 export default nextConfig;

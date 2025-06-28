@@ -1,18 +1,14 @@
-import { Pool } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const isProduction = process.env.NODE_ENV === 'production';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
-const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+if (!supabaseUrl || !supabaseKey) {
+  // eslint-disable-next-line no-console
+  console.error('Supabase URL or Key is missing in environment variables.');
+}
 
-const pool = new Pool({
-  connectionString: isProduction ? process.env.DATABASE_URL : connectionString,
-  ssl: isProduction ? { rejectUnauthorized: false } : false
-});
-
-export default {
-  query: (text: string, params?: any[]) => pool.query(text, params),
-  getClient: () => pool.connect()
-}; 
+export const supabase = createClient(supabaseUrl!, supabaseKey!);

@@ -1,4 +1,6 @@
-import React, { useState } from 'react'; // Keep useState for client-side interactivity
+"use client";
+
+import React, { useState, useEffect } from 'react'; // useEffect for client-side data fetching
 import { Image as ImageIcon, ZoomIn } from 'lucide-react';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import Link from "next/link";
@@ -20,21 +22,50 @@ interface GalleryItem {
   updated_at: string;
 }
 
-async function getAllGalleryItems(): Promise<GalleryItem[]> {
-  // Use relative URL for Next.js fullstack
-  const res = await fetch('/api/content?content_type=gallery&is_published=true', { next: { revalidate: 3600 } });
-  if (!res.ok) {
-    console.error('Failed to fetch gallery items:', res.status, res.statusText);
-    return [];
-  }
-  const data = await res.json();
-  return data.content || [];
-}
-
-const GalleryPage = async () => {
-  const allGalleryItems = await getAllGalleryItems();
-
+const GalleryPage = () => {
+  const [allGalleryItems, setAllGalleryItems] = useState<GalleryItem[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+const GalleryPage = () => {
+  const [allGalleryItems, setAllGalleryItems] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchGalleryItems() {
+      try {
+        const res = await fetch("/api/content?content_type=gallery&is_published=true");
+        if (!res.ok) {
+          console.error('Failed to fetch gallery items:', res.status, res.statusText);
+          if (isMounted) setAllGalleryItems([]);
+          return;
+        }
+        const data = await res.json();
+        if (isMounted) setAllGalleryItems(data.content || []);
+      } catch (e) {
+        console.error('Error fetching gallery items:', e);
+        if (isMounted) setAllGalleryItems([]);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    fetchGalleryItems();
+    return () => { isMounted = false; };
+  }, []);
+
+  // render a spinner or skeleton when isLoading === true
+};        setLoading(false);
+      }
+    }
+    fetchGalleryItems();
+    return () => controller.abort();
+  }, []);
 
   // Process fetched data for display
   const galleryImages = allGalleryItems.map(item => {
@@ -69,6 +100,16 @@ const GalleryPage = async () => {
       duration: "3 days"
     }
   ];
+
+  // Render loading spinner or skeleton UI
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary border-solid"></div>
+        <span className="sr-only">Loading gallery...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">

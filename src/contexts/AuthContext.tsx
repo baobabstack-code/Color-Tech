@@ -3,7 +3,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '@/services/api';
 import jwtConfig from '@/config/jwt';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the user interface for our application
 interface User {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const toast = useToast ? useToast() : null;
+  const toast = useToast();
 
   // Check for existing session on mount
   useEffect(() => {
@@ -72,13 +72,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error('Session verification failed:', err);
           jwtConfig.removeToken();
           setError('Your session has expired. Please log in again.');
-          if (toast?.toast) {
-            toast.toast({
-              title: 'Session Expired',
-              description: 'Your session has expired. Please log in again.',
-              variant: 'destructive',
-            });
-          }
+          toast.toast({
+            title: 'Session Expired',
+            description: 'Your session has expired. Please log in again.',
+            variant: 'destructive',
+          });
         })
         .finally(() => {
           setIsLoading(false);
@@ -117,12 +115,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       setUser(userData);
       
-      if (toast?.toast) {
-        toast.toast({
-          title: 'Login Successful',
-          description: `Welcome back, ${userData.fullName}!`,
-        });
-      }
+      toast.toast({
+        title: 'Login Successful',
+        description: `Welcome back, ${userData.fullName}!`,
+      });
       
       return response.data;
     } catch (err: any) {
@@ -130,13 +126,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
       setError(errorMessage);
       
-      if (toast?.toast) {
-        toast.toast({
-          title: 'Login Failed',
-          description: errorMessage,
-          variant: 'destructive',
-        });
-      }
+      toast.toast({
+        title: 'Login Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
       
       throw err;
     } finally {
@@ -157,12 +151,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(null);
       jwtConfig.removeToken();
       
-      if (toast?.toast) {
-        toast.toast({
-          title: 'Logged Out',
-          description: 'You have been successfully logged out.',
-        });
-      }
+      toast.toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
     } catch (err) {
       console.error('Logout error:', err);
       // Even if the API call fails, we should still clear local state
@@ -195,4 +187,4 @@ export const useAuth = () => {
   return context;
 };
 
-export default AuthContext; 
+export default AuthContext;

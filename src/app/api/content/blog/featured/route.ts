@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { supabase } from '@/config/database';
 import { handleApiError } from '@/lib/apiAuth';
 
 export async function GET(request: Request) {
@@ -12,15 +12,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'Invalid limit parameter. Must be a positive integer.' }, { status: 400 });
     }
 
-    const query = `
-      SELECT * FROM content
-      WHERE content_type = 'blog' AND is_published = TRUE AND is_featured = TRUE
-      ORDER BY created_at DESC
-      LIMIT $1
-    `;
-    const featuredPostsResult = await pool.query(query, [limit]);
+    const { data: featuredPosts, error } = await supabase
+      .from('content')
+      .select('*')
+      .eq('content_type', 'blog')
+      .eq('is_published', true)
+      .eq('is_featured', true)
+      .order('created_at', { ascending: false })
+      .limit(limit);
 
-    return NextResponse.json({ featuredPosts: featuredPostsResult.rows });
+    if (error) throw error;
+
+    return NextResponse.json({ featuredPosts });
   } catch (error) {
     return handleApiError(error, 'Error fetching featured blog posts');
   }

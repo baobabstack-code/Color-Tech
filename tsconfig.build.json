@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./dist/esm",
+    "rootDir": "./database",
+    "types": ["node"]
+  },
+  "include": ["database/**/*.ts"],
+  "exclude": ["node_modules"]
+}

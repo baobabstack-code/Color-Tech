@@ -6,6 +6,7 @@ import VirtualTour from '@/components/VirtualTour';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { headers } from 'next/headers';
 
 // Define interfaces for fetched data
 interface Service {
@@ -30,8 +31,11 @@ interface ServiceCategory {
 }
 
 async function getAllServices(): Promise<Service[]> {
-  // Use relative URL for Next.js fullstack
-  const res = await fetch('/api/services', { next: { revalidate: 3600 } }); // Revalidate every hour
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const res = await fetch(`${baseUrl}/api/services`, { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch services:', res.status, res.statusText);
     return [];
@@ -41,8 +45,11 @@ async function getAllServices(): Promise<Service[]> {
 }
 
 async function getServiceCategories(): Promise<ServiceCategory[]> {
-  // Use relative URL for Next.js fullstack
-  const res = await fetch('/api/services/categories', { next: { revalidate: 3600 } }); // Revalidate every hour
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const protocol = headersList.get('x-forwarded-proto') || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const res = await fetch(`${baseUrl}/api/services/categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch service categories:', res.status, res.statusText);
     return [];
