@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "booking_items",
+  "info": {
+    "singularName": "booking-item",
+    "pluralName": "booking-items",
+    "displayName": "Booking Item",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "quantity": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "notes": {
+      "type": "text"
+    },
+    "booking": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::booking.booking",
+      "inversedBy": "booking_items"
+    },
+    "service": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::service.service",
+      "inversedBy": "booking_items"
+    }
+  }
+}

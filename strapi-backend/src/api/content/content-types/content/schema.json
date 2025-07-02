@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "content",
+  "info": {
+    "singularName": "content",
+    "pluralName": "contents",
+    "displayName": "Content",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content_type": {
+      "type": "enumeration",
+      "enum": [
+        "blog",
+        "gallery",
+        "faq",
+        "testimonial"
+      ],
+      "required": true
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user.user",
+      "inversedBy": "contents"
+    }
+  }
+}

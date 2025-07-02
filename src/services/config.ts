@@ -1,7 +1,7 @@
 // Frontend-compatible configuration
 export const serviceConfig = {
   // API configuration
-  apiUrl: '/api', // Use relative URL for Next.js fullstack
+  apiUrl: 'http://localhost:1337/api', // Strapi backend URL
   
   // JWT configuration
   jwt: {

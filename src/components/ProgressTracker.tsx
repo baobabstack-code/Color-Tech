@@ -302,19 +302,19 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       {/* Progress Timeline */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <div className="space-y-6">
-          {stages.map((stage) => (
-            <div 
+          {stages.map((stage, index) => (
+            <div
               key={stage.id}
               className={`relative flex items-start ${
-                /* ...existing code... */
+                index <= currentStage ? 'opacity-100' : 'opacity-60'
               }`}
             >
               {/* Connector Line */}
               {index !== stages.length - 1 && (
-                <div 
+                <div
                   className={`h-full w-0.5 absolute ml-3 top-6 bottom-0 ${
                     stage.status === 'completed' ? 'bg-green-500' : 'bg-gray-200'
-                  }`} 
+                  }`}
                 />
               )}
 
@@ -352,7 +352,7 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                         </p>
                       )}
                       <div className="grid grid-cols-2 gap-4">
-                        {stage.photos?.map((photo) => (
+                        {stage.photos?.map((photo, photoIndex) => (
                           <div key={photo} className="relative aspect-w-4 aspect-h-3">
                             <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                               <ImageIcon className="w-8 h-8 text-gray-300" />

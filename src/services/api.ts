@@ -18,9 +18,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle token expiration
+// Unwrap Strapi's data property for all responses
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If Strapi wraps the response in a data property, return that
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      return { ...response, data: response.data.data };
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     
@@ -28,12 +34,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
-      // Clear token and redirect to login using centralized JWT configuration
+      // Clear token using centralized JWT configuration
       jwtConfig.removeToken();
-      localStorage.removeItem('user');
       
       // If we're not already on the login page, redirect
-      if (!window.location.pathname.includes('/login')) {
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
       
@@ -52,4 +57,4 @@ if (isNode) {
   // Node.js specific code
 }
 
-export default api; 
+export default api;

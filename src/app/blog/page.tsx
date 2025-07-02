@@ -1,18 +1,18 @@
-import React, { useState } from 'react'; // Keep useState for client-side interactivity
+'use client';
+import React, { useState, useEffect } from 'react';
 import { Search, Tag, Calendar, Clock, User, ChevronRight } from 'lucide-react';
 import Link from "next/link";
-import Image from "next/image"; // Import Image for optimized images
-import { headers } from 'next/headers';
+import Image from "next/image";
 
 // Define interfaces for fetched data
 interface BlogPost {
   id: number;
   title: string;
   content_type: string;
-  body: string; // Full content, might need truncation for excerpt
+  body: string;
   image_url: string | null;
   is_published: boolean;
-  tags: string | null; // Assuming tags can be used as categories
+  tags: string | null;
   author: string | null;
   created_by: number;
   updated_by: number;
@@ -20,55 +20,42 @@ interface BlogPost {
   updated_at: string;
 }
 
-interface BlogCategory {
-  category_name: string;
-}
-
-async function getAllBlogPosts(): Promise<BlogPost[]> {
-  // Use relative URL for Next.js fullstack
-  const res = await fetch('/api/content?content_type=blog&is_published=true', { next: { revalidate: 3600 } });
-  if (!res.ok) {
-    console.error('Failed to fetch blog posts:', res.status, res.statusText);
-    return [];
-  }
-  const data = await res.json();
-  return data.content || [];
-}
-
-async function getBlogCategories(): Promise<BlogCategory[]> {
-  const host = headers().get('host');
-  const protocol = headers().get('x-forwarded-proto') || 'http';
-  const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/content/faq/categories`, { next: { revalidate: 3600 } });
-  if (!res.ok) {
-    console.error('Failed to fetch blog categories:', res.status, res.statusText);
-    return [];
-  }
-  const data = await res.json();
-  return data.categories.map((name: string) => ({ category_name: name })) || [];
-}
-
-const BlogPage = async () => {
-  const [allBlogPosts, allCategories] = await Promise.all([
-    getAllBlogPosts(),
-    getBlogCategories()
-  ]);
-
-  // Client-side state for search and filter
+const BlogPage = () => {
+  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchBlogPosts() {
+      try {
+        const res = await fetch('/api/content?content_type=blog&is_published=true');
+        if (!res.ok) {
+          setAllBlogPosts([]);
+          return;
+        }
+        const data = await res.json();
+        setAllBlogPosts(data.content || []);
+      } catch (e) {
+        setAllBlogPosts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBlogPosts();
+  }, []);
 
   // Process fetched data for display
   const processedBlogPosts = allBlogPosts.map(post => ({
     id: post.id,
     title: post.title,
-    excerpt: post.body.substring(0, 150) + (post.body.length > 150 ? '...' : ''), // Truncate body for excerpt
-    category: post.tags ? post.tags.split(',')[0].trim() : 'Uncategorized', // Use first tag as category
+    excerpt: post.body.substring(0, 150) + (post.body.length > 150 ? '...' : ''),
+    category: post.tags ? post.tags.split(',')[0].trim() : 'Uncategorized',
     author: post.author || 'Admin',
-    date: new Date(post.created_at).toISOString().split('T')[0], // Format date
-    readTime: `${Math.ceil(post.body.length / 200)} min`, // Estimate read time
+    date: new Date(post.created_at).toISOString().split('T')[0],
+    readTime: `${Math.ceil(post.body.length / 200)} min`,
     image: post.image_url || 'https://via.placeholder.com/800x400?text=Blog+Image',
-    featured: post.tags?.includes('featured') || false // Assuming 'featured' tag
+    featured: post.tags?.includes('featured') || false
   }));
 
   const categories = Array.from(new Set(processedBlogPosts.map(post => post.category)));

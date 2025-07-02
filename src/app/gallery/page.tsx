@@ -25,21 +25,15 @@ interface GalleryItem {
 const GalleryPage = () => {
   const [allGalleryItems, setAllGalleryItems] = useState<GalleryItem[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
-const GalleryPage = () => {
-  const [allGalleryItems, setAllGalleryItems] = useState<GalleryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-  useEffect(() => {
     let isMounted = true;
 
     async function fetchGalleryItems() {
       try {
-        const res = await fetch("/api/content?content_type=gallery&is_published=true");
+        const res = await fetch("/api/content?content_type=gallery&is_published=true", { signal: controller.signal });
         if (!res.ok) {
           console.error('Failed to fetch gallery items:', res.status, res.statusText);
           if (isMounted) setAllGalleryItems([]);
@@ -54,17 +48,11 @@ const GalleryPage = () => {
         if (isMounted) setIsLoading(false);
       }
     }
-
     fetchGalleryItems();
-    return () => { isMounted = false; };
-  }, []);
-
-  // render a spinner or skeleton when isLoading === true
-};        setLoading(false);
-      }
-    }
-    fetchGalleryItems();
-    return () => controller.abort();
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
   }, []);
 
   // Process fetched data for display
@@ -102,7 +90,7 @@ const GalleryPage = () => {
   ];
 
   // Render loading spinner or skeleton UI
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary border-solid"></div>

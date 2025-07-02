@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { jwtConfig } from '@/config/jwt';
+import logger from '@/utils/logger'; // Import the logger
 
 interface UserPayload {
   id: number;
@@ -33,7 +34,7 @@ export async function authenticateApi(request: AuthenticatedRequest): Promise<Ne
     request.user = decoded; // Attach user payload to the request
     return null; // No response means continue to the route handler
   } catch (err) {
-    console.error('JWT verification error:', err);
+    logger.error('JWT verification error:', err);
     return NextResponse.json({ message: 'Invalid or expired token' }, { status: 401 });
   }
 }
@@ -60,6 +61,6 @@ export function authorizeApi(allowedRoles: string[]) {
  * Helper function to handle API errors consistently.
  */
 export function handleApiError(error: any, message: string, status: number = 500): NextResponse {
-  console.error(message, error);
+  logger.error(message, error);
   return NextResponse.json({ message: message, error: process.env.NODE_ENV === 'development' ? error.message : undefined }, { status });
 }

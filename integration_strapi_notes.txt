@@ -1,0 +1,36 @@
+# Strapi Integration Review Notes
+
+## 1. API Endpoints Consistency
+- All service files use endpoints like `/bookings`, `/users`, `/services`, etc.
+- Double-check that these match your Strapi collection names and routes. Adjust if Strapi uses different names (e.g., `/api/bookings`, `/api/users`).
+
+## 2. Authentication
+- Login/register endpoints use `/users/login` and `/users/register`. Strapi's default is `/auth/local` and `/auth/local/register`.
+- Update service files if your Strapi uses the default endpoints.
+- JWT token handling is centralized via `jwtConfig`.
+
+## 3. Data Mapping
+- Strapi responses are usually wrapped in a `data` property (e.g., `{ data: [...] }`).
+- Service files currently use `response.data`. If you get nested data, update to `response.data.data`.
+
+## 4. File Uploads
+- `contentService.ts` uses FormData for uploads, which matches Strapi's requirements.
+- Ensure the endpoint matches your Strapi media upload route (usually `/upload`).
+
+## 5. Permissions
+- Set up Strapi roles/permissions for all required endpoints in the Strapi admin panel.
+
+## 6. Code Cleanup
+- All mock data and localStorage logic has been removed.
+- No unused imports remain in service files.
+
+## 7. Testing
+- Test all major flows (bookings, users, reviews, content, vehicles, inventory) with your Strapi backend.
+
+---
+
+## Next Steps
+- Adjust endpoints and data mapping in service files if your Strapi API structure is different.
+- Test authentication and file upload flows.
+- Confirm permissions in Strapi admin.
+- Test the app end-to-end.

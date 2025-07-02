@@ -227,7 +227,7 @@ const Navigation = () => {
                     {/* Common items */}
                     <DropdownMenuItem asChild>
                       <Link 
-                        to="/notifications" 
+                        href="/notifications"
                         className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
                       >
                         <Bell className="mr-2 h-4 w-4" />
@@ -240,7 +240,7 @@ const Navigation = () => {
                     
                     <DropdownMenuItem asChild>
                       <Link 
-                        to="/settings" 
+                        href="/settings"
                         className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
                       >
                         <Settings className="mr-2 h-4 w-4" />

@@ -1,0 +1,14 @@
+Integration and Cleanup Plan:
+
+1. Update all service files in src/services/ to use Strapi endpoints (apiUrl now points to Strapi).
+2. Remove all files in src/app/api/ (local API routes).
+3. Remove all files in database/ (old SQL scripts, migrations, seeds, etc.).
+4. Remove src/utils/mockData.ts and src/lib/__mocks__/db.ts (mock data and test mocks).
+5. Refactor any service files that use mock data to only use Strapi endpoints.
+6. Refactor all data fetching in pages/components to use the updated service files.
+7. Test integration with Strapi backend for all major features (bookings, users, services, reviews, content, vehicles, inventory).
+
+Next steps:
+- Remove unwanted files and folders as listed above.
+- Refactor service files and components as needed.
+- Test the app end-to-end with Strapi backend only.

@@ -13,7 +13,7 @@ export const jwtConfig = {
    * Falls back to a default value if environment variable is not set
    * IMPORTANT: Always set a strong secret in production environment
    */
-  secret: process.env.JWT_SECRET || 'your_secret_key_change_this_in_production',
+  secret: process.env.JWT_SECRET as string, // Ensure JWT_SECRET is always set in production
   
   /**
    * JWT token expiration time
