@@ -25,21 +25,21 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800", // Darker shades for better contrast
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-2 border-primary-600 bg-transparent text-primary-800 hover:bg-primary-50 hover:text-primary-900 active:bg-primary-100", // Thicker border, better contrast text
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary",
+        ghost: "text-primary-800 hover:bg-primary-50 hover:text-primary-900 active:bg-primary-100", // Better contrast
+        link: "text-primary-700 underline underline-offset-4 hover:text-primary-900 hover:underline active:text-primary-800", // Always underlined for clarity
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-10 min-h-10 px-4 py-2", // Ensure minimum height for touch targets
+        sm: "h-9 min-h-9 rounded-md px-3 py-1.5",
+        lg: "h-12 min-h-12 rounded-md px-8 py-3 text-base", // Larger text for large buttons
+        icon: "h-10 w-10 min-h-10 min-w-10", // Ensure minimum size for touch targets
       },
     },
     defaultVariants: {
@@ -52,4 +52,9 @@ export const buttonVariants = cva(
 export const navigationMenuTriggerStyle = cva(
   "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
 );
- 
+
+//
+// Standard Button Usage:
+// <Button className="w-full h-10 px-6 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:ring-2 focus:ring-primary/50 transition-colors duration-200">
+//
+// Use this className for all primary actions. Adjust variant/size as needed for secondary, ghost, or icon buttons.

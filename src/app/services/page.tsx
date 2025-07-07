@@ -6,22 +6,10 @@ import VirtualTour from '@/components/VirtualTour';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getAllServices as getServices } from '@/services/serviceService';
 import { headers } from 'next/headers';
 
 // Define interfaces for fetched data
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-  category_id: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  category_name: string;
-}
-
 interface ServiceCategory {
   id: number;
   name: string;
@@ -30,18 +18,15 @@ interface ServiceCategory {
   updated_at: string;
 }
 
-async function getAllServices(): Promise<Service[]> {
-  const headersList = await headers();
-  const host = headersList.get('host');
-  const protocol = headersList.get('x-forwarded-proto') || 'http';
-  const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/services`, { next: { revalidate: 3600 } }); // Revalidate every hour
-  if (!res.ok) {
-    console.error('Failed to fetch services:', res.status, res.statusText);
+// Use the service file to fetch services
+async function getAllServices() {
+  try {
+    // Use the imported service function
+    return await getServices();
+  } catch (error) {
+    console.error('Failed to fetch services:', error);
     return [];
   }
-  const data = await res.json();
-  return data.services || [];
 }
 
 async function getServiceCategories(): Promise<ServiceCategory[]> {

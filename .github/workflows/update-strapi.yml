@@ -1,0 +1,59 @@
+name: Update Strapi Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Strapi version to update to (e.g., 5.17.0)'
+        required: true
+        type: string
+      create_pr:
+        description: 'Create a pull request with the changes'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  update-strapi:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: strapi-backend/package-lock.json
+    
+    - name: Install dependencies
+      run: cd strapi-backend && npm ci
+    
+    - name: Update Strapi version
+      run: cd strapi-backend && node scripts/update-strapi-version.js ${{ github.event.inputs.version }}
+    
+    - name: Check for changes
+      id: git-check
+      run: |
+        git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+    
+    - name: Create Pull Request
+      if: steps.git-check.outputs.changes == 'true' && github.event.inputs.create_pr == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Strapi to version ${{ github.event.inputs.version }}'
+        title: 'Update Strapi to version ${{ github.event.inputs.version }}'
+        body: |
+          This PR updates Strapi to version ${{ github.event.inputs.version }}.
+          
+          ### Changes
+          - Updated all @strapi/* dependencies to version ${{ github.event.inputs.version }}
+          
+          ### Testing
+          - [ ] Verify that the Strapi backend starts correctly
+          - [ ] Verify that all existing functionality works as expected
+        branch: update-strapi-${{ github.event.inputs.version }}
+        base: develop
+        labels: dependencies,strapi

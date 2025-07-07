@@ -1,0 +1,64 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Run every Monday at midnight
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Check for frontend dependency updates
+      id: frontend-deps
+      run: |
+        npm outdated --json > frontend-outdated.json || true
+        if [ -s frontend-outdated.json ]; then
+          echo "updates=true" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Check for Strapi dependency updates
+      id: strapi-deps
+      run: |
+        cd strapi-backend
+        npm outdated --json > ../strapi-outdated.json || true
+        if [ -s ../strapi-outdated.json ]; then
+          echo "updates=true" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Create Pull Request for dependency updates
+      if: steps.frontend-deps.outputs.updates == 'true' || steps.strapi-deps.outputs.updates == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update dependencies'
+        title: 'Update Dependencies'
+        body: |
+          This PR contains dependency updates detected by the automated workflow.
+          
+          ### Frontend Dependencies
+          ```
+          $(cat frontend-outdated.json || echo "No updates")
+          ```
+          
+          ### Strapi Dependencies
+          ```
+          $(cat strapi-outdated.json || echo "No updates")
+          ```
+          
+          ### Testing Checklist
+          - [ ] Verify that the application builds successfully
+          - [ ] Verify that all tests pass
+          - [ ] Verify that the application runs correctly
+        branch: dependency-updates
+        base: develop
+        labels: dependencies

@@ -1,7 +1,9 @@
 import setupTestDatabase from './setup-db';
 
-// Setup the SQLite test database before all tests
+// This file needs to be updated to work with Strapi instead of SQLite
+// Setup the test environment before all tests
 beforeAll(() => {
+  // Call the updated setupTestDatabase function
   setupTestDatabase();
 });
 

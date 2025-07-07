@@ -12,7 +12,9 @@
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "update": "node update-strapi.js",
+    "update:version": "node scripts/update-strapi-version.js"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.16.1",

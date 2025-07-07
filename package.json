@@ -8,7 +8,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "setup": "node setup.js",
+    "setup:install": "node setup.js --install",
+    "docker:setup": "node scripts/docker-setup.js",
+    "docker:up": "docker-compose up -d --build",
+    "docker:down": "docker-compose down"
   },
   "dependencies": {
     "@faker-js/faker": "^9.8.0",
@@ -52,6 +57,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4",
     "@types/express": "^5.0.3",
     "@types/jest": "^29.5.14",

@@ -13,6 +13,28 @@ export interface BlogPost {
   readTime: string;
 }
 
+export interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  status: 'published' | 'draft';
+  lastUpdated: string;
+  views: number;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  image: string;
+  quote: string;
+  rating: number;
+  status: 'approved' | 'pending' | 'rejected';
+  date: string;
+  source: 'website' | 'google' | 'facebook';
+}
+
 export interface GalleryItem {
   id: string;
   title: string;
@@ -63,5 +85,68 @@ export const contentService = {
 
   async deleteGalleryItem(id: string) {
     await api.delete(`/gallery/${id}`);
+  },
+  
+  // FAQ Management
+  async getFAQs() {
+    const response = await api.get<FAQ[]>('/faqs');
+    return response.data;
+  },
+
+  async getFAQById(id: string) {
+    const response = await api.get<FAQ>(`/faqs/${id}`);
+    return response.data;
+  },
+
+  async createFAQ(faq: Omit<FAQ, 'id'>) {
+    const response = await api.post<FAQ>('/faqs', faq);
+    return response.data;
+  },
+
+  async updateFAQ(id: string, faq: Partial<FAQ>) {
+    const response = await api.put<FAQ>(`/faqs/${id}`, faq);
+    return response.data;
+  },
+
+  async deleteFAQ(id: string) {
+    await api.delete(`/faqs/${id}`);
+  },
+
+  async incrementFAQViews(id: string) {
+    const faq = await this.getFAQById(id);
+    return this.updateFAQ(id, { views: faq.views + 1 });
+  },
+  
+  // Testimonial Management
+  async getTestimonials() {
+    const response = await api.get<Testimonial[]>('/testimonials');
+    return response.data;
+  },
+
+  async getTestimonialById(id: string) {
+    const response = await api.get<Testimonial>(`/testimonials/${id}`);
+    return response.data;
+  },
+
+  async createTestimonial(testimonial: Omit<Testimonial, 'id'>) {
+    const response = await api.post<Testimonial>('/testimonials', testimonial);
+    return response.data;
+  },
+
+  async updateTestimonial(id: string, testimonial: Partial<Testimonial>) {
+    const response = await api.put<Testimonial>(`/testimonials/${id}`, testimonial);
+    return response.data;
+  },
+
+  async deleteTestimonial(id: string) {
+    await api.delete(`/testimonials/${id}`);
+  },
+  
+  async approveTestimonial(id: string) {
+    return this.updateTestimonial(id, { status: 'approved' });
+  },
+  
+  async rejectTestimonial(id: string) {
+    return this.updateTestimonial(id, { status: 'rejected' });
   }
-}; 
+};

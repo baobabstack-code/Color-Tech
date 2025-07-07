@@ -72,4 +72,16 @@ export const cancelBooking = async (id: string): Promise<Booking> => {
 export const deleteBooking = async (id: string): Promise<{ message: string }> => {
   const response = await api.delete(`/bookings/${id}`);
   return response.data;
-}; 
+};
+
+// Get booking history (completed bookings)
+export const getBookingHistory = async (): Promise<Booking[]> => {
+  const response = await api.get('/bookings/history');
+  return response.data;
+};
+
+// Get bookings by user ID (admin only)
+export const getBookingsByUserId = async (userId: string): Promise<Booking[]> => {
+  const response = await api.get(`/bookings/user/${userId}`);
+  return response.data;
+};

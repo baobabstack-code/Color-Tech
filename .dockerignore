@@ -1,0 +1,57 @@
+# Node.js
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Next.js
+.next
+out
+
+# Environment variables
+.env*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# IDE
+.idea
+.vscode
+
+# Misc
+.DS_Store
+README.md
+LICENSE
+*.md
+!README.md
+
+# Logs
+logs
+*.log
+
+# Tests
+coverage
+.nyc_output
+
+# Build files
+dist
+build
+
+# Temporary files
+.tmp
+.temp
+
+# Strapi specific files (handled in strapi-backend/.dockerignore)
+strapi-backend/node_modules
+strapi-backend/.cache
+strapi-backend/.tmp
+strapi-backend/build
+strapi-backend/public/uploads/*
+!strapi-backend/public/uploads/.gitkeep

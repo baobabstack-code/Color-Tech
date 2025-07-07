@@ -61,4 +61,10 @@ export const updateReview = async (id: string, data: UpdateReviewData): Promise<
 export const deleteReview = async (id: string): Promise<{ message: string }> => {
   const response = await api.delete(`/reviews/${id}`);
   return response.data;
-}; 
+};
+
+// Get reviews by user ID (admin only)
+export const getReviewsByUserId = async (userId: string): Promise<Review[]> => {
+  const response = await api.get(`/reviews/user/${userId}`);
+  return response.data;
+};

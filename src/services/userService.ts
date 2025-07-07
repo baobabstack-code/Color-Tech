@@ -40,15 +40,22 @@ export interface UpdateUserData {
 
 // User authentication
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
-  const response = await api.post('/users/register', {
-    ...data,
+  const response = await api.post('/auth/local/register', {
+    username: data.email,
+    email: data.email,
+    password: data.password,
+    fullName: data.fullName,
+    phone: data.phone,
     role: data.role || 'client'
   });
   return response.data;
 };
 
 export const login = async (data: LoginData): Promise<AuthResponse> => {
-  const response = await api.post('/users/login', data);
+  const response = await api.post('/auth/local', {
+    identifier: data.email,
+    password: data.password
+  });
   return response.data;
 };
 
@@ -82,4 +89,4 @@ export const updateUser = async (id: string, data: UpdateUserData): Promise<User
 export const deleteUser = async (id: string): Promise<{ message: string; user?: User }> => {
   const response = await api.delete(`/users/${id}`);
   return response.data;
-}; 
+};

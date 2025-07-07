@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import HomePageClient from '@/components/HomePageClient';
+import { getAllServices as getServicesFromApi } from '@/services/serviceService';
 
 // Define interfaces for fetched data
 interface Service {
@@ -95,14 +96,15 @@ async function getGalleryPreviews() {
 }
 
 async function getServices() {
-  const headersList = await headers();
-  const host = headersList.get('host');
-  const protocol = headersList.get('x-forwarded-proto') || 'http';
-  const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/services?limit=3`, { next: { revalidate: 3600 } });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.services || [];
+  try {
+    // Use the service file to fetch services
+    const allServices = await getServicesFromApi();
+    // Return only the first 3 services
+    return allServices.slice(0, 3);
+  } catch (error) {
+    console.error('Failed to fetch services:', error);
+    return [];
+  }
 }
 
 export default async function HomePage() {
