@@ -67,10 +67,10 @@ async function getFeaturedPosts() {
   const host = headersList.get('host');
   const protocol = headersList.get('x-forwarded-proto') || 'http';
   const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/content/blog/featured`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/contents?content_type=blog&is_published=true&_sort=createdAt:desc&_limit=3`, { next: { revalidate: 3600 } });
   if (!res.ok) return [];
   const data = await res.json();
-  return data.featuredPosts || [];
+  return data || [];
 }
 
 async function getTestimonials() {
@@ -78,10 +78,10 @@ async function getTestimonials() {
   const host = headersList.get('host');
   const protocol = headersList.get('x-forwarded-proto') || 'http';
   const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/reviews?status=approved&limit=3`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/reviews?is_public=true&_limit=3`, { next: { revalidate: 3600 } });
   if (!res.ok) return [];
   const data = await res.json();
-  return data.reviews || [];
+  return data || [];
 }
 
 async function getGalleryPreviews() {
@@ -89,10 +89,10 @@ async function getGalleryPreviews() {
   const host = headersList.get('host');
   const protocol = headersList.get('x-forwarded-proto') || 'http';
   const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/content?content_type=gallery&is_published=true&limit=2`, { next: { revalidate: 3600 } });
+  const res = await fetch(`${baseUrl}/api/contents?content_type=gallery&is_published=true&_limit=2`, { next: { revalidate: 3600 } });
   if (!res.ok) return [];
   const data = await res.json();
-  return data.content || [];
+  return data || [];
 }
 
 async function getServices() {

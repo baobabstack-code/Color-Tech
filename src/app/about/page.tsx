@@ -7,6 +7,8 @@ import {
   Phone, Mail, Award as Certification
 } from 'lucide-react';
 import Link from "next/link"; // Import Link from next/link
+import { Button } from "@/components/ui/button";
+import { PhoneCall } from 'lucide-react';
 
 const About = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -141,27 +143,27 @@ const About = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4">
+    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary text-center mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
           About Color-tech
         </h1>
-        <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto">
-          Your trusted partner in vehicle restoration and repair, delivering excellence 
+        <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto">
+          Your trusted partner in vehicle restoration and repair, delivering excellence
           through expertise and dedication.
         </p>
       </div>
 
       {/* Story Section */}
       <div className="container mx-auto mb-16">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
           <div className="md:flex">
             <div className="md:w-1/2">
               <img
                 src="/images/about/workshop.jpg"
                 alt="Our Workshop"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-l-2xl"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = 'https://placehold.co/800x600/F97316/ffffff?text=Workshop';
@@ -169,16 +171,16 @@ const About = () => {
               />
             </div>
             <div className="md:w-1/2 p-8 md:p-12">
-              <h2 className="text-3xl font-bold text-primary mb-6">Our Story</h2>
-              <p className="text-gray-600 mb-4">
-                Founded with a passion for automotive excellence, Color-tech has been serving 
-                the community for over a decade. What started as a small workshop has grown 
+              <h2 className="text-3xl font-bold text-primary dark:text-white mb-6">Our Story</h2>
+              <p className="text-gray-600 dark:text-gray-200 mb-4">
+                Founded with a passion for automotive excellence, Color-tech has been serving
+                the community for over a decade. What started as a small workshop has grown
                 into a full-service automotive repair and refinishing center.
               </p>
-              <p className="text-gray-600">
-                Our commitment to quality workmanship and customer satisfaction has earned us 
-                a reputation as one of the most trusted names in the industry. We continue to 
-                invest in the latest technology and training to provide the best possible service 
+              <p className="text-gray-600 dark:text-gray-200">
+                Our commitment to quality workmanship and customer satisfaction has earned us
+                a reputation as one of the most trusted names in the industry. We continue to
+                invest in the latest technology and training to provide the best possible service
                 to our clients.
               </p>
             </div>
@@ -188,20 +190,20 @@ const About = () => {
 
       {/* Values Section */}
       <div className="container mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-primary text-center mb-12">Our Values</h2>
+        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">Our Values</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {values.map((value, index) => (
-            <div 
+            <div
               key={index}
-              className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-white/90 dark:bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-white/30 hover:scale-105 hover:shadow-2xl transition-all duration-300"
             >
               <div className="mb-4">
                 {value.icon}
               </div>
-              <h3 className="text-xl font-semibold text-primary mb-2">
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
                 {value.title}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-200">
                 {value.description}
               </p>
             </div>
@@ -211,15 +213,15 @@ const About = () => {
 
       {/* Enhanced Team Section */}
       <div className="container mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-primary text-center mb-12">Our Expert Team</h2>
+        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">Our Expert Team</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div key={index} className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
               <div className="aspect-w-4 aspect-h-3">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-t-2xl"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = 'https://source.unsplash.com/random/400x300?mechanic';
@@ -227,44 +229,44 @@ const About = () => {
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary mb-2">{member.name}</h3>
-                <p className="text-secondary font-medium mb-4">{member.role}</p>
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{member.name}</h3>
+                <p className="text-secondary font-medium dark:text-gray-200 mb-4">{member.role}</p>
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-2">
-                    <Certification className="w-5 h-5 text-secondary mt-1" />
+                    <Certification className="w-5 h-5 text-secondary dark:text-white mt-1" />
                     <div>
-                      <p className="font-medium">Certifications:</p>
-                      <ul className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-700 dark:text-gray-200">Certifications:</p>
+                      <ul className="text-sm text-gray-600 dark:text-gray-300">
                         {member.certifications.map((cert, i) => (
                           <li key={i}>{cert}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
-
+ 
                   <div className="flex items-start gap-2">
-                    <Wrench className="w-5 h-5 text-secondary mt-1" />
+                    <Wrench className="w-5 h-5 text-secondary dark:text-white mt-1" />
                     <div>
-                      <p className="font-medium">Specializations:</p>
-                      <ul className="text-sm text-gray-600">
+                      <p className="font-medium text-gray-700 dark:text-gray-200">Specializations:</p>
+                      <ul className="text-sm text-gray-600 dark:text-gray-300">
                         {member.specializations.map((spec, i) => (
                           <li key={i}>{spec}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <Mail className="w-4 h-4" />
-                      <a href={`mailto:${member.contact.email}`} className="hover:text-secondary">
+ 
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                      <Mail className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                      <a href={`mailto:${member.contact.email}`} className="hover:text-secondary dark:hover:text-white">
                         {member.contact.email}
                       </a>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <a href={`tel:${member.contact.phone}`} className="hover:text-secondary">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      <Phone className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                      <a href={`tel:${member.contact.phone}`} className="hover:text-secondary dark:hover:text-white">
                         {member.contact.phone}
                       </a>
                     </div>
@@ -279,21 +281,21 @@ const About = () => {
       {/* Testimonials Section */}
       <div className="container mx-auto mb-16">
         <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-lg p-8 md:p-12">
-          <h2 className="text-3xl font-bold mb-12 text-center">Client Testimonials</h2>
+          <h2 className="text-3xl font-bold mb-12 text-center text-white">Client Testimonials</h2>
           
           <div className="relative max-w-3xl mx-auto">
             <div className="flex items-center justify-between">
-              <button 
+              <button
                 onClick={prevTestimonial}
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors duration-200"
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors duration-200 text-white"
                 aria-label="Previous testimonial"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
-
+ 
               <div className="text-center px-16">
-                <Quote className="w-12 h-12 mx-auto mb-6 opacity-50" />
-                <p className="text-lg md:text-xl mb-6">
+                <Quote className="w-12 h-12 mx-auto mb-6 opacity-50 text-white" />
+                <p className="text-lg md:text-xl mb-6 text-white">
                   {testimonials[currentTestimonial].content}
                 </p>
                 <div className="flex justify-center mb-2">
@@ -301,23 +303,23 @@ const About = () => {
                     <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="font-semibold text-lg">
+                <p className="font-semibold text-lg text-white">
                   {testimonials[currentTestimonial].name}
                 </p>
-                <p className="text-sm opacity-75">
+                <p className="text-sm opacity-75 text-white">
                   {testimonials[currentTestimonial].role}
                 </p>
               </div>
-
-              <button 
+ 
+              <button
                 onClick={nextTestimonial}
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors duration-200"
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors duration-200 text-white"
                 aria-label="Next testimonial"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
             </div>
-
+ 
             {/* Dots indicator */}
             <div className="flex justify-center space-x-2 mt-6">
               {testimonials.map((_, index) => (
@@ -337,41 +339,41 @@ const About = () => {
 
       {/* FAQ Section */}
       <div className="container mx-auto mb-16">
-        <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-primary text-center mb-12">
+        <div className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 p-8 md:p-12">
+          <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">
             Frequently Asked Questions
           </h2>
           
           <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
-              <div 
+              <div
                 key={index}
-                className="border rounded-lg overflow-hidden"
+                className="border border-white/30 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
               >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                  className="w-full flex items-center justify-between p-4 text-left bg-white/80 dark:bg-slate-800/80 hover:bg-white/90 dark:hover:bg-slate-800/90 transition-colors duration-200"
                   aria-expanded="false"
                   data-state={openFaq === index ? 'expanded' : 'collapsed'}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="font-medium text-primary">{faq.question}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">{faq.question}</span>
                   {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-secondary" />
+                    <ChevronUp className="w-5 h-5 text-secondary dark:text-white" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-secondary" />
+                    <ChevronDown className="w-5 h-5 text-secondary dark:text-white" />
                   )}
                 </button>
                 
-                <div 
+                <div
                   id={`faq-answer-${index}`}
-                  className={`p-4 bg-white transition-all duration-200 ${
+                  className={`p-4 bg-white/90 dark:bg-slate-900/90 transition-all duration-200 ${
                     openFaq === index ? 'block' : 'hidden'
                   }`}
                   role="region"
                   aria-labelledby={`faq-question-${index}`}
                 >
-                  <p className="text-gray-600">{faq.answer}</p>
+                  <p className="text-gray-600 dark:text-gray-200">{faq.answer}</p>
                 </div>
               </div>
             ))}
@@ -381,20 +383,23 @@ const About = () => {
 
       {/* CTA Section */}
       <div className="container mx-auto text-center">
-        <div className="bg-white rounded-lg p-8 md:p-12 shadow-lg">
-          <h2 className="text-3xl font-bold text-primary mb-4">
-            Experience the Color-tech Difference
-          </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Let us show you why we're the preferred choice for vehicle repair and refinishing. 
-            Contact us today to discuss your needs.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200"
-          >
-            Contact Us
-          </Link>
+        <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold mb-4">
+              Experience the Color-tech Difference
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto">
+              Let us show you why we're the preferred choice for vehicle repair and refinishing.
+              Contact us today to discuss your needs.
+            </p>
+            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+              <Link href="/contact" className="flex items-center gap-2">
+                <PhoneCall className="h-5 w-5 text-white" />
+                Contact Us
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

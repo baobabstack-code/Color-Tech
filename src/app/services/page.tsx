@@ -1,4 +1,6 @@
 import React from 'react';
+import { PhoneCall } from 'lucide-react';
+import { Stage } from '@/components/ProgressTracker';
 import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings, CheckCircle, ArrowRight } from 'lucide-react';
 import CostCalculator from '@/components/CostCalculator';
 import ProgressTracker from '@/components/ProgressTracker';
@@ -34,7 +36,7 @@ async function getServiceCategories(): Promise<ServiceCategory[]> {
   const host = headersList.get('host');
   const protocol = headersList.get('x-forwarded-proto') || 'http';
   const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/services/categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
+  const res = await fetch(`${baseUrl}/api/service-categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
   if (!res.ok) {
     console.error('Failed to fetch service categories:', res.status, res.statusText);
     return [];
@@ -50,8 +52,9 @@ const ServicesPage = async () => {
   ]);
 
   // Define stages for ProgressTracker (can be fetched from API if dynamic)
-  const repairStages = [
+  const repairStages: Stage[] = [
     {
+      id: 1,
       title: "Vehicle Check-in",
       description: "Initial inspection and documentation",
       status: "completed",
@@ -59,6 +62,7 @@ const ServicesPage = async () => {
       details: "Vehicle received and documented"
     },
     {
+      id: 2,
       title: "Damage Assessment",
       description: "Detailed evaluation of repairs needed",
       status: "completed",
@@ -66,6 +70,7 @@ const ServicesPage = async () => {
       details: "Full assessment completed"
     },
     {
+      id: 3,
       title: "Repair Work",
       description: "Active repair and restoration",
       status: "in-progress",
@@ -73,6 +78,7 @@ const ServicesPage = async () => {
       details: "Panel beating in progress"
     },
     {
+      id: 4,
       title: "Quality Check",
       description: "Final inspection and testing",
       status: "pending",
@@ -80,6 +86,7 @@ const ServicesPage = async () => {
       details: "Awaiting completion"
     },
     {
+      id: 5,
       title: "Ready for Pickup",
       description: "Vehicle ready for collection",
       status: "pending",
@@ -90,10 +97,10 @@ const ServicesPage = async () => {
 
   // Map fetched services to the display format
   const displayedServices = services.map(service => ({
-    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-primary" /> :
-          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-primary" /> :
-          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-primary" /> :
-          <Car className="h-12 w-12 text-primary" />, // Default icon
+    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-primary dark:text-white" /> :
+          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-primary dark:text-white" /> :
+          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-primary dark:text-white" /> :
+          <Car className="h-12 w-12 text-primary dark:text-white" />, // Default icon
     title: service.name,
     description: service.description,
     features: [
@@ -107,14 +114,14 @@ const ServicesPage = async () => {
   }));
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4">
+    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary text-center mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
           Our Services
         </h1>
-        <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto">
-          We offer a comprehensive range of automotive repair and refinishing services, 
+        <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto">
+          We offer a comprehensive range of automotive repair and refinishing services,
           delivered by our team of experienced professionals using state-of-the-art equipment.
         </p>
       </div>
@@ -122,50 +129,59 @@ const ServicesPage = async () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service, index) => (
-            <Card key={index} className="p-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4">{service.icon}</div>
-                <h2 className="text-2xl font-semibold mb-2">{service.title}</h2>
-                <p className="text-gray-600 mb-6">{service.description}</p>
+            <Link key={index} href={`/services#${service.link}`} className="block">
+              <Card className="p-6 bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
+                <div className="mb-4">
+                  {service.icon}
+                </div>
+                <h2 className="text-2xl font-semibold mb-2 text-slate-900 dark:text-white group-hover:text-primary">{service.title}</h2>
+                <p className="text-gray-600 dark:text-gray-200 mb-6 group-hover:text-primary/90">{service.description}</p>
                 <ul className="space-y-2 text-left w-full mb-6">
                   {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                    <li key={featureIndex} className="flex items-center text-gray-700 dark:text-gray-200">
+                      <CheckCircle className="h-5 w-5 text-green-500 dark:text-green-400 mr-2" />
                       {feature}
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full">Learn More</Button>
-              </div>
-            </Card>
+                <Button className="w-full" asChild>
+                  <span className="text-primary hover:text-primary/80 flex items-center font-semibold">
+                    Learn More <ArrowRight className="ml-2 h-4 w-4 text-primary dark:text-white group-hover:text-primary" />
+                  </span>
+                </Button>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
 
       {/* CTA Section */}
       <div className="container mx-auto mt-16 text-center">
-        <div className="bg-primary text-white rounded-lg p-8 md:p-12">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Transform Your Vehicle?
-          </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Contact us today for a consultation and quote. Our team is ready to help restore 
-            your vehicle to its former glory.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200"
-          >
-            Get a Quote
-          </Link>
+        <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold mb-4">
+              Ready to Transform Your Vehicle?
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto">
+              Contact us today for a consultation and quote. Our team is ready to help restore
+              your vehicle to its former glory.
+            </p>
+            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+              <Link href="/contact" className="flex items-center gap-2">
+                <PhoneCall className="h-5 w-5 text-white" />
+                Get a Quote
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Progress Tracking Section */}
       <div className="container mx-auto mt-16">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-4">Track Your Repair Progress</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Track Your Repair Progress</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
             Stay informed about your vehicle's repair status with our real-time progress tracking system.
           </p>
         </div>
@@ -178,8 +194,8 @@ const ServicesPage = async () => {
       {/* Virtual Tour Section */}
       <div className="container mx-auto mt-16">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-4">Explore Our Workshop</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Explore Our Workshop</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
             Take a virtual tour of our state-of-the-art facility and discover where the magic happens.
           </p>
         </div>

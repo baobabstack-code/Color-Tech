@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react'; // useEffect for client-side data fetching
+import { PhoneCall } from 'lucide-react';
 import { Image as ImageIcon, ZoomIn } from 'lucide-react';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import Image from "next/image"; // Import Image for optimized images
 
 // Define interface for fetched data
@@ -100,24 +102,24 @@ const GalleryPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4">
+    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary text-center mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
           Our Work Gallery
         </h1>
-        <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto mb-8">
-          Browse through our portfolio of completed projects showcasing our expertise 
+        <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto mb-8">
+          Browse through our portfolio of completed projects showcasing our expertise
           in panel beating, spray painting, and vehicle restoration.
         </p>
       </div>
 
       {/* Before & After Section */}
       <div className="container mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-primary text-center mb-6">
+        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-6">
           Before & After Transformations
         </h2>
-        <p className="text-lg text-gray-600 text-center max-w-2xl mx-auto mb-8">
+        <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto mb-8">
           See the dramatic transformations we achieve through our expert repair and restoration work.
         </p>
         
@@ -139,9 +141,9 @@ const GalleryPage = () => {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryImages.map((image, index) => (
-            <div 
+            <div
               key={index}
-              className="relative group cursor-pointer overflow-hidden rounded-lg shadow-lg bg-white"
+              className="relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300"
               onClick={() => setSelectedImage(image.src)}
             >
               <div className="aspect-w-4 aspect-h-3">
@@ -150,18 +152,18 @@ const GalleryPage = () => {
                   alt={image.alt}
                   width={600} // Adjust width/height as needed
                   height={450} // Adjust width/height as needed
-                  className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110"
+                  className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-2xl"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = image.fallback;
                   }}
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-2xl">
                 <div className="text-white text-center p-4">
-                  <ZoomIn className="w-8 h-8 mx-auto mb-2" />
-                  <p className="text-sm font-semibold">{image.category}</p>
-                  <p className="text-xs mt-1 opacity-80">{image.alt}</p>
+                  <ZoomIn className="w-8 h-8 mx-auto mb-2 text-white" />
+                  <p className="text-sm font-semibold group-hover:text-sky-300">{image.category}</p>
+                  <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">{image.alt}</p>
                 </div>
               </div>
             </div>
@@ -199,20 +201,23 @@ const GalleryPage = () => {
 
       {/* CTA Section */}
       <div className="container mx-auto mt-16 text-center">
-        <div className="bg-primary text-white rounded-lg p-8 md:p-12">
-          <h2 className="text-3xl font-bold mb-4">
-            Want Similar Results for Your Vehicle?
-          </h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Let us help you transform your vehicle. Contact us today for a consultation 
-            and see how we can bring your vision to life.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md transition-colors duration-200"
-          >
-            Get Started
-          </Link>
+        <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold mb-4">
+              Want Similar Results for Your Vehicle?
+            </h2>
+            <p className="text-lg mb-8 max-w-2xl mx-auto">
+              Let us help you transform your vehicle. Contact us today for a consultation
+              and see how we can bring your vision to life.
+            </p>
+            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+              <Link href="/contact" className="flex items-center gap-2">
+                <PhoneCall className="h-5 w-5 text-white" />
+                Get Started
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
