@@ -43,16 +43,16 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="backdrop-blur-2xl bg-white/30 dark:bg-slate-900/70 border-t border-white/20 shadow-2xl ring-1 ring-white/30 ring-inset text-gray-800 dark:text-gray-200">
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Company Info */}
           <div>
             <div className="mb-4">
-              <Logo className="h-8 w-auto" />
+              <Logo className="h-10 w-auto drop-shadow-lg" />
             </div>
-            <p className="text-sm mb-4">
+            <p className="text-sm mb-4 opacity-80">
               Your trusted partner for auto body repair and spray painting services. Quality and satisfaction guaranteed.
             </p>
             <div className="flex space-x-4">
@@ -62,7 +62,7 @@ export default function Footer() {
                   href={social.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
+                  className="hover:text-fuchsia-500 transition-colors bg-white/40 dark:bg-slate-800/40 rounded-full p-2 shadow-md border border-white/20"
                 >
                   {social.icon}
                 </a>
@@ -72,13 +72,13 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-slate-900 dark:text-white font-semibold mb-4 tracking-wide">Quick Links</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link 
                     href={link.path}
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-fuchsia-500 transition-colors font-medium"
                   >
                     {link.title}
                   </Link>
@@ -89,13 +89,13 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Our Services</h3>
+            <h3 className="text-slate-900 dark:text-white font-semibold mb-4 tracking-wide">Our Services</h3>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service.path}>
                   <Link 
                     href={service.path}
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-fuchsia-500 transition-colors font-medium"
                   >
                     {service.title}
                   </Link>
@@ -106,22 +106,22 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
-            <div className="space-y-4">
+            <h3 className="text-slate-900 dark:text-white font-semibold mb-4 tracking-wide">Contact Us</h3>
+            <div className="space-y-4 text-sm">
               <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-primary shrink-0" />
+                <MapPin className="h-5 w-5 text-fuchsia-500 shrink-0" />
                 <span>{contact.address}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-primary" />
+                <Phone className="h-5 w-5 text-fuchsia-500" />
                 <span>{contact.phone}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-primary" />
+                <Mail className="h-5 w-5 text-fuchsia-500" />
                 <span>{contact.email}</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Clock className="h-5 w-5 text-primary" />
+                <Clock className="h-5 w-5 text-fuchsia-500" />
                 <span>{contact.hours}</span>
               </div>
             </div>
@@ -130,20 +130,20 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-white/20 bg-white/20 dark:bg-slate-900/30">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-sm">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-xs md:text-sm opacity-80">
               © {new Date().getFullYear()} Color-Tech Panel & Paint. All rights reserved.
             </div>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-sm hover:text-primary transition-colors">
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-xs md:text-sm hover:text-fuchsia-500 transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-sm hover:text-primary transition-colors">
+              <Link href="/terms" className="text-xs md:text-sm hover:text-fuchsia-500 transition-colors">
                 Terms of Service
               </Link>
-              <Link href="/sitemap" className="text-sm hover:text-primary transition-colors">
+              <Link href="/sitemap" className="text-xs md:text-sm hover:text-fuchsia-500 transition-colors">
                 Sitemap
               </Link>
             </div>
@@ -152,4 +152,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+}
