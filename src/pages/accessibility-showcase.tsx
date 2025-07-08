@@ -61,7 +61,7 @@ export default function AccessibilityShowcase() {
       
       <MainContentArea>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-12">
+          <div className="space-y-8">
             {/* Introduction */}
             <section>
               <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
@@ -166,15 +166,14 @@ export default function AccessibilityShowcase() {
               <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
                 Accessible Components
               </h2>
-              
               <div className="space-y-8 mt-6">
                 {/* Accessible Images */}
                 <div>
                   <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
                     Accessible Images
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="border p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="border p-6 rounded-lg">
                       <h4 className="text-sm font-medium mb-2">Informative Image (with alt text)</h4>
                       <AccessibleImage 
                         src="/placeholder-image.jpg" 
@@ -184,8 +183,7 @@ export default function AccessibilityShowcase() {
                         className="w-full h-auto"
                       />
                     </div>
-                    
-                    <div className="border p-4 rounded-lg">
+                    <div className="border p-6 rounded-lg">
                       <h4 className="text-sm font-medium mb-2">Decorative Image (hidden from screen readers)</h4>
                       <DecorativeImage 
                         src="/placeholder-decorative.jpg" 
@@ -202,19 +200,20 @@ export default function AccessibilityShowcase() {
                   <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
                     Accessible Form Inputs
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <FormInput
                       id="demo-input"
                       label="Example Input"
                       placeholder="Enter some text"
                       hint="This is a hint message for the input"
+                      className="w-full"
                     />
-                    
                     <FormInput
                       id="demo-input-error"
                       label="Input with Error"
                       placeholder="Enter some text"
                       error="This field has an error message"
+                      className="w-full"
                     />
                   </div>
                 </div>
@@ -245,11 +244,11 @@ export default function AccessibilityShowcase() {
                   </h3>
                   <div className="flex space-x-4">
                     <AccessibleTooltip content="This is a helpful tooltip with information">
-                      <Button>Hover Me</Button>
+                      <Button variant="default" size="lg" className="w-full max-w-xs">Hover Me</Button>
                     </AccessibleTooltip>
                     
                     <AccessibleTooltip content="This tooltip has a longer delay" delayDuration={700}>
-                      <Button variant="outline">Delayed Tooltip</Button>
+                      <Button variant="outline" size="lg" className="w-full max-w-xs">Delayed Tooltip</Button>
                     </AccessibleTooltip>
                   </div>
                 </div>
@@ -259,7 +258,7 @@ export default function AccessibilityShowcase() {
                   <h3 className="text-lg font-medium mb-3 text-gray-900 dark:text-gray-100">
                     Accessibility Hooks
                   </h3>
-                  <div className="border p-4 rounded-lg">
+                  <div className="border p-6 rounded-lg">
                     <AccessibilityHooksDemo />
                   </div>
                 </div>

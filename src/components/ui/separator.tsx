@@ -27,3 +27,4 @@ const Separator = React.forwardRef<
 Separator.displayName = SeparatorPrimitive.Root.displayName
 
 export { Separator }
+// Separator already uses 'w-full' for full width. No changes needed.

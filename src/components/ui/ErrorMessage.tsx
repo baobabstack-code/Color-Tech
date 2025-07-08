@@ -146,3 +146,5 @@ export function FormErrorSummary({
     </div>
   );
 }
+
+// ErrorMessage is a utility component. No changes needed for spacing/alignment here.

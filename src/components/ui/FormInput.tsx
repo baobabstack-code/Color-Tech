@@ -16,7 +16,7 @@ const FormInput = React.forwardRef<HTMLInputElement, InputProps>(
     const hintId = `${inputId}-hint`;
     
     return (
-      <div className="space-y-2">
+      <div className="space-y-4">
         <label 
           htmlFor={inputId}
           className={cn(

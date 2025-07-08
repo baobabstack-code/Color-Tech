@@ -45,7 +45,7 @@ export function ContrastDemonstration({
   className = '',
 }: ContrastDemonstrationProps) {
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-8 ${className}`}>
       {combinations.map((combo, index) => {
         const contrastRatio = getContrastRatio(combo.foreground, combo.background);
         const wcagLevel = meetsContrastStandard(contrastRatio, false); // Assuming normal text

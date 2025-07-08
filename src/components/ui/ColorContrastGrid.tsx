@@ -61,7 +61,7 @@ export function ColorContrastGrid({
   };
   
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-8 ${className}`}>
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Color Contrast Grid</h3>
         <div className="text-sm">
