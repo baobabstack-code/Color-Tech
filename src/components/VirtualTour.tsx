@@ -80,10 +80,10 @@ const VirtualTour = () => {
   return (
     <div className="container mx-auto py-12">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-primary mb-4">Virtual Workshop Tour</h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore our state-of-the-art facility with this interactive 360° tour. 
-          Click and drag to look around, and discover key areas by clicking on the hotspots.
+        <h2 className="text-3xl font-bold text-white mb-4">Explore Our Workshop</h2>
+        <p className="text-slate-300 max-w-2xl mx-auto">
+          Take a virtual tour of our state-of-the-art facility and discover where the magic
+          happens.
         </p>
       </div>
 
@@ -117,8 +117,8 @@ const VirtualTour = () => {
             >
               <button
                 className={`
-                  relative group p-3 rounded-full 
-                  bg-white/90 shadow-lg hover:bg-primary 
+                  relative group p-3 rounded-full
+                  bg-white/90 shadow-lg hover:bg-primary
                   transition-colors duration-200
                   ${activeHotspot === hotspot.id ? 'bg-primary' : ''}
                 `}
@@ -136,7 +136,7 @@ const VirtualTour = () => {
                 </span>
 
                 {/* Tooltip */}
-                <div 
+                <div
                   className={`
                     absolute left-1/2 bottom-full mb-2 -translate-x-1/2
                     bg-white rounded-lg shadow-lg p-4 w-64
@@ -149,7 +149,7 @@ const VirtualTour = () => {
                 >
                   <h3 className="font-semibold text-primary mb-2">{hotspot.title}</h3>
                   <p className="text-sm text-gray-600">{hotspot.description}</p>
-                  <div className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 
+                  <div className="absolute bottom-[-8px] left-1/2 -translate-x-1/2
                     w-4 h-4 bg-white transform rotate-45"></div>
                 </div>
               </button>
@@ -158,42 +158,42 @@ const VirtualTour = () => {
         </div>
 
         {/* Navigation Instructions */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2
           bg-black/50 text-white px-4 py-2 rounded-full text-sm">
           Click and drag to explore • Click hotspots for more information
         </div>
-      </div>
-
-      {/* Feature Highlights */}
-      <div className="grid md:grid-cols-3 gap-8 mt-12">
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <Camera className="w-6 h-6 text-primary" />
+  
+        {/* Feature Highlights */}
+        <div className="grid md:grid-cols-3 gap-8 mt-12">
+          <div className="glassmorphic p-6">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+              <Camera className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">360° View</h3>
+            <p className="text-slate-300">
+              Immerse yourself in our workshop with a complete 360-degree panoramic view
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-primary mb-2">360° View</h3>
-          <p className="text-gray-600">
-            Immerse yourself in our workshop with a complete 360-degree panoramic view
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <Info className="w-6 h-6 text-primary" />
+  
+          <div className="glassmorphic p-6">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+              <Info className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Interactive Hotspots</h3>
+            <p className="text-slate-300">
+              Click on highlighted areas to learn more about our equipment and services
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-primary mb-2">Interactive Hotspots</h3>
-          <p className="text-gray-600">
-            Click on highlighted areas to learn more about our equipment and services
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <Navigation className="w-6 h-6 text-primary" />
+  
+          <div className="glassmorphic p-6">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+              <Navigation className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Guided Tour</h3>
+            <p className="text-slate-300">
+              Follow the hotspots for a guided tour of our key service areas
+            </p>
           </div>
-          <h3 className="text-xl font-semibold text-primary mb-2">Guided Tour</h3>
-          <p className="text-gray-600">
-            Follow the hotspots for a guided tour of our key service areas
-          </p>
         </div>
       </div>
     </div>

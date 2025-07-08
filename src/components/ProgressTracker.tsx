@@ -179,40 +179,40 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
 
       {/* Emergency Services Information */}
       {showEmergencyInfo && (
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border-l-4 border-red-600">
-          <h2 className="text-2xl font-bold text-primary mb-6">Emergency Services</h2>
+        <div className="glassmorphic p-6 mb-8 border-l-4 border-red-600 animate-fade-in">
+          <h2 className="text-2xl font-bold text-white mb-6">Emergency Services</h2>
           
           {/* Emergency Contacts */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {emergencyContacts.map((contact) => (
-              <div key={contact.number} className="bg-red-50 rounded-lg p-4">
-                <h3 className="font-semibold text-red-700 mb-2">{contact.title}</h3>
+              <div key={contact.number} className="rounded-lg p-4">
+                <h3 className="font-semibold text-red-300 mb-2">{contact.title}</h3>
                 <div className="flex items-center mb-2">
-                  <Phone className="w-5 h-5 text-red-600 mr-2" />
-                  <a href={`tel:${contact.number}`} className="text-red-600 font-medium hover:text-red-700">
+                  <Phone className="w-5 h-5 text-red-400 mr-2" />
+                  <a href={`tel:${contact.number}`} className="text-red-400 font-medium hover:text-red-500">
                     {contact.number}
                   </a>
                 </div>
-                <p className="text-sm text-gray-600">Hours: {contact.hours}</p>
-                <p className="text-sm text-gray-600">{contact.description}</p>
+                <p className="text-sm text-slate-300">Hours: {contact.hours}</p>
+                <p className="text-sm text-slate-300">{contact.description}</p>
               </div>
             ))}
           </div>
 
           {/* Towing Services */}
-          <h3 className="text-xl font-semibold text-primary mb-4">Towing Services</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">Towing Services</h3>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {towingServices.map((service) => (
-              <div key={service.contact} className="bg-gray-50 rounded-lg p-4">
+              <div key={service.contact} className="rounded-lg p-4">
                 <div className="flex items-start">
-                  <Truck className="w-5 h-5 text-secondary mt-1 mr-3" />
+                  <Truck className="w-5 h-5 text-slate-300 mt-1 mr-3" />
                   <div>
-                    <h4 className="font-medium text-primary">{service.name}</h4>
-                    <p className="text-sm text-gray-600 mb-2">Coverage: {service.coverage}</p>
-                    <p className="text-sm text-gray-600">ETA: {service.eta}</p>
+                    <h4 className="font-medium text-white">{service.name}</h4>
+                    <p className="text-sm text-slate-300 mb-2">Coverage: {service.coverage}</p>
+                    <p className="text-sm text-slate-300">ETA: {service.eta}</p>
                     <a
                       href={`tel:${service.contact}`}
-                      className="text-secondary hover:text-secondary/80 text-sm font-medium mt-2 inline-flex items-center"
+                      className="text-slate-300 hover:text-white text-sm font-medium mt-2 inline-flex items-center"
                     >
                       Call Now <ArrowRight className="w-4 h-4 ml-1" />
                     </a>
@@ -223,9 +223,9 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
           </div>
 
           {/* Emergency Guidelines */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-primary mb-4">Emergency Procedures</h3>
-            <ol className="list-decimal list-inside space-y-3 text-gray-600">
+          <div className="rounded-lg p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">Emergency Procedures</h3>
+            <ol className="list-decimal list-inside space-y-3 text-slate-300">
               <li>Ensure personal safety and move to a secure location</li>
               <li>Call our 24/7 emergency hotline for immediate assistance</li>
               <li>Share your location and vehicle details with our team</li>
@@ -237,53 +237,53 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       )}
 
       {/* Job Information */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div className="glassmorphic p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-primary">Repair Progress</h2>
-            <p className="text-gray-600">Job ID: {repairProgress.jobId}</p>
+            <h2 className="text-2xl font-bold text-white">Repair Progress</h2>
+            <p className="text-slate-300">Job ID: {repairProgress.jobId}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-600">Estimated Completion</p>
-            <p className="text-lg font-semibold text-primary">
+            <p className="text-sm text-slate-300">Estimated Completion</p>
+            <p className="text-lg font-semibold text-white">
               {new Date(repairProgress.estimatedCompletion).toLocaleDateString()}
             </p>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-semibold text-primary mb-3">Vehicle Information</h3>
+          <div className="rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-3">Vehicle Information</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Make</p>
-                <p className="font-medium">{repairProgress.vehicleInfo.make}</p>
+                <p className="text-sm text-slate-300">Make</p>
+                <p className="font-medium text-white">{repairProgress.vehicleInfo.make}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Model</p>
-                <p className="font-medium">{repairProgress.vehicleInfo.model}</p>
+                <p className="text-sm text-slate-300">Model</p>
+                <p className="font-medium text-white">{repairProgress.vehicleInfo.model}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Year</p>
-                <p className="font-medium">{repairProgress.vehicleInfo.year}</p>
+                <p className="text-sm text-slate-300">Year</p>
+                <p className="font-medium text-white">{repairProgress.vehicleInfo.year}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Color</p>
-                <p className="font-medium">{repairProgress.vehicleInfo.color}</p>
+                <p className="text-sm text-slate-300">Color</p>
+                <p className="font-medium text-white">{repairProgress.vehicleInfo.color}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-semibold text-primary mb-3">Progress Overview</h3>
+          <div className="rounded-lg p-4">
+            <h3 className="font-semibold text-white mb-3">Progress Overview</h3>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
                   <Wrench className="w-6 h-6 text-secondary" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-medium">Current Stage</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-medium text-white">Current Stage</p>
+                  <p className="text-sm text-slate-300">
                     {repairProgress.stages[repairProgress.currentStage - 1].title}
                   </p>
                 </div>
@@ -292,7 +292,7 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                 <p className="text-2xl font-bold text-secondary">
                   {Math.round((repairProgress.currentStage / repairProgress.stages.length) * 100)}%
                 </p>
-                <p className="text-sm text-gray-600">Complete</p>
+                <p className="text-sm text-slate-300">Complete</p>
               </div>
             </div>
           </div>
@@ -300,7 +300,7 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       </div>
 
       {/* Progress Timeline */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="glassmorphic p-6">
         <div className="space-y-6">
           {stages.map((stage, index) => (
             <div
@@ -327,28 +327,28 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
               <div className="flex-1">
                 <button
                   className={`w-full text-left ${
-                    activeStage === index ? 'bg-gray-50' : ''
-                  } rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200`}
+                    activeStage === index ? '' : ''
+                  } rounded-lg p-4 hover:bg-gray-50/10 transition-colors duration-200`}
                   onClick={() => setActiveStage(index)}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-primary">
+                    <h3 className="text-lg font-semibold text-white">
                       {stage.title}
                     </h3>
                     {stage.date && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-slate-300">
                         {new Date(stage.date).toLocaleDateString()}
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600">{stage.description}</p>
+                  <p className="text-slate-300">{stage.description}</p>
 
                   {/* Additional Details (shown when active) */}
                   {activeStage === index && stage.photos && (
                     <div className="mt-4">
                       {stage.notes && (
-                        <p className="text-sm text-gray-600 mb-3">
-                          <span className="font-medium">Notes:</span> {stage.notes}
+                        <p className="text-sm text-slate-300 mb-3">
+                          <span className="font-medium text-white">Notes:</span> {stage.notes}
                         </p>
                       )}
                       <div className="grid grid-cols-2 gap-4">

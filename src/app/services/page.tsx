@@ -97,10 +97,10 @@ const ServicesPage = async () => {
 
   // Map fetched services to the display format
   const displayedServices = services.map(service => ({
-    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-primary dark:text-white" /> :
-          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-primary dark:text-white" /> :
-          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-primary dark:text-white" /> :
-          <Car className="h-12 w-12 text-primary dark:text-white" />, // Default icon
+    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-white" /> :
+          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-white" /> :
+          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-white" /> :
+          <Car className="h-12 w-12 text-white" />, // Default icon
     title: service.name,
     description: service.description,
     features: [
@@ -130,23 +130,23 @@ const ServicesPage = async () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service, index) => (
             <Link key={index} href={`/services#${service.link}`} className="block">
-              <Card className="p-6 bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
+              <Card className="p-6 glassmorphic flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
                 <div className="mb-4">
                   {service.icon}
                 </div>
-                <h2 className="text-2xl font-semibold mb-2 text-slate-900 dark:text-white group-hover:text-primary">{service.title}</h2>
-                <p className="text-gray-600 dark:text-gray-200 mb-6 group-hover:text-primary/90">{service.description}</p>
+                <h2 className="text-2xl font-semibold mb-2 text-white group-hover:text-slate-200">{service.title}</h2>
+                <p className="text-slate-300 mb-6 group-hover:text-slate-400">{service.description}</p>
                 <ul className="space-y-2 text-left w-full mb-6">
                   {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-gray-700 dark:text-gray-200">
-                      <CheckCircle className="h-5 w-5 text-green-500 dark:text-green-400 mr-2" />
+                    <li key={featureIndex} className="flex items-center text-slate-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 <Button className="w-full" asChild>
-                  <span className="text-primary hover:text-primary/80 flex items-center font-semibold">
-                    Learn More <ArrowRight className="ml-2 h-4 w-4 text-primary dark:text-white group-hover:text-primary" />
+                  <span className="text-white hover:text-slate-200 flex items-center font-semibold">
+                    Learn More <ArrowRight className="ml-2 h-4 w-4 text-white group-hover:text-slate-200" />
                   </span>
                 </Button>
               </Card>
@@ -192,10 +192,10 @@ const ServicesPage = async () => {
       </div>
 
       {/* Virtual Tour Section */}
-      <div className="container mx-auto mt-16">
+      <div className="container mx-auto mt-16 glassmorphic p-8 animate-fade-in">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Explore Our Workshop</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-4">Explore Our Workshop</h2>
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Take a virtual tour of our state-of-the-art facility and discover where the magic happens.
           </p>
         </div>

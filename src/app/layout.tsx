@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./glassmorphism.css";
 import MainLayout from "@/components/MainLayout";
 import { AuthProvider } from "@/contexts/AuthContext"; // Import AuthProvider
 import { Toaster } from "@/components/ui/sonner";
