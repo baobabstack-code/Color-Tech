@@ -147,237 +147,130 @@ const Navigation = () => {
   const userIcon = <UserCircle className="h-5 w-5 text-primary" />;
   const shieldIcon = <ShieldCheck className="h-4 w-4 text-primary" />;
 
+  // Enhanced glassmorphism nav bar styles
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-100 h-16 shadow-sm">
-      <div className="container mx-auto px-4 h-full">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo Container */}
-          <Link href="/" className="flex items-center">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-secondary/50 rounded-lg blur-sm group-hover:blur opacity-75 transition-all duration-300 group-hover:opacity-100"></div>
-              <div className="relative px-4 py-2 bg-white rounded-lg border border-gray-100 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <div className="flex items-center space-x-2">
-                  <Logo className="h-8 w-auto" />
-                  <span className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-secondary bg-clip-text text-transparent">
-                    Color Tech
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Link>
+    <nav
+      className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[97vw] max-w-6xl rounded-3xl shadow-2xl border border-white/30 bg-white/30 dark:bg-slate-900/60 backdrop-blur-2xl backdrop-saturate-200 transition-all duration-300 flex items-center px-10 py-4 gap-8 ring-1 ring-white/40 ring-inset hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+      style={{
+        boxShadow:
+          '0 8px 32px 0 rgba(31,38,135,0.37), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
+        border: '1.5px solid rgba(255,255,255,0.22)',
+        backdropFilter: 'blur(22px) saturate(200%)',
+      }}
+    >
+      {/* Logo with vibrant gradient and subtle border */}
+      <div className="flex items-center gap-3 select-none bg-white/60 dark:bg-slate-800/60 rounded-2xl px-3 py-1 shadow-md border border-white/30">
+        <img src="/images/hero/logo/logo.svg" alt="Color-Tech Logo" className="h-10 w-10 drop-shadow-lg rounded-xl" />
+        <span className="text-2xl font-extrabold bg-gradient-to-r from-fuchsia-500 via-sky-400 to-emerald-400 bg-clip-text text-transparent animate-gradient-x tracking-tight drop-shadow-md">
+          Color-Tech
+        </span>
+      </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {publicLinks.map((link) => (
-              <Link
-                key={link.title}
-                href={link.path}
-                className="text-gray-600 hover:text-secondary transition-colors duration-200"
-              >
-                {link.title}
-              </Link>
-            ))}
-          </div>
-
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <div className="flex h-full w-full items-center justify-center rounded-full bg-primary/10">
-                        {userIcon}
-                      </div>
-                      {/* Notification indicator */}
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="w-56 bg-white shadow-lg border-gray-200"
-                    sideOffset={5}
-                    alignOffset={5}
-                  >
-                    <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user?.fullName}</p>
-                        <p className="text-xs leading-none text-gray-500">{user?.email}</p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    
-                    {/* Role-specific items */}
-                    {getNavLinks().map((link) => (
-                      <DropdownMenuItem key={link.path} asChild>
-                        <Link 
-                          href={link.path}
-                          className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                        >
-                          {link.icon && <span className="mr-2">{link.icon}</span>}
-                          {link.title}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                    
-                    <DropdownMenuSeparator />
-                    
-                    {/* Common items */}
-                    <DropdownMenuItem asChild>
-                      <Link 
-                        href="/notifications"
-                        className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                      >
-                        <Bell className="mr-2 h-4 w-4" />
-                        Notifications
-                        <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">
-                          3
-                        </span>
-                      </Link>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuItem asChild>
-                      <Link 
-                        href="/settings"
-                        className="flex items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
-                      >
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    <DropdownMenuItem 
-                      onSelect={(event) => {
-                        event.preventDefault();
-                        logout();
-                      }}
-                      className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            ) : (
-              <div className="flex items-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center">
-                      <UserCircle className="mr-2 h-4 w-4" />
-                      <span>Login</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-white shadow-lg border-gray-200">
-                    <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
-                      <Link href="/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
-                        {userIcon}
-                        <span>Client Login</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
-                      <Link href="/admin/login" className="flex items-center px-4 py-2 text-sm text-gray-700">
-                        {shieldIcon}
-                        <span>Admin Login</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-          </div>
-
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="border border-gray-300 rounded-md px-3 py-1 mr-2 focus:outline-none focus:ring-2 focus:ring-secondary"
-            />
-            <button className="bg-secondary text-white rounded-md px-3 py-1 hover:bg-primary transition-colors duration-200">
-              Search
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
+      {/* Nav links with animated underline and modern spacing */}
+      <div className="flex-1 flex justify-center gap-10">
+        {publicLinks.map((link) => (
+          <Link
+            key={link.title}
+            href={link.path}
+            className="relative px-3 py-1.5 text-lg font-semibold text-slate-800/90 dark:text-slate-100/90 hover:text-sky-500 dark:hover:text-fuchsia-400 transition-colors duration-200 group"
           >
-            {isOpen ? (
-              <X className="h-6 w-6 text-gray-600" />
-            ) : (
-              <Menu className="h-6 w-6 text-gray-600" />
-            )}
-          </button>
-        </div>
+            {link.title}
+            <span className="absolute left-1/2 -bottom-1 w-0 h-0.5 bg-gradient-to-r from-sky-400 to-fuchsia-400 rounded-full transition-all duration-300 group-hover:w-4/5 group-hover:left-1/10"></span>
+          </Link>
+        ))}
+      </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden py-4">
-            <div className="flex flex-col space-y-4">
-              {publicLinks.map((link) => (
+      {/* Search bar and login button with modern style */}
+      <div className="flex items-center gap-3 ml-auto pr-2">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="pl-10 pr-4 py-2 rounded-full bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 w-36 md:w-52 border border-white/40"
+          />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sky-400 dark:text-fuchsia-400">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          </span>
+        </div>
+        <a
+          href="/login"
+          className="px-6 py-2 rounded-full bg-gradient-to-r from-sky-400 to-fuchsia-400 text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-transform duration-200 border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400"
+          style={{ boxShadow: '0 2px 8px 0 rgba(31,38,135,0.18)' }}
+        >
+          Login
+        </a>
+      </div>
+
+      {/* Mobile menu button (hamburger) */}
+      <button
+        className="ml-4 flex md:hidden items-center justify-center w-10 h-10 rounded-full bg-white/40 dark:bg-slate-800/40 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 shadow-md border border-white/30"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle menu"
+      >
+        {isOpen ? (
+          <X className="h-7 w-7 text-gray-700 dark:text-gray-200" />
+        ) : (
+          <Menu className="h-7 w-7 text-gray-700 dark:text-gray-200" />
+        )}
+      </button>
+
+      {/* Mobile Navigation */}
+      <div className={`md:hidden transition-all duration-300 ${isOpen ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 py-0'} overflow-hidden bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-xl border border-white/30 absolute left-1/2 -translate-x-1/2 top-20 w-[90vw] max-w-md z-40`}> 
+        <div className="flex flex-col gap-3 px-4">
+          {publicLinks.map((link) => (
+            <Link
+              key={link.title}
+              href={link.path}
+              className="px-4 py-3 rounded-full text-gray-700 dark:text-gray-200 font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.title}
+            </Link>
+          ))}
+          {isAuthenticated ? (
+            <>
+              <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+              {getNavLinks().map((link) => (
                 <Link
                   key={link.title}
                   href={link.path}
-                  className="text-gray-600 hover:text-secondary transition-colors duration-200 px-4 py-2"
+                  className="block px-4 py-3 rounded-full text-gray-700 dark:text-gray-200 font-medium hover:bg-primary/10 hover:text-primary transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.title}
                 </Link>
               ))}
-              {isAuthenticated ? (
-                <>
-                  <div className="border-t border-gray-100 pt-4">
-                    {getNavLinks().map((link) => (
-                      <Link
-                        key={link.title}
-                        href={link.path}
-                        className="block px-4 py-2 text-gray-600 hover:text-secondary"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.title}
-                      </Link>
-                    ))}
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="border-t border-gray-100 pt-4 px-4 space-y-2">
-                  <Link
-                    href="/login"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-secondary py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {userIcon}
-                    <span>Client Portal</span>
-                  </Link>
-                  <Link
-                    href="/admin/login"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-secondary py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {shieldIcon}
-                    <span>Admin Login</span>
-                  </Link>
-                </div>
-              )}
+              <button
+                onClick={() => {
+                  logout();
+                  setIsOpen(false);
+                }}
+                className="block w-full text-left px-4 py-3 rounded-full text-red-600 hover:bg-red-50 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <div className="border-t border-gray-200 dark:border-gray-700 my-2 flex flex-col gap-2">
+              <Link
+                href="/login"
+                className="flex items-center gap-2 px-4 py-3 rounded-full text-gray-700 dark:text-gray-200 font-medium hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                {userIcon}
+                <span>Client Portal</span>
+              </Link>
+              <Link
+                href="/admin/login"
+                className="flex items-center gap-2 px-4 py-3 rounded-full text-gray-700 dark:text-gray-200 font-medium hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                {shieldIcon}
+                <span>Admin Login</span>
+              </Link>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );
