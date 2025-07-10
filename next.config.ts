@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
     ],
+    domains: ['localhost'],
   },
   compiler: {
     // Remove all console.log messages in production builds

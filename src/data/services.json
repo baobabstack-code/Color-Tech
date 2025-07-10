@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "name": "Oil Change",
+    "description": "Standard oil change service",
+    "basePrice": 39.99,
+    "durationMinutes": 30,
+    "category": "Maintenance",
+    "status": "active",
+    "createdAt": "2023-10-26",
+    "updatedAt": "2023-10-26"
+  },
+  {
+    "id": "2",
+    "name": "Brake Inspection",
+    "description": "Thorough brake inspection service",
+    "basePrice": 49.99,
+    "durationMinutes": 45,
+    "category": "Brakes",
+    "status": "active",
+    "createdAt": "2023-10-27",
+    "updatedAt": "2023-10-27"
+  }
+]

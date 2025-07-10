@@ -18,11 +18,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'; // Assuming CardHeader and CardFooter are used, though not in original Home.tsx
 import { Icons } from '@/components/ui/icons';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import api from '@/services/api'; // Will call API directly for now
 import { useAuth } from '@/contexts/AuthContext'; // To use login function after registration
 import { AxiosError } from 'axios';
-import jwtConfig from '@/lib/jwt';
 
 // Define the user interface for our application (can be shared or defined in types)
 interface User {
@@ -87,43 +86,19 @@ export function RegisterForm() { // Renamed component
       // Destructure to remove confirmPassword before sending to API
       const { confirmPassword, ...registerData } = data;
 
-      const response = await api.post<AuthResponse>('/api/auth/register', { // Updated API endpoint
+      const response = await api.post<AuthResponse>('/api/auth/register', {
         ...registerData,
-        role: 'client', // Default role for new registrations
+        role: 'client',
       });
 
-      // After successful registration, log the user in using the token from the response
-      // This assumes the register endpoint returns a token and user object similar to login
       if (response.data.token && response.data.user) {
-        // jwtConfig.setToken(response.data.token); // jwtConfig from @/lib/jwt
-        const apiUser = response.data.user;
-        const userData: User = {
-          id: apiUser.id,
-          email: apiUser.email,
-          fullName: apiUser.full_name || apiUser.email,
-          role: apiUser.role
-        };
-        localStorage.setItem('user', JSON.stringify(userData)); // Manually set user for now
-        // Ideally, the login function from AuthContext should be called or a similar mechanism
-        // For now, we manually update and then redirect.
-        // To fully use AuthContext, it would need a method to setUser after registration.
-        // A simpler approach is to call login() from AuthContext if register returns the same AuthResponse
-        // Or, even better, the login function in AuthContext could be refactored to handle this.
-        // For now, this is a direct way to set auth state after registration.
-
-        // To properly update AuthContext state, we might need to call a function like `login`
-        // or a new function `handleAuthentication(token, user)` if the register API returns these.
-        // The current login function in AuthContext handles this.
-        // We can call it with the credentials again, or if the register API returns the same structure,
-        // we can reuse parts of the login logic.
-        // For simplicity and to leverage existing AuthContext logic:
-        await login(registerData.email, data.password); // Attempt to login to set context state
+        await login(registerData.email, data.password);
 
         toast({
           title: 'Welcome to Color-Tech! 🎉',
           description: 'Your account has been created successfully.',
         });
-        router.push('/Color-Tech/client/dashboard'); // Updated redirect path
+        router.push('/client/dashboard');
       } else {
         throw new Error("Registration successful, but no token/user received.");
       }

@@ -147,7 +147,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
   const displayedTestimonials = testimonials.slice(0, 3).map((t: Testimonial, index: number) => ({
     name: `${t.user_first_name} ${t.user_last_name}`,
     role: t.user_email, // Or a more appropriate role if available
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a", // Placeholder, ideally fetch from user profile or content
+    image: "/images/default-avatar.png", // Placeholder, ideally fetch from user profile or content
     quote: t.comment,
     rating: t.rating
   }));
@@ -155,13 +155,13 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
   const displayedGalleryPreviews = galleryPreviews.slice(0, 2).map((g: GalleryItem, index: number) => {
     let bodyContent = { original_name: g.title };
     try {
-      bodyContent = JSON.parse(g.body);
+      bodyContent = typeof g.body === 'string' ? JSON.parse(g.body) : g.body;
     } catch (e) {
       console.error("Failed to parse gallery item body:", e);
     }
     return {
-      before: g.image_url || "https://via.placeholder.com/600x338?text=Before",
-      after: g.image_url || "https://via.placeholder.com/600x338?text=After", // Assuming 'after' is the same as 'before' for now, or needs a separate field
+      before: g.image_url || "/images/hero/colorful-car.png",
+      after: g.image_url || "/images/hero/colorful-car.png",
       title: g.title,
       description: (bodyContent as any).original_name || g.title
     };
@@ -170,7 +170,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+      <div className="min-h-screen">
         {/* Hero Section */}
         <motion.div
           className="relative h-[600px] flex items-center justify-center"
@@ -271,7 +271,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Services Section */}
-        <div className="bg-gradient-to-br from-white via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 py-16">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">Our Services</h2>
@@ -352,7 +352,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Gallery Preview Section */}
-        <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-slate-800 py-16">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-white mb-4">
@@ -409,7 +409,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Enhanced Stats Section */}
-        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 py-16">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
@@ -423,7 +423,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Enhanced Testimonials Section */}
-        <div className="bg-gray-50 dark:bg-slate-900 py-16">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">What Our Clients Say</h2>

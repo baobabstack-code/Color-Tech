@@ -72,13 +72,22 @@ export const updateProfile = async (data: UpdateUserData): Promise<User> => {
 
 // Admin user management
 export const getAllUsers = async (): Promise<User[]> => {
-  const response = await api.get('/users');
-  return response.data;
+  if (typeof window === 'undefined') {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), 'src/data/users.json');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const users: User[] = JSON.parse(fileContent);
+    return users;
+  } else {
+    return [];
+  }
 };
 
 export const getUserById = async (id: string): Promise<User> => {
-  const response = await api.get(`/users/${id}`);
-  return response.data;
+  const users = await getAllUsers();
+  const user = users.find((u) => u.id === id);
+  return user as User;
 };
 
 export const updateUser = async (id: string, data: UpdateUserData): Promise<User> => {

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "name": "Oil Filter",
+    "category": "Filters",
+    "quantity": 100,
+    "threshold": 20,
+    "supplier": "ACME Filters",
+    "status": "in-stock",
+    "lastOrdered": "2023-10-20",
+    "price": 5.99
+  },
+  {
+    "id": "2",
+    "name": "Brake Pads",
+    "category": "Brakes",
+    "quantity": 50,
+    "threshold": 10,
+    "supplier": "Brakes R Us",
+    "status": "in-stock",
+    "lastOrdered": "2023-10-22",
+    "price": 19.99
+  }
+]

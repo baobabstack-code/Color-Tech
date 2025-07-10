@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 export function useToast() {
-  const toast = useCallback((options: { title: string; description?: string; status?: string }) => {
+  const toast = useCallback((options: { title: string; description?: string; variant?: 'default' | 'destructive' | 'success' | 'warning' | 'info' }) => {
     // You can replace this with a real toast library (e.g., react-hot-toast, sonner, etc.)
     alert(`${options.title}${options.description ? ': ' + options.description : ''}`);
   }, []);

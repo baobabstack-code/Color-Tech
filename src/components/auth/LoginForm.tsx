@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { 
   Eye, EyeOff, Mail, Lock, 
   Loader2, User, Shield, Briefcase, AlertCircle
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -41,7 +41,7 @@ const getLoginSchema = (type: 'client' | 'admin') => {
 export default function LoginForm({ type, redirectPath }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { login, isLoading, error } = useAuth();
   const { toast } = useToast();
 
@@ -79,10 +79,10 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
         title: "Welcome back!",
         description: "Successfully logged in",
       });
-      navigate(redirectPath);
+      router.push(redirectPath);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 
-                          "Login failed. Please check your credentials and try again.";
+      const errorMessage = error.message ||
+                           "Login failed. Please check your credentials and try again.";
       setLoginError(errorMessage);
     }
   };

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "userId": "1",
+    "make": "Toyota",
+    "model": "Camry",
+    "year": 2018,
+    "color": "Silver",
+    "licensePlate": "ABC-123",
+    "vin": "1234567890",
+    "notes": "Regular maintenance"
+  },
+  {
+    "id": "2",
+    "userId": "2",
+    "make": "Honda",
+    "model": "Civic",
+    "year": 2020,
+    "color": "Blue",
+    "licensePlate": "DEF-456",
+    "vin": "0987654321",
+    "notes": "New tires"
+  }
+]

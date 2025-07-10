@@ -7,6 +7,7 @@ import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image"; // Import Image for optimized images
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 
 // Define interface for fetched data
 interface GalleryItem {
@@ -57,21 +58,56 @@ const GalleryPage = () => {
     };
   }, []);
 
-  // Process fetched data for display
-  const galleryImages = allGalleryItems.map(item => {
-    let bodyContent = { original_name: item.title };
-    try {
-      bodyContent = JSON.parse(item.body);
-    } catch (e) {
-      console.error("Failed to parse gallery item body:", e);
-    }
-    return {
-      src: item.image_url || "https://via.placeholder.com/600x450?text=Image",
-      alt: item.title,
-      category: item.tags ? item.tags.split(',')[0].trim() : 'Uncategorized', // Use first tag as category
-      fallback: "https://via.placeholder.com/600x450?text=Error" // Fallback image
-    };
-  });
+  // Add more demo images for a richer gallery
+  const demoImages = [
+    {
+      src: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d",
+      alt: "Classic Car Restoration",
+      category: "Restoration",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
+      alt: "Paint Detailing",
+      category: "Paint Work",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1511918984145-48de785d4c4e",
+      alt: "Interior Cleaning",
+      category: "Detailing",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+      alt: "Wheel Refurbishment",
+      category: "Wheels",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023",
+      alt: "Engine Bay Cleaning",
+      category: "Engine",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
+      alt: "Ceramic Coating",
+      category: "Coating",
+    },
+  ];
+
+  // Merge fetched images and demo images for display
+  const galleryImages = [
+    ...allGalleryItems.map(item => {
+      let bodyContent = { original_name: item.title };
+      try {
+        bodyContent = JSON.parse(item.body);
+      } catch (e) {}
+      return {
+        src: item.image_url || "https://via.placeholder.com/600x450?text=Image",
+        alt: item.title,
+        category: item.tags ? item.tags.split(',')[0].trim() : 'Uncategorized',
+        fallback: "https://via.placeholder.com/600x450?text=Error"
+      };
+    }),
+    ...demoImages.map(img => ({...img, fallback: "https://via.placeholder.com/600x450?text=Error"}))
+  ];
 
   // Update BeforeAfterSlider images (these are still hardcoded for now, can be fetched from API if needed)
   const transformations = [
@@ -141,32 +177,43 @@ const GalleryPage = () => {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryImages.map((image, index) => (
-            <div
+            <Card
               key={index}
-              className="relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300"
+              className="group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300"
               onClick={() => setSelectedImage(image.src)}
             >
-              <div className="aspect-w-4 aspect-h-3">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={600} // Adjust width/height as needed
-                  height={450} // Adjust width/height as needed
-                  className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = image.fallback;
-                  }}
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-2xl">
-                <div className="text-white text-center p-4">
-                  <ZoomIn className="w-8 h-8 mx-auto mb-2 text-white" />
-                  <p className="text-sm font-semibold group-hover:text-sky-300">{image.category}</p>
-                  <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">{image.alt}</p>
+              <CardHeader className="p-0 relative">
+                <div className="aspect-w-4 aspect-h-3">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={600}
+                    height={450}
+                    className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-t-2xl"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = (image as any).fallback;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-t-2xl">
+                    <div className="text-white text-center p-4">
+                      <ZoomIn className="w-8 h-8 mx-auto mb-2 text-white" />
+                      <p className="text-sm font-semibold group-hover:text-sky-300">{image.category}</p>
+                      <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">{image.alt}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent className="pt-4 pb-2 px-4">
+                <CardTitle className="text-lg truncate">{image.alt}</CardTitle>
+                <CardDescription className="truncate text-xs text-gray-500">{image.category}</CardDescription>
+              </CardContent>
+              <CardFooter className="px-4 pb-4 pt-0 flex justify-end">
+                <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
+                  View
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </div>

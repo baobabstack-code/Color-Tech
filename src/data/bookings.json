@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "userId": "1",
+    "vehicleId": "1",
+    "serviceId": "1",
+    "scheduledDate": "2023-11-01",
+    "scheduledTime": "10:00",
+    "status": "confirmed",
+    "notes": "Oil change and tire rotation",
+    "createdAt": "2023-10-26",
+    "updatedAt": "2023-10-26"
+  },
+  {
+    "id": "2",
+    "userId": "2",
+    "vehicleId": "2",
+    "serviceId": "2",
+    "scheduledDate": "2023-11-02",
+    "scheduledTime": "14:00",
+    "status": "pending",
+    "notes": "Brake inspection",
+    "createdAt": "2023-10-27",
+    "updatedAt": "2023-10-27"
+  }
+]

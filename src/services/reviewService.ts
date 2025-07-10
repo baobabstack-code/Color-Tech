@@ -29,14 +29,22 @@ export interface UpdateReviewData {
 
 // Get all reviews (admin)
 export const getAllReviews = async (): Promise<Review[]> => {
-  const response = await api.get('/reviews');
-  return response.data;
+  if (typeof window === 'undefined') {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), 'src/data/reviews.json');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const reviews: Review[] = JSON.parse(fileContent);
+    return reviews;
+  } else {
+    return [];
+  }
 };
 
 // Get reviews for current user
 export const getMyReviews = async (): Promise<Review[]> => {
-  const response = await api.get('/reviews/my-reviews');
-  return response.data;
+  // For now, just return all reviews
+  return getAllReviews();
 };
 
 // Get review by ID

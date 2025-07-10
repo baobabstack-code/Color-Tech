@@ -1,15 +1,16 @@
 import api from './api';
 
 export interface Service {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  basePrice: number;
-  durationMinutes: number;
-  category: string;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
+  price: number;
+  duration_minutes: number;
+  category_id: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  category_name: string;
 }
 
 export interface CreateServiceData {
@@ -31,14 +32,23 @@ export interface UpdateServiceData {
 
 // Get all services
 export const getAllServices = async (): Promise<Service[]> => {
-  const response = await api.get('/services');
-  return response.data;
+  if (typeof window === 'undefined') {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), 'src/data/services.json');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
+    return services;
+  } else {
+    return [];
+  }
 };
 
 // Get service by ID
-export const getServiceById = async (id: string): Promise<Service> => {
-  const response = await api.get(`/services/${id}`);
-  return response.data;
+export const getServiceById = async (id: number): Promise<Service> => {
+  const services = await getAllServices();
+  const service = services.find((s) => s.id === Number(id));
+  return service as Service;
 };
 
 // Create new service (admin only)

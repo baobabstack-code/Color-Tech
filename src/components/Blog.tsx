@@ -12,39 +12,20 @@ interface BlogPost {
   readTime: string;
 }
 
+import { contentService } from '../services/contentService';
+import { useEffect, useState } from 'react';
+
 const Blog = () => {
-  const blogPosts: BlogPost[] = [
-    {
-      id: '1',
-      title: 'Essential Tips for Maintaining Your Car\'s Paint',
-      excerpt: 'Learn the best practices for keeping your vehicle\'s paint looking fresh and protected from environmental damage.',
-      category: 'Car Care Tips',
-      author: 'James Thompson',
-      date: '2024-02-15',
-      image: 'https://images.unsplash.com/photo-1596883040737-6d38c9e905b0?w=800&h=400',
-      readTime: '5 min read'
-    },
-    {
-      id: '2',
-      title: 'Understanding Modern Auto Paint Technology',
-      excerpt: 'Discover how advanced paint technologies are revolutionizing the automotive refinishing industry.',
-      category: 'Industry News',
-      author: 'David Wilson',
-      date: '2024-02-10',
-      image: 'https://images.unsplash.com/photo-1599256621730-535171e28e50?w=800&h=400',
-      readTime: '7 min read'
-    },
-    {
-      id: '3',
-      title: 'When to Consider Panel Beating vs. Replacement',
-      excerpt: 'Expert advice on deciding whether to repair or replace damaged vehicle panels.',
-      category: 'Expert Advice',
-      author: 'Robert Chen',
-      date: '2024-02-05',
-      image: 'https://images.unsplash.com/photo-1630332661797-c5ee3ec92e6f?w=800&h=400',
-      readTime: '6 min read'
-    }
-  ];
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      const posts = await contentService.getBlogPosts();
+      setBlogPosts(posts);
+    };
+
+    fetchBlogPosts();
+  }, []);
 
   return (
     <div className="container mx-auto py-12">

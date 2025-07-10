@@ -1,16 +1,18 @@
 import api from './api';
 
 export interface BlogPost {
-  id: string;
+  id: number;
   title: string;
-  content: string;
-  excerpt: string;
-  author: string;
-  category: string;
-  status: 'draft' | 'published' | 'archived';
-  publishDate: string;
-  imageUrl: string;
-  readTime: string;
+  content_type: string;
+  body: string;
+  image_url: string | null;
+  is_published: boolean;
+  tags: string | null;
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface FAQ {
@@ -24,34 +26,49 @@ export interface FAQ {
 }
 
 export interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  image: string;
-  quote: string;
+  id: number;
+  user_id: number;
+  service_id: number;
+  booking_id: number;
   rating: number;
-  status: 'approved' | 'pending' | 'rejected';
-  date: string;
-  source: 'website' | 'google' | 'facebook';
+  comment: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  user_first_name: string;
+  user_last_name: string;
+  user_email: string;
+  service_name: string;
 }
 
 export interface GalleryItem {
-  id: string;
+  id: number;
   title: string;
-  description: string;
-  category: string;
-  type: 'before-after' | 'showcase';
-  beforeImage?: string;
-  afterImage?: string;
-  image?: string;
-  uploadDate: string;
+  content_type: string;
+  body: string; // JSON string
+  image_url: string;
+  is_published: boolean;
+  tags: string | null;
+  author: string | null;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export const contentService = {
   // Blog Management
   async getBlogPosts() {
-    const response = await api.get<BlogPost[]>('/blog-posts');
-    return response.data;
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'src/data/blog-posts.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const blogPosts: BlogPost[] = JSON.parse(fileContent);
+      return blogPosts;
+    } else {
+      return [];
+    }
   },
 
   async createBlogPost(post: Omit<BlogPost, 'id'>) {
@@ -70,8 +87,16 @@ export const contentService = {
 
   // Gallery Management
   async getGalleryItems() {
-    const response = await api.get<GalleryItem[]>('/gallery');
-    return response.data;
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'src/data/gallery.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const galleryItems: GalleryItem[] = JSON.parse(fileContent);
+      return galleryItems;
+    } else {
+      return [];
+    }
   },
 
   async uploadGalleryItem(formData: FormData) {
@@ -89,8 +114,16 @@ export const contentService = {
   
   // FAQ Management
   async getFAQs() {
-    const response = await api.get<FAQ[]>('/faqs');
-    return response.data;
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'src/data/faqs.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const faqs: FAQ[] = JSON.parse(fileContent);
+      return faqs;
+    } else {
+      return [];
+    }
   },
 
   async getFAQById(id: string) {
@@ -119,8 +152,16 @@ export const contentService = {
   
   // Testimonial Management
   async getTestimonials() {
-    const response = await api.get<Testimonial[]>('/testimonials');
-    return response.data;
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'src/data/testimonials.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const testimonials: Testimonial[] = JSON.parse(fileContent);
+      return testimonials;
+    } else {
+      return [];
+    }
   },
 
   async getTestimonialById(id: string) {

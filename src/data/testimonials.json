@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "role": "CEO",
+    "image": "/images/testimonials/1.jpg",
+    "quote": "Color Tech has helped us improve our color accuracy by 50%.",
+    "rating": 5,
+    "status": "approved",
+    "date": "2023-10-26",
+    "source": "website"
+  },
+  {
+    "id": "2",
+    "name": "Jane Doe",
+    "role": "Marketing Manager",
+    "image": "/images/testimonials/2.jpg",
+    "quote": "Color Tech's color consulting services are top-notch.",
+    "rating": 4,
+    "status": "approved",
+    "date": "2023-10-27",
+    "source": "google"
+  }
+]

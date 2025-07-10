@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1",
+    "userId": "1",
+    "serviceId": "1",
+    "rating": 5,
+    "comment": "Great service!",
+    "date": "2023-10-26",
+    "status": "approved",
+    "createdAt": "2023-10-26",
+    "updatedAt": "2023-10-26"
+  },
+  {
+    "id": "2",
+    "userId": "2",
+    "serviceId": "2",
+    "rating": 4,
+    "comment": "Good service, but a bit pricey.",
+    "date": "2023-10-27",
+    "status": "approved",
+    "createdAt": "2023-10-27",
+    "updatedAt": "2023-10-27"
+  }
+]

@@ -35,20 +35,29 @@ export interface UpdateBookingData {
 
 // Admin: Get all bookings
 export const getAllBookings = async (): Promise<Booking[]> => {
-  const response = await api.get('/bookings');
-  return response.data;
+  if (typeof window === 'undefined') {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), 'src/data/bookings.json');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const bookings: Booking[] = JSON.parse(fileContent);
+    return bookings;
+  } else {
+    return [];
+  }
 };
 
 // Client: Get current user's bookings
 export const getMyBookings = async (): Promise<Booking[]> => {
-  const response = await api.get('/bookings/my-bookings');
-  return response.data;
+  // For now, just return all bookings
+  return getAllBookings();
 };
 
 // Get booking by ID
 export const getBookingById = async (id: string): Promise<Booking> => {
-  const response = await api.get(`/bookings/${id}`);
-  return response.data;
+  const bookings = await getAllBookings();
+  const booking = bookings.find((b) => b.id === id);
+  return booking as Booking;
 };
 
 // Create new booking

@@ -36,20 +36,29 @@ export interface UpdateVehicleData {
 
 // Get all vehicles (admin only)
 export const getAllVehicles = async (): Promise<Vehicle[]> => {
-  const response = await api.get('/vehicles');
-  return response.data;
+  if (typeof window === 'undefined') {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), 'src/data/vehicles.json');
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const vehicles: Vehicle[] = JSON.parse(fileContent);
+    return vehicles;
+  } else {
+    return [];
+  }
 };
 
 // Get current user's vehicles
 export const getMyVehicles = async (): Promise<Vehicle[]> => {
-  const response = await api.get('/vehicles/my-vehicles');
-  return response.data;
+  // For now, just return all vehicles
+  return getAllVehicles();
 };
 
 // Get vehicle by ID
 export const getVehicleById = async (id: string): Promise<Vehicle> => {
-  const response = await api.get(`/vehicles/${id}`);
-  return response.data;
+  const vehicles = await getAllVehicles();
+  const vehicle = vehicles.find((v) => v.id === id);
+  return vehicle as Vehicle;
 };
 
 // Create new vehicle

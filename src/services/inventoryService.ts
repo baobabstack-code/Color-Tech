@@ -14,8 +14,16 @@ export interface InventoryItem {
 
 export const inventoryService = {
   async getInventory() {
-    const response = await api.get<InventoryItem[]>('/inventory');
-    return response.data;
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'src/data/inventory.json');
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      const inventory: InventoryItem[] = JSON.parse(fileContent);
+      return inventory;
+    } else {
+      return [];
+    }
   },
 
   async addItem(item: Omit<InventoryItem, 'id'>) {

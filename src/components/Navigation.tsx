@@ -150,7 +150,7 @@ const Navigation = () => {
   // Enhanced glassmorphism nav bar styles
   return (
     <nav
-      className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[97vw] max-w-6xl rounded-3xl shadow-2xl border border-white/30 bg-white/30 dark:bg-slate-900/60 backdrop-blur-2xl backdrop-saturate-200 transition-all duration-300 flex items-center px-4 sm:px-10 py-4 gap-4 sm:gap-8 ring-1 ring-white/40 ring-inset hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+      className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[97vw] max-w-6xl rounded-3xl shadow-2xl border border-white/30 dark:bg-slate-900/60 backdrop-blur-2xl backdrop-saturate-200 transition-all duration-300 flex items-center px-4 sm:px-10 py-4 gap-4 sm:gap-8 ring-1 ring-white/40 ring-inset hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
       style={{
         boxShadow:
           '0 8px 32px 0 rgba(31,38,135,0.37), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
