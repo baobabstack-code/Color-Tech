@@ -10,52 +10,80 @@ import {
   Edit, Trash2, Eye, Calendar, User,
   RefreshCw, AlertCircle
 } from "lucide-react";
-import { useData } from '@/hooks/useData';
 import { contentService } from '@/services/contentService';
 import type { BlogPost } from '@/services/contentService';
+import { useToast } from "@/hooks/use-toast"; // Ensure useToast is imported
 
 export default function BlogManagement() {
+  const { toast } = useToast(); // Initialize toast
   const [searchTerm, setSearchTerm] = useState("");
+  const [posts, setPosts] = useState<BlogPost[]>([]); // Use posts state directly
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true); // Manage loading state
+  const [error, setError] = useState<string | null>(null); // Manage error state
   const [stats, setStats] = useState({
     total: 0,
     published: 0,
     drafts: 0
   });
 
-  const { data: posts, loading, error, refetch } = useData<BlogPost[]>(
-    () => contentService.getBlogPosts(),
-    []
-  );
-
-  const handleDelete = async (id: string) => {
+  const fetchPosts = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      await contentService.deleteBlogPost(id);
-      refetch();
-    } catch (error) {
-      console.error('Failed to delete post:', error);
+      const data = await contentService.getBlogPosts();
+      setPosts(data);
+    } catch (err: any) {
+      console.error('Failed to fetch posts:', err);
+      setError('Failed to load blog posts. Please try again.');
+      toast({
+        title: "Error",
+        description: "Failed to load blog posts. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []); // Fetch posts on component mount
+
+  const refetch = () => { // Define refetch function
+    fetchPosts();
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await contentService.deleteBlogPost(id.toString());
+      toast({
+        title: "Success",
+        description: "Blog post deleted successfully.",
+      });
+      refetch(); // Refetch posts after deletion
+    } catch (err: any) {
+      console.error('Failed to delete post:', err);
+      toast({
+        title: "Error",
+        description: "Failed to delete blog post. Please try again.",
+        variant: "destructive",
+      });
     }
   };
   
   useEffect(() => {
     if (posts) {
-      // Filter posts based on search term
-      if (searchTerm.trim() === '') {
-        setFilteredPosts(posts);
-      } else {
-        const lowercasedSearch = searchTerm.toLowerCase();
-        const filtered = posts.filter(post => 
-          post.title.toLowerCase().includes(lowercasedSearch) || 
-          post.excerpt.toLowerCase().includes(lowercasedSearch) ||
-          post.category.toLowerCase().includes(lowercasedSearch) ||
-          post.author.toLowerCase().includes(lowercasedSearch)
-        );
-        setFilteredPosts(filtered);
-      }
+      const lowercasedSearch = searchTerm.toLowerCase();
+      const filtered = posts.filter(post =>
+        post.title.toLowerCase().includes(lowercasedSearch) ||
+        (post.body && post.body.toLowerCase().includes(lowercasedSearch)) ||
+        (post.author && post.author.toLowerCase().includes(lowercasedSearch))
+      );
+      setFilteredPosts(filtered);
       
-      // Calculate stats
-      const published = posts.filter(post => post.status === 'published').length;
-      const drafts = posts.filter(post => post.status === 'draft').length;
+      const published = posts.filter(post => post.is_published).length;
+      const drafts = posts.filter(post => !post.is_published).length;
       
       setStats({
         total: posts.length,
@@ -67,17 +95,8 @@ export default function BlogManagement() {
     }
   }, [posts, searchTerm]);
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'published':
-        return 'default';
-      case 'draft':
-        return 'secondary';
-      case 'archived':
-        return 'outline';
-      default:
-        return 'default';
-    }
+  const getStatusBadgeVariant = (isPublished: boolean) => { // Change status to isPublished
+    return isPublished ? 'default' : 'secondary'; // Map boolean to badge variant
   };
 
   return (
@@ -175,7 +194,7 @@ export default function BlogManagement() {
             <div className="flex gap-6">
               <div className="w-48 h-32 rounded-lg overflow-hidden">
                 <img 
-                  src={post.imageUrl} 
+                  src={post.image_url || '/placeholder.png'} // Use image_url, provide fallback
                   alt={post.title}
                   className="w-full h-full object-cover"
                 />
@@ -185,25 +204,24 @@ export default function BlogManagement() {
                   <div>
                     <div className="flex items-center space-x-2 mb-2">
                       <h3 className="text-xl font-semibold">{post.title}</h3>
-                      <Badge variant={getStatusBadgeVariant(post.status)}>
-                        {post.status}
+                      <Badge variant={getStatusBadgeVariant(post.is_published)}>
+                        {post.is_published ? 'Published' : 'Draft'}
                       </Badge>
                     </div>
-                    <p className="text-gray-600">{post.excerpt}</p>
+                    <p className="text-gray-600">{post.body ? post.body.substring(0, 150) + '...' : 'No content'}</p> {/* Use body, truncate */}
                   </div>
                 </div>
 
                 <div className="mt-4 flex items-center space-x-6 text-sm text-gray-500">
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
-                    {post.author}
+                    {post.author || 'Unknown Author'}
                   </div>
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    {new Date(post.publishDate).toLocaleDateString()}
+                    {new Date(post.created_at).toLocaleDateString()} {/* Use created_at */}
                   </div>
-                  <div>{post.readTime} read</div>
-                  <div>Category: {post.category}</div>
+                  {/* Removed readTime and category as they don't exist in BlogPost */}
                 </div>
 
                 <div className="mt-4 flex space-x-2">
@@ -215,7 +233,7 @@ export default function BlogManagement() {
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => handleDelete(post.id)}>
+                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600" onClick={() => handleDelete(post.id)}> {/* id is now number, handleDelete expects number */}
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
                   </Button>

@@ -6,7 +6,7 @@ dotenv.config();
 // Configuration object
 export const config = {
   // Server configuration
-  apiUrl: '/api', // Use relative URL for Next.js fullstack
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api', // Use environment variable for API URL
   
   // File upload configuration
   uploads: {

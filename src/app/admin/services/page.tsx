@@ -9,7 +9,7 @@ import {
   CheckCircle, AlertCircle, Star,
   Loader2, Plus, Edit, BarChart2
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { getAllServices } from "@/services/serviceService";
 import { getAllBookings } from "@/services/bookingService";
 import { getAllReviews } from "@/services/reviewService";
@@ -48,7 +48,7 @@ export default function ServiceManagement() {
       ]);
       
       // Calculate booking counts per service
-      const bookingCounts = {};
+      const bookingCounts: Record<string, number> = {};
       bookingsData.forEach(booking => {
         if (booking.serviceId) {
           bookingCounts[booking.serviceId] = (bookingCounts[booking.serviceId] || 0) + 1;
@@ -56,8 +56,8 @@ export default function ServiceManagement() {
       });
       
       // Calculate average ratings per service
-      const serviceRatings = {};
-      const serviceReviewCounts = {};
+      const serviceRatings: Record<string, number> = {};
+      const serviceReviewCounts: Record<string, number> = {};
       
       reviewsData.forEach(review => {
         if (review.serviceId && review.rating) {
@@ -71,23 +71,23 @@ export default function ServiceManagement() {
       });
       
       // Calculate average ratings
-      const averageRatings = {};
+      const averageRatings: Record<string, number> = {};
       Object.keys(serviceRatings).forEach(serviceId => {
-        averageRatings[serviceId] = serviceReviewCounts[serviceId] > 0 
-          ? (serviceRatings[serviceId] / serviceReviewCounts[serviceId]).toFixed(1)
+        averageRatings[serviceId] = serviceReviewCounts[serviceId] > 0
+          ? parseFloat((serviceRatings[serviceId] / serviceReviewCounts[serviceId]).toFixed(1))
           : 0;
       });
       
       // Transform the data to match our display interface
       const formattedServices = servicesData.map(service => ({
-        id: service.id,
+        id: service.id.toString(), // Convert number ID to string
         name: service.name,
         description: service.description,
-        duration: `${service.durationMinutes} minutes`,
+        duration: `${service.duration_minutes} minutes`,
         capacity: 4, // Default value, could be added to service model in future
-        rating: parseFloat(averageRatings[service.id] || '0'),
-        status: service.status as 'active' | 'inactive',
-        bookingCount: bookingCounts[service.id] || 0
+        rating: averageRatings[service.id.toString()] || 0, // Use string ID, default to 0 if undefined
+        status: (service.is_active ? 'active' : 'inactive') as 'active' | 'inactive', // Explicit cast
+        bookingCount: bookingCounts[service.id.toString()] || 0 // Use string ID
       }));
       
       setServices(formattedServices);

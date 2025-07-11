@@ -11,18 +11,28 @@ import {
   MoreVertical, RefreshCw, AlertCircle
 } from "lucide-react";
 import { contentService, GalleryItem } from "@/services/contentService";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Interface is now imported from contentService.ts
+// Extend GalleryItem to include parsed body content for display
+interface EnrichedGalleryItem extends GalleryItem {
+  description: string;
+  category: string;
+  type: 'before-after' | 'showcase';
+  image: string; // Corresponds to image_url for showcase
+  beforeImage: string;
+  afterImage: string;
+  uploadDate: string; // Corresponds to created_at
+  views: number;
+}
 
 export default function GalleryManagement() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<GalleryItem[]>([]);
+  const [galleryItems, setGalleryItems] = useState<EnrichedGalleryItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<EnrichedGalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
@@ -35,12 +45,12 @@ export default function GalleryManagement() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentItem, setCurrentItem] = useState<GalleryItem | null>(null);
-  const [newItem, setNewItem] = useState({
+  const [currentItem, setCurrentItem] = useState<EnrichedGalleryItem | null>(null);
+  const [newItem, setNewItem] = useState<Omit<EnrichedGalleryItem, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'updated_by' | 'is_published' | 'tags' | 'author' | 'content_type'>>({
     title: "",
     description: "",
     category: "Paint Work",
-    type: "showcase" as 'before-after' | 'showcase',
+    type: "showcase",
     image: "",
     beforeImage: "",
     afterImage: "",
@@ -50,24 +60,48 @@ export default function GalleryManagement() {
   
   const { toast } = useToast();
 
+  const parseGalleryItemBody = (item: GalleryItem): EnrichedGalleryItem => {
+    let parsedBody: any = {};
+    try {
+      if (item.body) {
+        parsedBody = JSON.parse(item.body);
+      }
+    } catch (e) {
+      console.error("Failed to parse gallery item body:", e);
+    }
+
+    return {
+      ...item,
+      description: parsedBody.description || '',
+      category: parsedBody.category || 'Uncategorized',
+      type: (parsedBody.type === 'before-after' || parsedBody.type === 'showcase') ? parsedBody.type : 'showcase',
+      image: item.image_url || '',
+      beforeImage: parsedBody.beforeImage || '',
+      afterImage: parsedBody.afterImage || '',
+      uploadDate: item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : '',
+      views: parsedBody.views || 0,
+    };
+  };
+
   const fetchGalleryItems = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await contentService.getGalleryItems();
-      setGalleryItems(data);
-      setFilteredItems(data);
+      const enrichedData = data.map(parseGalleryItemBody);
+      setGalleryItems(enrichedData);
+      setFilteredItems(enrichedData);
       
       // Calculate stats
-      const beforeAfterSets = data.filter(item => item.type === 'before-after').length;
-      const totalViews = data.reduce((sum, item) => sum + item.views, 0);
+      const beforeAfterSets = enrichedData.filter(item => item.type === 'before-after').length;
+      const totalViews = enrichedData.reduce((sum, item) => sum + item.views, 0);
       
       setStats({
-        total: data.length,
+        total: enrichedData.length,
         beforeAfterSets,
         totalViews
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching gallery items:', err);
       setError('Failed to load gallery items. Please try again.');
       toast({
@@ -89,8 +123,8 @@ export default function GalleryManagement() {
       setFilteredItems(galleryItems);
     } else {
       const lowercasedSearch = searchTerm.toLowerCase();
-      const filtered = galleryItems.filter(item => 
-        item.title.toLowerCase().includes(lowercasedSearch) || 
+      const filtered = galleryItems.filter(item =>
+        item.title.toLowerCase().includes(lowercasedSearch) ||
         item.description.toLowerCase().includes(lowercasedSearch) ||
         item.category.toLowerCase().includes(lowercasedSearch)
       );
@@ -100,13 +134,30 @@ export default function GalleryManagement() {
   
   const handleAddItem = async () => {
     try {
-      await contentService.uploadGalleryItem(newItem);
+      const formData = new FormData();
+      formData.append('title', newItem.title);
+      formData.append('image_url', newItem.image); // Use image_url for main image
+      formData.append('content_type', newItem.type); // Use content_type for type
+      formData.append('is_published', 'true'); // Default to published
+
+      const bodyContent = {
+        description: newItem.description,
+        category: newItem.category,
+        type: newItem.type,
+        beforeImage: newItem.beforeImage,
+        afterImage: newItem.afterImage,
+        uploadDate: newItem.uploadDate,
+        views: newItem.views,
+      };
+      formData.append('body', JSON.stringify(bodyContent));
+
+      await contentService.uploadGalleryItem(formData);
       setIsAddDialogOpen(false);
       setNewItem({
         title: "",
         description: "",
         category: "Paint Work",
-        type: "showcase" as 'before-after' | 'showcase',
+        type: "showcase",
         image: "",
         beforeImage: "",
         afterImage: "",
@@ -118,7 +169,7 @@ export default function GalleryManagement() {
         description: "Gallery item added successfully",
       });
       fetchGalleryItems();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding gallery item:', err);
       toast({
         title: "Error",
@@ -132,9 +183,28 @@ export default function GalleryManagement() {
     if (!currentItem) return;
     
     try {
-      // Since there's no updateGalleryItem in the service, we'll delete and re-upload
-      await contentService.deleteGalleryItem(currentItem.id);
-      await contentService.uploadGalleryItem(currentItem);
+      // Create a new FormData object for the updated item
+      const formData = new FormData();
+      formData.append('title', currentItem.title);
+      formData.append('image_url', currentItem.image);
+      formData.append('content_type', currentItem.type);
+      formData.append('is_published', 'true'); // Assuming published status for now
+
+      const bodyContent = {
+        description: currentItem.description,
+        category: currentItem.category,
+        type: currentItem.type,
+        beforeImage: currentItem.beforeImage,
+        afterImage: currentItem.afterImage,
+        uploadDate: currentItem.uploadDate,
+        views: currentItem.views,
+      };
+      formData.append('body', JSON.stringify(bodyContent));
+
+      // Since there's no direct updateGalleryItem with FormData, we'll delete and re-upload
+      // This is a workaround; a proper API would have an update endpoint for FormData
+      await contentService.deleteGalleryItem(currentItem.id.toString()); // Convert id to string
+      await contentService.uploadGalleryItem(formData); // Pass FormData
       
       setIsEditDialogOpen(false);
       setCurrentItem(null);
@@ -143,7 +213,7 @@ export default function GalleryManagement() {
         description: "Gallery item updated successfully",
       });
       fetchGalleryItems();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating gallery item:', err);
       toast({
         title: "Error",
@@ -157,7 +227,7 @@ export default function GalleryManagement() {
     if (!currentItem) return;
     
     try {
-      await contentService.deleteGalleryItem(currentItem.id);
+      await contentService.deleteGalleryItem(currentItem.id.toString()); // Convert id to string
       setIsDeleteDialogOpen(false);
       setCurrentItem(null);
       toast({
@@ -165,7 +235,7 @@ export default function GalleryManagement() {
         description: "Gallery item deleted successfully",
       });
       fetchGalleryItems();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting gallery item:', err);
       toast({
         title: "Error",

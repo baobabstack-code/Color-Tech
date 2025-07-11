@@ -11,18 +11,26 @@ import {
   CheckCircle, XCircle, RefreshCw, AlertCircle
 } from "lucide-react";
 import { contentService, Testimonial } from "@/services/contentService";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-// Interface is now imported from contentService.ts
+// Extend Testimonial to include display-specific properties
+interface EnrichedTestimonial extends Testimonial {
+  name: string; // user_first_name + user_last_name
+  image: string; // Placeholder for now, as not in Testimonial interface
+  role: string; // Placeholder for now
+  quote: string; // Maps to comment
+  date: string; // Maps to created_at
+  source: 'website' | 'google' | 'facebook' | 'unknown'; // Placeholder for now
+}
 
 export default function TestimonialManagement() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [filteredTestimonials, setFilteredTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<EnrichedTestimonial[]>([]);
+  const [filteredTestimonials, setFilteredTestimonials] = useState<EnrichedTestimonial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
@@ -36,41 +44,53 @@ export default function TestimonialManagement() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentTestimonial, setCurrentTestimonial] = useState<Testimonial | null>(null);
-  const [newTestimonial, setNewTestimonial] = useState({
-    name: "",
-    role: "",
-    image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167", // Default placeholder image
-    quote: "",
+  const [currentTestimonial, setCurrentTestimonial] = useState<EnrichedTestimonial | null>(null);
+  const [newTestimonial, setNewTestimonial] = useState<Omit<Testimonial, 'id' | 'created_at' | 'updated_at' | 'user_first_name' | 'user_last_name' | 'service_name'>>({
+    user_id: 0, // Change to number
+    service_id: 0, // Assuming service_id is number, adjust if string
+    booking_id: 0, // Assuming booking_id is number, adjust if string
     rating: 5,
-    status: "pending" as 'approved' | 'pending' | 'rejected',
-    date: new Date().toISOString().split('T')[0],
-    source: "website" as 'website' | 'google' | 'facebook'
+    comment: "",
+    status: "pending",
+    user_email: "", // Add missing required property
   });
   
   const { toast } = useToast();
+
+  const parseTestimonialData = (testimonial: Testimonial): EnrichedTestimonial => {
+    return {
+      ...testimonial,
+      name: `${testimonial.user_first_name || ''} ${testimonial.user_last_name || ''}`.trim() || 'Anonymous',
+      image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167", // Placeholder
+      role: "Customer", // Placeholder
+      quote: testimonial.comment,
+      date: new Date(testimonial.created_at).toISOString().split('T')[0],
+      source: "website", // Placeholder
+    };
+  };
 
   const fetchTestimonials = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await contentService.getTestimonials();
-      setTestimonials(data);
-      setFilteredTestimonials(data);
+      const enrichedData = data.map(parseTestimonialData);
+      setTestimonials(enrichedData);
+      setFilteredTestimonials(enrichedData);
       
       // Calculate stats
-      const approved = data.filter(t => t.status === 'approved').length;
-      const pending = data.filter(t => t.status === 'pending').length;
-      const totalRating = data.reduce((sum, t) => sum + t.rating, 0);
-      const averageRating = data.length > 0 ? +(totalRating / data.length).toFixed(1) : 0;
+      const approved = enrichedData.filter(t => t.status === 'approved').length;
+      const pending = enrichedData.filter(t => t.status === 'pending').length;
+      const totalRating = enrichedData.reduce((sum, t) => sum + t.rating, 0);
+      const averageRating = enrichedData.length > 0 ? +(totalRating / enrichedData.length).toFixed(1) : 0;
       
       setStats({
-        total: data.length,
+        total: enrichedData.length,
         approved,
         pending,
         averageRating
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching testimonials:', err);
       setError('Failed to load testimonials. Please try again.');
       toast({
@@ -92,8 +112,8 @@ export default function TestimonialManagement() {
       setFilteredTestimonials(testimonials);
     } else {
       const lowercasedSearch = searchTerm.toLowerCase();
-      const filtered = testimonials.filter(testimonial => 
-        testimonial.name.toLowerCase().includes(lowercasedSearch) || 
+      const filtered = testimonials.filter(testimonial =>
+        testimonial.name.toLowerCase().includes(lowercasedSearch) ||
         testimonial.quote.toLowerCase().includes(lowercasedSearch) ||
         testimonial.role.toLowerCase().includes(lowercasedSearch) ||
         testimonial.source.toLowerCase().includes(lowercasedSearch)
@@ -104,24 +124,34 @@ export default function TestimonialManagement() {
   
   const handleAddTestimonial = async () => {
     try {
-      await contentService.createTestimonial(newTestimonial);
+      // Map newTestimonial to Testimonial interface for creation
+      const testimonialToCreate = {
+        user_id: newTestimonial.user_id,
+        service_id: newTestimonial.service_id,
+        booking_id: newTestimonial.booking_id,
+        rating: newTestimonial.rating,
+        comment: newTestimonial.comment, // Map quote to comment
+        status: newTestimonial.status,
+        // created_at and updated_at will be set by backend
+        // user_first_name, user_last_name, service_name are joined fields, not for creation
+      };
+      await contentService.createTestimonial(testimonialToCreate as Omit<Testimonial, 'id'>); // Cast to Omit<Testimonial, 'id'>
       setIsAddDialogOpen(false);
       setNewTestimonial({
-        name: "",
-        role: "",
-        image: "https://images.unsplash.com/photo-1511367461989-f85a21fda167",
-        quote: "",
+        user_id: 0,
+        service_id: 0,
+        booking_id: 0,
         rating: 5,
-        status: "pending" as 'approved' | 'pending' | 'rejected',
-        date: new Date().toISOString().split('T')[0],
-        source: "website" as 'website' | 'google' | 'facebook'
+        comment: "",
+        status: "pending",
+        user_email: "", // Add missing required property
       });
       toast({
         title: "Success",
         description: "Testimonial added successfully",
       });
       fetchTestimonials();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding testimonial:', err);
       toast({
         title: "Error",
@@ -135,7 +165,14 @@ export default function TestimonialManagement() {
     if (!currentTestimonial) return;
     
     try {
-      await contentService.updateTestimonial(currentTestimonial.id, currentTestimonial);
+      // Map currentTestimonial (Enriched) to Partial<Testimonial> for update
+      const testimonialToUpdate: Partial<Testimonial> = {
+        rating: currentTestimonial.rating,
+        comment: currentTestimonial.quote, // Map quote back to comment
+        status: currentTestimonial.status,
+        // Other fields like user_id, service_id, booking_id are typically not updated via this form
+      };
+      await contentService.updateTestimonial(currentTestimonial.id.toString(), testimonialToUpdate); // Convert id to string
       setIsEditDialogOpen(false);
       setCurrentTestimonial(null);
       toast({
@@ -143,7 +180,7 @@ export default function TestimonialManagement() {
         description: "Testimonial updated successfully",
       });
       fetchTestimonials();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating testimonial:', err);
       toast({
         title: "Error",
@@ -157,7 +194,7 @@ export default function TestimonialManagement() {
     if (!currentTestimonial) return;
     
     try {
-      await contentService.deleteTestimonial(currentTestimonial.id);
+      await contentService.deleteTestimonial(currentTestimonial.id.toString()); // Convert id to string
       setIsDeleteDialogOpen(false);
       setCurrentTestimonial(null);
       toast({
@@ -165,7 +202,7 @@ export default function TestimonialManagement() {
         description: "Testimonial deleted successfully",
       });
       fetchTestimonials();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting testimonial:', err);
       toast({
         title: "Error",
@@ -175,15 +212,15 @@ export default function TestimonialManagement() {
     }
   };
   
-  const handleApproveTestimonial = async (id: string) => {
+  const handleApproveTestimonial = async (id: number) => { // Change id type to number
     try {
-      await contentService.approveTestimonial(id);
+      await contentService.approveTestimonial(id.toString()); // Convert id to string
       toast({
         title: "Success",
         description: "Testimonial approved successfully",
       });
       fetchTestimonials();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error approving testimonial:', err);
       toast({
         title: "Error",
@@ -193,15 +230,15 @@ export default function TestimonialManagement() {
     }
   };
   
-  const handleRejectTestimonial = async (id: string) => {
+  const handleRejectTestimonial = async (id: number) => { // Change id type to number
     try {
-      await contentService.rejectTestimonial(id);
+      await contentService.rejectTestimonial(id.toString()); // Convert id to string
       toast({
         title: "Success",
         description: "Testimonial rejected successfully",
       });
       fetchTestimonials();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error rejecting testimonial:', err);
       toast({
         title: "Error",
@@ -247,40 +284,51 @@ export default function TestimonialManagement() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="user_id">User ID</Label>
                     <Input
-                      id="name"
-                      value={newTestimonial.name}
-                      onChange={(e) => setNewTestimonial({...newTestimonial, name: e.target.value})}
-                      placeholder="Customer name"
+                      id="user_id"
+                      value={newTestimonial.user_id.toString()}
+                      onChange={(e) => setNewTestimonial({...newTestimonial, user_id: parseInt(e.target.value) || 0})}
+                      placeholder="User ID"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="role">Role</Label>
+                    <Label htmlFor="service_id">Service ID</Label>
                     <Input
-                      id="role"
-                      value={newTestimonial.role}
-                      onChange={(e) => setNewTestimonial({...newTestimonial, role: e.target.value})}
-                      placeholder="Customer role"
+                      id="service_id"
+                      type="number"
+                      value={newTestimonial.service_id}
+                      onChange={(e) => setNewTestimonial({...newTestimonial, service_id: parseInt(e.target.value)})}
+                      placeholder="Service ID"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="quote">Testimonial</Label>
+                  <Label htmlFor="booking_id">Booking ID</Label>
+                  <Input
+                    id="booking_id"
+                    type="number"
+                    value={newTestimonial.booking_id}
+                    onChange={(e) => setNewTestimonial({...newTestimonial, booking_id: parseInt(e.target.value)})}
+                    placeholder="Booking ID"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="comment">Comment</Label>
                   <Textarea
-                    id="quote"
-                    value={newTestimonial.quote}
-                    onChange={(e) => setNewTestimonial({...newTestimonial, quote: e.target.value})}
-                    placeholder="Customer testimonial"
+                    id="comment"
+                    value={newTestimonial.comment}
+                    onChange={(e) => setNewTestimonial({...newTestimonial, comment: e.target.value})}
+                    placeholder="Testimonial comment"
                     rows={3}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="rating">Rating</Label>
-                    <Select 
-                      value={newTestimonial.rating.toString()} 
-                      onValueChange={(value) => setNewTestimonial({...newTestimonial, rating: parseInt(value)})}
+                    <Select
+                      value={newTestimonial.rating.toString()}
+                      onValueChange={(value: string) => setNewTestimonial({...newTestimonial, rating: parseInt(value)})}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select rating" />
@@ -295,30 +343,21 @@ export default function TestimonialManagement() {
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="source">Source</Label>
-                    <Select 
-                      value={newTestimonial.source} 
-                      onValueChange={(value) => setNewTestimonial({...newTestimonial, source: value as 'website' | 'google' | 'facebook'})}
+                    <Label htmlFor="status">Status</Label>
+                    <Select
+                      value={newTestimonial.status}
+                      onValueChange={(value: 'approved' | 'pending' | 'rejected') => setNewTestimonial({...newTestimonial, status: value})}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select source" />
+                        <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="website">Website</SelectItem>
-                        <SelectItem value="google">Google</SelectItem>
-                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="image">Image URL</Label>
-                  <Input
-                    id="image"
-                    value={newTestimonial.image}
-                    onChange={(e) => setNewTestimonial({...newTestimonial, image: e.target.value})}
-                    placeholder="Image URL"
-                  />
                 </div>
               </div>
               <DialogFooter>
@@ -475,7 +514,7 @@ export default function TestimonialManagement() {
                       </>
                     )}
                     
-                    <Dialog open={isEditDialogOpen && currentTestimonial?.id === testimonial.id} onOpenChange={(open) => {
+                    <Dialog open={isEditDialogOpen && currentTestimonial?.id === testimonial.id} onOpenChange={(open: boolean) => {
                       setIsEditDialogOpen(open);
                       if (!open) setCurrentTestimonial(null);
                     }}>
@@ -497,80 +536,64 @@ export default function TestimonialManagement() {
                           <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-2 gap-4">
                               <div className="grid gap-2">
-                                <Label htmlFor="edit-name">Name</Label>
+                                <Label htmlFor="edit-user_id">User ID</Label>
                                 <Input
-                                  id="edit-name"
-                                  value={currentTestimonial.name}
-                                  onChange={(e) => setCurrentTestimonial({...currentTestimonial, name: e.target.value})}
+                                  id="edit-user_id"
+                                  value={currentTestimonial.user_id.toString()}
+                                  onChange={(e) => setCurrentTestimonial({...currentTestimonial, user_id: parseInt(e.target.value) || 0})}
                                 />
                               </div>
                               <div className="grid gap-2">
-                                <Label htmlFor="edit-role">Role</Label>
+                                <Label htmlFor="edit-service_id">Service ID</Label>
                                 <Input
-                                  id="edit-role"
-                                  value={currentTestimonial.role}
-                                  onChange={(e) => setCurrentTestimonial({...currentTestimonial, role: e.target.value})}
+                                  id="edit-service_id"
+                                  type="number"
+                                  value={currentTestimonial.service_id}
+                                  onChange={(e) => setCurrentTestimonial({...currentTestimonial, service_id: parseInt(e.target.value)})}
                                 />
                               </div>
                             </div>
                             <div className="grid gap-2">
-                              <Label htmlFor="edit-quote">Testimonial</Label>
+                              <Label htmlFor="edit-booking_id">Booking ID</Label>
+                              <Input
+                                id="edit-booking_id"
+                                type="number"
+                                value={currentTestimonial.booking_id}
+                                onChange={(e) => setCurrentTestimonial({...currentTestimonial, booking_id: parseInt(e.target.value)})}
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label htmlFor="edit-comment">Comment</Label>
                               <Textarea
-                                id="edit-quote"
-                                value={currentTestimonial.quote}
+                                id="edit-comment"
+                                value={currentTestimonial.quote} // Map quote to comment
                                 onChange={(e) => setCurrentTestimonial({...currentTestimonial, quote: e.target.value})}
                                 rows={3}
                               />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-rating">Rating</Label>
-                                <Select 
-                                  value={currentTestimonial.rating.toString()} 
-                                  onValueChange={(value) => setCurrentTestimonial({...currentTestimonial, rating: parseInt(value)})}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select rating" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">1 Star</SelectItem>
-                                    <SelectItem value="2">2 Stars</SelectItem>
-                                    <SelectItem value="3">3 Stars</SelectItem>
-                                    <SelectItem value="4">4 Stars</SelectItem>
-                                    <SelectItem value="5">5 Stars</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-source">Source</Label>
-                                <Select 
-                                  value={currentTestimonial.source} 
-                                  onValueChange={(value) => setCurrentTestimonial({...currentTestimonial, source: value as 'website' | 'google' | 'facebook'})}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select source" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="website">Website</SelectItem>
-                                    <SelectItem value="google">Google</SelectItem>
-                                    <SelectItem value="facebook">Facebook</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
                             <div className="grid gap-2">
-                              <Label htmlFor="edit-image">Image URL</Label>
-                              <Input
-                                id="edit-image"
-                                value={currentTestimonial.image}
-                                onChange={(e) => setCurrentTestimonial({...currentTestimonial, image: e.target.value})}
-                              />
+                              <Label htmlFor="edit-rating">Rating</Label>
+                              <Select
+                                value={currentTestimonial.rating.toString()}
+                                onValueChange={(value: string) => setCurrentTestimonial({...currentTestimonial, rating: parseInt(value)})}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select rating" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">1 Star</SelectItem>
+                                  <SelectItem value="2">2 Stars</SelectItem>
+                                  <SelectItem value="3">3 Stars</SelectItem>
+                                  <SelectItem value="4">4 Stars</SelectItem>
+                                  <SelectItem value="5">5 Stars</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="grid gap-2">
                               <Label htmlFor="edit-status">Status</Label>
-                              <Select 
-                                value={currentTestimonial.status} 
-                                onValueChange={(value) => setCurrentTestimonial({...currentTestimonial, status: value as 'approved' | 'pending' | 'rejected'})}
+                              <Select
+                                value={currentTestimonial.status}
+                                onValueChange={(value: 'approved' | 'pending' | 'rejected') => setCurrentTestimonial({...currentTestimonial, status: value})}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select status" />
@@ -591,7 +614,7 @@ export default function TestimonialManagement() {
                       </DialogContent>
                     </Dialog>
                     
-                    <Dialog open={isDeleteDialogOpen && currentTestimonial?.id === testimonial.id} onOpenChange={(open) => {
+                    <Dialog open={isDeleteDialogOpen && currentTestimonial?.id === testimonial.id} onOpenChange={(open: boolean) => {
                       setIsDeleteDialogOpen(open);
                       if (!open) setCurrentTestimonial(null);
                     }}>

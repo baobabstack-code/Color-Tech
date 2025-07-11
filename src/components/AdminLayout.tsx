@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,11 +69,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { title: "Testimonials", path: "/admin/content/testimonials", icon: <MessageSquare className="h-5 w-5" /> },
         { title: "FAQs", path: "/admin/content/faqs", icon: <HelpCircle className="h-5 w-5" /> }
       ]
-    },
-    { 
-      title: "Inventory", 
-      path: "/admin/inventory",
-      icon: <Package className="h-5 w-5" />
     },
     { 
       title: "Reviews", 
@@ -163,14 +160,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               })()}
             </h1>
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-500 hover:text-primary">
+              <button className="p-2 text-gray-500 hover:text-primary" aria-label="Notifications">
                 <Bell className="h-5 w-5" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 text-gray-700 hover:text-primary">
                     <UserCircle className="h-6 w-6" />
-                    <span>{user?.fullName || 'Admin'}</span>
+                    <span>{user?.name || 'Admin'}</span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
                 </DropdownMenuTrigger>

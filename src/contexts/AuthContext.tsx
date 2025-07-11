@@ -91,6 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     id: session.user.id,
     email: session.user.email || '',
     name: session.user.name,
+    role: (session.user as any).role, // Cast session.user to any to access role
   } : null;
 
   return (

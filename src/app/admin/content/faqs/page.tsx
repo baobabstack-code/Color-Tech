@@ -11,7 +11,7 @@ import {
   ChevronDown, ChevronUp, RefreshCw, AlertCircle
 } from "lucide-react";
 import { contentService, FAQ } from "@/services/contentService";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -228,7 +228,7 @@ export default function FaqManagement() {
                     <Label htmlFor="status">Status</Label>
                     <Select 
                       value={newFaq.status} 
-                      onValueChange={(value) => setNewFaq({...newFaq, status: value as 'draft' | 'published'})}
+                      onValueChange={(value: 'draft' | 'published') => setNewFaq({...newFaq, status: value})}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -361,7 +361,7 @@ export default function FaqManagement() {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Dialog open={isEditDialogOpen && currentFaq?.id === faq.id} onOpenChange={(open) => {
+                    <Dialog open={isEditDialogOpen && currentFaq?.id === faq.id} onOpenChange={(open: boolean) => {
                       setIsEditDialogOpen(open);
                       if (!open) setCurrentFaq(null);
                     }}>
@@ -411,7 +411,7 @@ export default function FaqManagement() {
                                 <Label htmlFor="edit-status">Status</Label>
                                 <Select 
                                   value={currentFaq.status} 
-                                  onValueChange={(value) => setCurrentFaq({...currentFaq, status: value as 'draft' | 'published'})}
+                                  onValueChange={(value: 'draft' | 'published') => setCurrentFaq({...currentFaq, status: value})}
                                 >
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select status" />
@@ -432,7 +432,7 @@ export default function FaqManagement() {
                       </DialogContent>
                     </Dialog>
                     
-                    <Dialog open={isDeleteDialogOpen && currentFaq?.id === faq.id} onOpenChange={(open) => {
+                    <Dialog open={isDeleteDialogOpen && currentFaq?.id === faq.id} onOpenChange={(open: boolean) => {
                       setIsDeleteDialogOpen(open);
                       if (!open) setCurrentFaq(null);
                     }}>
@@ -509,7 +509,7 @@ export default function FaqManagement() {
                 <Label htmlFor="status">Status</Label>
                 <Select 
                   value={newFaq.status} 
-                  onValueChange={(value) => setNewFaq({...newFaq, status: value as 'draft' | 'published'})}
+                  onValueChange={(value: 'draft' | 'published') => setNewFaq({...newFaq, status: value})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />

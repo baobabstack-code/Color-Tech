@@ -12,37 +12,14 @@ import {
   MoreHorizontal, Loader2, UserPlus,
   Trash2, Edit, Eye
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { getAllUsers, deleteUser } from "@/services/userService";
+import type { User } from "@/services/userService"; // Import User interface
 import { getBookingsByUserId } from "@/services/bookingService";
+import type { Booking } from "@/services/bookingService"; // Import Booking interface
 import { getReviewsByUserId } from "@/services/reviewService";
+import type { Review } from "@/services/reviewService"; // Import Review interface
 
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  role: string;
-  createdAt: string;
-  status: 'active' | 'inactive';
-}
-
-interface Booking {
-  id: string;
-  serviceName: string;
-  scheduledDate: string;
-  scheduledTime: string;
-  status: string;
-}
-
-interface Review {
-  id: string;
-  serviceName: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-}
 
 export default function CustomerManagement() {
   const { toast } = useToast();
@@ -138,8 +115,7 @@ export default function CustomerManagement() {
   const filteredUsers = users.filter(user => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      user.firstName.toLowerCase().includes(searchLower) ||
-      user.lastName.toLowerCase().includes(searchLower) ||
+      user.fullName.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
       user.phone.toLowerCase().includes(searchLower)
     );
@@ -187,7 +163,7 @@ export default function CustomerManagement() {
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-medium">{user.firstName} {user.lastName}</h3>
+                        <h3 className="font-medium">{user.fullName}</h3>
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                       <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
@@ -225,7 +201,7 @@ export default function CustomerManagement() {
                 <>
                   <div className="flex justify-between items-start mb-6">
                     <div>
-                      <h2 className="text-2xl font-semibold">{selectedUser.firstName} {selectedUser.lastName}</h2>
+                      <h2 className="text-2xl font-semibold">{selectedUser.fullName}</h2>
                       <p className="text-gray-500">{selectedUser.email}</p>
                     </div>
                     <div className="flex gap-2">

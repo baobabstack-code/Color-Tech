@@ -116,7 +116,7 @@ export function RegisterForm() { // Renamed component
   };
 
   return (
-    <Card>
+    <Card className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30">
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -125,9 +125,14 @@ export function RegisterForm() { // Renamed component
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-white">Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} disabled={isLoading} />
+                    <Input
+                      placeholder="John Doe"
+                      {...field}
+                      disabled={isLoading}
+                      className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -139,9 +144,15 @@ export function RegisterForm() { // Renamed component
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-white">Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" type="email" {...field} disabled={isLoading} />
+                    <Input
+                      placeholder="name@example.com"
+                      type="email"
+                      {...field}
+                      disabled={isLoading}
+                      className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,9 +164,14 @@ export function RegisterForm() { // Renamed component
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-white">Phone Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="+1 (555) 000-0000" {...field} disabled={isLoading} />
+                    <Input
+                      placeholder="+1 (555) 000-0000"
+                      {...field}
+                      disabled={isLoading}
+                      className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,9 +183,14 @@ export function RegisterForm() { // Renamed component
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-white">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} disabled={isLoading} />
+                    <Input
+                      type="password"
+                      {...field}
+                      disabled={isLoading}
+                      className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -181,16 +202,25 @@ export function RegisterForm() { // Renamed component
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel className="text-slate-800 dark:text-white">Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} disabled={isLoading} />
+                    <Input
+                      type="password"
+                      {...field}
+                      disabled={isLoading}
+                      className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white hover:bg-primary/90 dark:bg-sky-500 dark:hover:bg-sky-600 shadow-lg transition-colors duration-200"
+              disabled={isLoading}
+            >
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
@@ -202,29 +232,29 @@ export function RegisterForm() { // Renamed component
       <CardFooter className="flex flex-col space-y-4">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full border-t border-gray-200 dark:border-gray-700" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
+            <span className="bg-background px-2 text-muted-foreground dark:text-gray-200">
               Or continue with
             </span>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-6">
-          <Button variant="outline" disabled={isLoading}>
-            <Icons.gitHub className="mr-2 h-4 w-4" />
+          <Button variant="outline" disabled={isLoading} className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+            <Icons.gitHub className="mr-2 h-4 w-4 text-slate-800 dark:text-white" />
             Github
           </Button>
-          <Button variant="outline" disabled={isLoading}>
-            <Icons.google className="mr-2 h-4 w-4" />
+          <Button variant="outline" disabled={isLoading} className="bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+            <Icons.google className="mr-2 h-4 w-4 text-slate-800 dark:text-white" />
             Google
           </Button>
         </div>
-        <p className="px-8 text-center text-sm text-muted-foreground">
+        <p className="px-8 text-center text-sm text-muted-foreground dark:text-gray-200">
           Already have an account?{" "}
           <Link
-            href="/login" // Assuming /login is the correct path for the login page
-            className="underline underline-offset-4 hover:text-primary"
+            href="/login"
+            className="underline underline-offset-4 hover:text-primary dark:hover:text-white"
           >
             Sign in
           </Link>
