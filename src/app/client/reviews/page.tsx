@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Edit2, Trash2, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Select, 
   SelectContent, 
@@ -220,7 +220,7 @@ const ClientReviews = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {services.map(service => (
-                        <SelectItem key={service.id} value={service.id}>
+                        <SelectItem key={service.id} value={service.id.toString()}>
                           {service.name}
                         </SelectItem>
                       ))}
@@ -238,6 +238,7 @@ const ClientReviews = () => {
                       type="button"
                       onClick={() => setRating(star)}
                       className="focus:outline-none"
+                      aria-label={`Rate ${star} stars`}
                     >
                       <Star 
                         className={`h-6 w-6 ${star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} 

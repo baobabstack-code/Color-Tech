@@ -58,11 +58,15 @@ export default async function HomePage() {
   ]);
 
   return (
-    <HomePageClient
-      featuredPosts={featuredPosts as any}
-      testimonials={testimonials as any}
-      galleryPreviews={galleryPreviews as any}
-      services={services as any}
-    />
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1">
+        <HomePageClient
+          featuredPosts={featuredPosts as any}
+          testimonials={testimonials as any}
+          galleryPreviews={galleryPreviews as any}
+          services={services as any}
+        />
+      </main>
+    </div>
   );
 }

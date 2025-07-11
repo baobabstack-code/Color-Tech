@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Calendar, CheckCircle, Loader2 } from "lucide-react";
 import { getBookingHistory, Booking } from '@/services/bookingService';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const ServiceHistory = () => {
   const { toast } = useToast();
@@ -60,7 +60,7 @@ const ServiceHistory = () => {
                       <h3 className="font-semibold">{booking.serviceName}</h3>
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <Calendar className="w-4 h-4" />
-                        <span>Completed on {formatDate(booking.date || booking.completedAt || booking.createdAt)}</span>
+                        <span>Completed on {formatDate(booking.scheduledDate || booking.createdAt)}</span>
                       </div>
                     </div>
                   </div>

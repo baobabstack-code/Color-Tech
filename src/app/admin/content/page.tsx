@@ -90,38 +90,39 @@ export default function ContentManagement() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Content Management</h1>
-        <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            onClick={fetchContentCounts} 
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Content Management</h1>
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={fetchContentCounts}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Settings className="h-4 w-4 mr-2" />
             Content Settings
           </Button>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
         {contentSections.map((section) => (
-          <Card key={section.title} className="p-6">
-            <Link href={section.path} className="block">
+          <Card key={section.title} className="p-4 sm:p-6 flex flex-col items-center text-center">
+            <Link href={section.path} className="block w-full">
               <div className="flex flex-col items-center text-center">
-                <div className="p-3 bg-primary/10 rounded-full mb-4">
+                <div className="p-3 bg-primary/10 rounded-full mb-3 sm:mb-4">
                   {section.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{section.title}</h3>
-                <p className="text-gray-600 mb-4">{section.description}</p>
-                <div className="text-sm text-gray-500">
+                <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">{section.title}</h3>
+                <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4">{section.description}</p>
+                <div className="text-xs sm:text-sm text-gray-500">
                   {isLoading ? (
-                    <span className="flex items-center">
+                    <span className="flex items-center justify-center">
                       <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
                       Loading...
                     </span>

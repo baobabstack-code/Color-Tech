@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Car, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getMyBookings, cancelBooking, Booking } from '@/services/bookingService';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const ClientBookings = () => {
@@ -106,10 +106,10 @@ const ClientBookings = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">My Bookings</h1>
-        <Button onClick={() => router.push('/booking')}>Book New Service</Button>
+    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">My Bookings</h1>
+        <Button onClick={() => router.push('/booking')} className="w-full sm:w-auto">Book New Service</Button>
       </div>
       
       {isLoading ? (
@@ -117,32 +117,36 @@ const ClientBookings = () => {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {bookings.length > 0 ? (
             bookings.map((booking) => (
-              <Card key={booking.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Car className="w-8 h-8 text-secondary" />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{booking.serviceName || 'Service'}</h3>
-                        <span className={`text-sm font-medium ${getStatusBadgeClass(booking.status)}`}>
+              <Card key={booking.id} className="p-4 sm:p-6 flex flex-col">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-grow">
+                  <div className="flex items-start space-x-3 sm:space-x-4 mb-4 sm:mb-0">
+                    <Car className="w-6 h-6 sm:w-8 sm:h-8 text-secondary shrink-0" />
+                    <div className="flex-grow">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 mb-1">
+                        <h3 className="font-semibold text-lg sm:text-xl">{booking.serviceName || 'Service'}</h3>
+                        <span className={`text-xs sm:text-sm font-medium px-2 py-0.5 rounded-full ${getStatusBadgeClass(booking.status)}`}>
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1).replace('_', ' ')}
                         </span>
                       </div>
-                      <div className="flex items-center space-x-3 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDate(booking.scheduledDate)}</span>
-                        <Clock className="w-4 h-4" />
-                        <span>{formatTime(booking.scheduledTime)}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4 shrink-0" />
+                          <span>{formatDate(booking.scheduledDate)}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4 shrink-0" />
+                          <span>{formatTime(booking.scheduledTime)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => router.push(`/booking/${booking.id}`)}>View Details</Button>
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                    <Button variant="outline" onClick={() => router.push(`/booking/${booking.id}`)} className="w-full">View Details</Button>
                     {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                      <Button variant="outline" className="text-red-500 border-red-200 hover:bg-red-50" onClick={() => openCancelDialog(booking)}>
+                      <Button variant="outline" className="w-full text-red-500 border-red-200 hover:bg-red-50" onClick={() => openCancelDialog(booking)}>
                         Cancel
                       </Button>
                     )}
@@ -151,8 +155,8 @@ const ClientBookings = () => {
               </Card>
             ))
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">You don't have any bookings yet.</p>
+            <div className="text-center py-12 col-span-full">
+              <p className="text-gray-500 text-lg mb-4">You don't have any bookings yet.</p>
               <Button className="mt-4" onClick={() => router.push('/booking')}>Book Your First Service</Button>
             </div>
           )}
@@ -160,16 +164,16 @@ const ClientBookings = () => {
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Cancel Booking</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl">Cancel Booking</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">
               Are you sure you want to cancel this booking? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isCancelling}>Cancel</Button>
-            <Button variant="destructive" onClick={handleCancelBooking} disabled={isCancelling}>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isCancelling} className="w-full sm:w-auto">Cancel</Button>
+            <Button variant="destructive" onClick={handleCancelBooking} disabled={isCancelling} className="w-full sm:w-auto">
               {isCancelling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Cancellation
             </Button>
