@@ -2,7 +2,7 @@ import React from 'react';
 import { AccessibleColorPalette, AccessibleColorGrid } from '@/components/ui/AccessibleColorPalette';
 import { ContrastDemonstration, TextReadabilityDemonstration, TextSpacingDemonstration } from '@/components/ui/ContrastDemonstration';
 import { InteractiveStatesDemonstration } from '@/components/ui/InteractiveStatesDemonstration';
-import { ContrastChecker } from '@/components/ui/ContrastChecker';
+import { ContrastChecker } from '@/components/accessibility/ContrastChecker';
 import { ColorContrastGrid } from '@/components/ui/ColorContrastGrid';
 import { AccessibilityHooksDemo } from '@/components/ui/AccessibilityHooksDemo';
 import { SkipToContent, MainContentArea } from '@/components/accessibility/SkipToContent';
@@ -10,8 +10,8 @@ import { AccessibleDialog } from '@/components/ui/AccessibleDialog';
 import { AccessibleImage, DecorativeImage } from '@/components/ui/AccessibleImage';
 import { FormInput } from '@/components/ui/FormInput';
 import { ErrorMessage, FormErrorSummary } from '@/components/ui/ErrorMessage';
-import { Button } from '@/components/ui/Button';
-import { AccessibleTooltip } from '@/components/ui/Tooltip';
+import { Button } from '@/components/ui/button';
+import { AccessibleTooltip } from '@/components/ui/tooltip';
 
 export default function AccessibilityShowcase() {
   // Sample color combinations for demonstration

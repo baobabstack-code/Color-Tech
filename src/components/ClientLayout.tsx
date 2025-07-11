@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -104,14 +105,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               })()}
             </h1>
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-500 hover:text-primary">
+              <button className="p-2 text-gray-500 hover:text-primary" aria-label="Notifications">
                 <Bell className="h-5 w-5" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 text-gray-700 hover:text-primary">
                     <User className="h-6 w-6" />
-                    <span>{user?.fullName || 'Client'}</span>
+                    <span>{user?.name || 'Client'}</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
