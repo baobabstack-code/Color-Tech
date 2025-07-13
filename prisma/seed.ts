@@ -1,0 +1,95 @@
+import { PrismaClient } from '@prisma/client';
+import {
+  customers as mockCustomers,
+  services as mockServices,
+  bookings as mockBookings,
+  reviews as mockReviews,
+} from '../src/lib/mock-db.ts';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('Start seeding ...');
+
+  // Clear existing data
+  await prisma.review.deleteMany();
+  await prisma.booking.deleteMany();
+  await prisma.service.deleteMany();
+  await prisma.user.deleteMany();
+
+  console.log('Seeding users...');
+  const createdUsers = [];
+  for (const customer of mockCustomers) {
+    const user = await prisma.user.create({
+      data: {
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+      },
+    });
+    createdUsers.push(user);
+    console.log(`Created user with id: ${user.id}`);
+  }
+
+  console.log('Seeding services...');
+  const createdServices = [];
+  for (const service of mockServices) {
+    const newService = await prisma.service.create({
+      data: {
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        price: service.price,
+        duration: service.duration,
+        isActive: service.isActive,
+      },
+    });
+    createdServices.push(newService);
+    console.log(`Created service with id: ${newService.id}`);
+  }
+
+  console.log('Seeding bookings...');
+  const createdBookings = [];
+  for (const booking of mockBookings) {
+    const newBooking = await prisma.booking.create({
+      data: {
+        id: booking.id,
+        customerId: booking.customerId,
+        serviceId: booking.serviceId,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        status: booking.status as any, // Cast because enum name differs slightly
+        notes: booking.notes,
+      },
+    });
+    createdBookings.push(newBooking);
+    console.log(`Created booking with id: ${newBooking.id}`);
+  }
+
+  console.log('Seeding reviews...');
+  for (const review of mockReviews) {
+    await prisma.review.create({
+      data: {
+        id: review.id,
+        bookingId: review.bookingId,
+        customerId: review.customerId,
+        serviceId: review.serviceId,
+        rating: review.rating,
+        comment: review.comment,
+      },
+    });
+    console.log(`Created review with id: ${review.id}`);
+  }
+
+  console.log('Seeding finished.');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

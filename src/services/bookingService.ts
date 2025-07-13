@@ -1,50 +1,37 @@
 import api from './api';
 
+// Interfaces to match the API response structure
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+  duration: number;
+}
+
 export interface Booking {
   id: string;
-  userId: string;
-  vehicleId: string;
+  customerId: string;
   serviceId: string;
-  scheduledDate: string;
-  scheduledTime: string;
-  status: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
+  scheduledAt: string;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
-  // Joined fields
-  clientName?: string;
-  serviceName?: string;
-  serviceDescription?: string;
+  customer?: Customer; // Enriched data
+  service?: Service;   // Enriched data
 }
 
-export interface CreateBookingData {
-  userId: string;
-  vehicleId: string;
-  serviceId: string;
-  scheduledDate: string;
-  scheduledTime: string;
-  notes?: string;
-}
+export type CreateBookingData = Omit<Booking, 'id' | 'customer' | 'service'>;
+export type UpdateBookingData = Partial<Omit<Booking, 'id' | 'customer' | 'service'>>;
 
-export interface UpdateBookingData {
-  scheduledDate?: string;
-  scheduledTime?: string;
-  status?: 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';
-  notes?: string;
-}
-
-// Admin: Get all bookings
+// Get all bookings with enriched customer and service data
 export const getAllBookings = async (): Promise<Booking[]> => {
-  if (typeof window === 'undefined') {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(process.cwd(), 'src/data/bookings.json');
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const bookings: Booking[] = JSON.parse(fileContent);
-    return bookings;
-  } else {
-    return [];
-  }
+  const response = await api.get('/bookings');
+  return response.data;
 };
 
 // Client: Get current user's bookings
