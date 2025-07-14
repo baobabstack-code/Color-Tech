@@ -174,7 +174,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
       <div className="min-h-screen">
         {/* Hero Section */}
         <motion.div
-          className="relative h-[600px] flex items-center justify-center"
+          className="relative h-[600px] flex items-center justify-center mt-24"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
