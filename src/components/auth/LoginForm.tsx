@@ -88,136 +88,116 @@ export default function LoginForm({ type, redirectPath }: LoginFormProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            {getIcon()}
-          </div>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {getTitle()}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-200">
-            Sign in to access your account
-          </p>
-        </div>
+    <Card className="w-full shadow-2xl border-white/20 bg-slate-900/80 rounded-2xl">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-8 sm:p-10">
+          {loginError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Login Failed</AlertTitle>
+              <AlertDescription>{loginError}</AlertDescription>
+            </Alert>
+          )}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="dark:text-slate-100">Email</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-200" />
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="your@email.com"
+                      className="pl-10 h-12 text-base bg-slate-800/80 border-slate-600 dark:text-white dark:placeholder-slate-300"
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="dark:text-slate-100">Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-200" />
+                    <Input
+                      {...field}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="pl-10 h-12 text-base bg-slate-800/80 border-slate-600 dark:text-white dark:placeholder-slate-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-300 hover:text-white focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {loginError && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Authentication Error</AlertTitle>
-            <AlertDescription>{loginError}</AlertDescription>
-          </Alert>
-        )}
-
-        <Card className="mt-8 p-6 shadow-xl border border-white/30 bg-white/90 dark:bg-slate-900/90 rounded-2xl">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-slate-800 dark:text-white">Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" />
-                        <Input
-                          {...field}
-                          placeholder="Enter your email"
-                          className="pl-10 bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
-                          disabled={isLoading}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-slate-800 dark:text-white">Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" />
-                        <Input
-                          {...field}
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Enter your password"
-                          className="pl-10 bg-white/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-fuchsia-400 transition-all duration-200 border border-white/40"
-                          disabled={isLoading}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                          disabled={isLoading}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
-                          ) : (
-                            <Eye className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-slate-700"
-                    disabled={isLoading}
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-200">
-                    Remember me
-                  </label>
-                </div>
-
-                <div className="text-sm">
-                  <a href="#" className="font-medium text-primary hover:text-primary/80 dark:text-sky-300 dark:hover:text-sky-200">
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-primary text-white hover:bg-primary/90 dark:bg-sky-500 dark:hover:bg-sky-600 shadow-lg transition-colors duration-200"
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-slate-500 dark:bg-slate-700"
                 disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign in"
-                )}
-              </Button>
-            </form>
-          </Form>
-        </Card>
+              />
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-slate-200">
+                Remember me
+              </label>
+            </div>
 
-        <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-200">
-          <p>
-            Need help? Contact{" "}
-            <a href="mailto:support@colortech.com" className="font-medium text-primary hover:text-primary/80 dark:text-sky-300 dark:hover:text-sky-200">
-              Support
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+            <div className="text-sm">
+              <a href="#" className="font-medium text-primary hover:text-primary/80 dark:text-sky-300 dark:hover:text-sky-200">
+                Forgot password?
+              </a>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-12 text-lg font-semibold bg-primary text-white hover:bg-primary/90 dark:bg-sky-500 dark:hover:bg-sky-600 shadow-lg transition-colors duration-200"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </Button>
+
+          <div className="mt-4 text-center text-sm text-gray-600 dark:text-slate-200">
+            <p>
+              Need help? Contact{" "}
+              <a href="mailto:support@colortech.com" className="font-medium text-primary hover:text-primary/80 dark:text-sky-300 dark:hover:text-sky-200">
+                Support
+              </a>
+            </p>
+          </div>
+        </form>
+      </Form>
+    </Card>
   );
 }

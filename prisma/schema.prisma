@@ -14,20 +14,21 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  phone     String?
+  id        Int       @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  email     String    @unique @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
   bookings  Booking[]
   reviews   Review[]
+  posts     Post[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
 model Service {
-  id          String    @id @default(cuid())
-  name        String
-  description String
+  id       Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String   @db.Text
   price       Float
   duration    Int // Duration in minutes
   isActive    Boolean   @default(true)
@@ -38,31 +39,48 @@ model Service {
 }
 
 model Booking {
-  id         String        @id @default(cuid())
-  customerId String
-  serviceId  String
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  serviceId  Int
   startTime  DateTime
   endTime    DateTime
   status     BookingStatus @default(pending)
-  notes      String?
-  customer   User          @relation(fields: [customerId], references: [id])
-  service    Service       @relation(fields: [serviceId], references: [id])
-  review     Review?       // A booking can have one review
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  notes      String?  @db.VarChar(500)
+  customer   User     @relation(fields: [customerId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id])
+  review     Review?   // A booking can have one review
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Review {
-  id         String   @id @default(cuid())
-  bookingId  String   @unique // Each booking can only be reviewed once
-  customerId String
-  serviceId  String
+  id         Int      @id @default(autoincrement())
+  bookingId  Int     @unique // Each booking can only be reviewed once
+  customerId Int
+  serviceId  Int
   rating     Int
-  comment    String?
+  comment    String?  @db.VarChar(500)
   booking    Booking  @relation(fields: [bookingId], references: [id])
   customer   User     @relation(fields: [customerId], references: [id])
   service    Service  @relation(fields: [serviceId], references: [id])
   createdAt  DateTime @default(now())
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  excerpt   String?  @db.VarChar(500)
+  imageUrl  String?  @db.VarChar(512)
+  isPublished Boolean @default(false)
+  slug      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  
+  @@index([slug])
+  @@index([isPublished])
 }
 
 enum BookingStatus {

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion } from 'framer-motion';
 import { Toaster } from "@/components/ui/sonner";
+import CTA from "@/components/CTA";
 
 // Define interfaces for fetched data
 interface Service {
@@ -83,22 +84,22 @@ interface HomePageClientProps {
 export default function HomePageClient({ featuredPosts, testimonials, galleryPreviews, services }: HomePageClientProps) {
   const features = [
     {
-      icon: <Wrench className="h-8 w-8 text-primary dark:text-white" />, // always visible
+      icon: <Wrench className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Expert Panel Beating",
       description: "Professional repair services for all vehicle types"
     },
     {
-      icon: <Car className="h-8 w-8 text-primary dark:text-white" />,
+      icon: <Car className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Spray Painting",
       description: "Premium quality paint jobs and color matching"
     },
     {
-      icon: <Star className="h-8 w-8 text-yellow-400 dark:text-yellow-300" />,
+      icon: <Star className="h-8 w-8 text-yellow-400 dark:text-yellow-400" />,
       title: "Quality Guaranteed",
       description: "100% satisfaction guarantee on all services"
     },
     {
-      icon: <Clock className="h-8 w-8 text-primary dark:text-white" />,
+      icon: <Clock className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Quick Turnaround",
       description: "Efficient service with minimal downtime"
     }
@@ -113,17 +114,17 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
 
   const process = [
     {
-      icon: <Camera className="h-12 w-12 text-primary dark:text-white" />,
+      icon: <Camera className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Initial Assessment",
       description: "We thoroughly inspect your vehicle and document all damage"
     },
     {
-      icon: <Settings className="h-12 w-12 text-primary dark:text-white" />,
+      icon: <Settings className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Repair Planning",
       description: "Our experts create a detailed repair plan and timeline"
     },
     {
-      icon: <Wrench className="h-12 w-12 text-primary dark:text-white" />,
+      icon: <Wrench className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Expert Repairs",
       description: "Skilled technicians perform the necessary repairs"
     },
@@ -136,9 +137,9 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
 
   // Process data for rendering
   const displayedServices = services.slice(0, 3).map((service: Service, index: number) => ({
-    icon: service.name.includes('Panel') ? <Wrench className="h-10 w-10 text-primary dark:text-white" /> :
-          service.name.includes('Paint') ? <Paintbrush className="h-10 w-10 text-primary dark:text-white" /> :
-          <Shield className="h-10 w-10 text-primary dark:text-white" />, // Default or more specific logic
+    icon: service.name.includes('Panel') ? <Wrench className="h-10 w-10 text-primary dark:text-sky-400" /> :
+          service.name.includes('Paint') ? <Paintbrush className="h-10 w-10 text-primary dark:text-sky-400" /> :
+          <Shield className="h-10 w-10 text-primary dark:text-sky-400" />, // Default or more specific logic
     title: service.name,
     description: service.description,
     link: service.name.toLowerCase().replace(/\s/g, '-') // Generate slug from name
@@ -233,8 +234,8 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         {/* Enhanced Features Section */}
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Why Choose Us</h2>
-            <p className="text-lg text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Why Choose Us</h2>
+            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
               We combine expertise, quality, and customer service to deliver the best auto body repair experience
             </p>
           </div>
@@ -254,7 +255,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className="p-8 bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300"
+                className="p-8 bg-white/90 dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
@@ -263,7 +264,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 <div className="flex flex-col items-center text-center">
                   {feature.icon}
                   <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">{feature.title}</h3>
-                  <p className="text-gray-700 dark:text-gray-200">{feature.description}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -275,7 +276,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">Our Services</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-200">
+              <p className="text-lg text-gray-700 dark:text-gray-300">
                 Comprehensive auto body repair and painting services
               </p>
             </div>
@@ -299,22 +300,18 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                   className="block" // Make the link a block element to wrap the card
                 >
                   <motion.div
-                    className="bg-white/90 dark:bg-slate-900/90 p-8 rounded-2xl shadow-xl border border-white/30 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group"
+                    className="p-8 bg-white/90 dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col items-start text-left h-full hover:scale-105 hover:shadow-2xl transition-all duration-300"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                     whileHover={{ scale: 1.07 }}
                   >
-                    <div className="mb-4">
-                      {service.icon}
+                    {service.icon}
+                    <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">{service.title}</h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">{service.description}</p>
+                    <div className="mt-auto flex items-center text-primary dark:text-sky-400 font-semibold">
+                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white group-hover:text-primary">{service.title}</h3>
-                    <p className="text-gray-700 dark:text-gray-200 mb-4 group-hover:text-primary/90">
-                      {service.description}
-                    </p>
-                    <span className="text-primary hover:text-primary/80 flex items-center font-semibold">
-                      Learn More <ArrowRight className="ml-2 h-4 w-4 text-primary dark:text-white group-hover:text-primary" />
-                    </span>
                   </motion.div>
                 </Link>
               ))}
@@ -323,31 +320,42 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Process Section */}
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Our Process</h2>
-            <p className="text-lg text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
-              We follow a systematic approach to ensure the highest quality repairs
-            </p>
-          </div>
-          <div className="grid md:grid-cols-4 gap-8">
-            {process.map((step, index) => (
-              <div key={index} className="relative">
-                <div className="flex flex-col items-center text-center bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 p-8 hover:scale-105 hover:shadow-2xl transition-all duration-300">
-                  <div className="mb-4 relative">
-                    <div className="absolute inset-0 bg-primary/10 rounded-full scale-150"></div>
-                    {step.icon}
+        <div className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary dark:text-white">Our Process</h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+                A streamlined and transparent process from start to finish, ensuring your peace of mind.
+              </p>
+            </div>
+            <div className="relative">
+              <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 dark:bg-slate-700" />
+              <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8">
+                {process.map((step, index) => (
+                  <div key={index} className="flex flex-col items-center text-center">
+                    <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-lg">
+                      {step.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold mt-6 mb-2 text-slate-900 dark:text-white">{step.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">{step.title}</h3>
-                  <p className="text-gray-700 dark:text-gray-200">{step.description}</p>
-                </div>
-                {index < process.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2">
-                    <ArrowRight className="w-6 h-6 text-slate-900 dark:text-white" />
-                  </div>
-                )}
+                ))}
               </div>
-            ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <div className="py-16 bg-gray-50 dark:bg-slate-900">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              {stats.map((stat, index) => (
+                <div key={index}>
+                  <h3 className="text-4xl font-bold text-primary dark:text-white">{stat.value}</h3>
+                  <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">{stat.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -355,17 +363,17 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white mb-4">
+              <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
                 Transformation Gallery
               </h2>
-              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
                 See the dramatic transformations we achieve through our expert repair and restoration work
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               {displayedGalleryPreviews.map((preview, index) => (
                 <Link key={index} href="/gallery" className="block">
-                  <div className="group relative overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300">
+                  <div className="group relative overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 hover:scale-[1.02] transition-transform duration-300">
                     <div className="aspect-video relative">
                       <Image
                         src={preview.after}
@@ -397,96 +405,91 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 </Link>
               ))}
             </div>
-            <div className="text-center mt-8">
-              <Button variant="outline" size="lg" className="text-white border-white hover:bg-white/10 shadow-lg" asChild>
-                <Link href="/gallery">
-                  View Full Gallery
-                  <ArrowRight className="ml-2 h-4 w-4 text-white" />
-                </Link>
-              </Button>
-            </div>
           </div>
         </div>
 
-        {/* Enhanced Stats Section */}
-        <div className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 p-8 hover:scale-105 hover:shadow-2xl transition-all duration-300">
-                  <div className="text-3xl sm:text-4xl font-bold text-primary dark:text-white mb-2">{stat.value}</div>
-                  <div className="text-gray-700 dark:text-gray-100">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Testimonials Section */}
-        <div className="py-16">
+        {/* Testimonials Section */}
+        <div className="py-16 bg-gray-50 dark:bg-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">What Our Clients Say</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-100">
-                Don't just take our word for it
+              <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
+                What Our Customers Say
+              </h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+                Real stories from satisfied clients who trust us with their vehicles.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {displayedTestimonials.map((testimonial, index) => (
-                <Card key={index} className="p-8 bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full overflow-hidden mb-4 relative border-4 border-primary/20 shadow-lg">
-                      <Image
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        fill
-                        style={{objectFit: "cover"}}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.srcset = '/images/default-avatar.png';
-                          target.src = '/images/default-avatar.png';
-                        }}
-                      />
+                <Card key={index} className="p-6 bg-white dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center mr-4">
+                      <Users className="h-6 w-6 text-primary dark:text-sky-400" />
                     </div>
-                    <Quote className="h-8 w-8 text-primary dark:text-white mb-4" />
-                    <p className="text-gray-700 dark:text-gray-200 mb-4 italic">"{testimonial.quote}"</p>
-                    <div className="flex items-center justify-center space-x-1 mb-2">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                      ))}
+                    <div>
+                      <h4 className="font-semibold text-slate-900 dark:text-white">{testimonial.name}</h4>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-slate-600'}`} fill="currentColor" />
+                        ))}
+                      </div>
                     </div>
-                    <h4 className="font-semibold text-slate-900 dark:text-white">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</p>
                   </div>
+                  <blockquote className="text-gray-600 dark:text-gray-300 italic flex-grow">
+                    <Quote className="h-5 w-5 text-gray-300 dark:text-slate-600 mr-2 inline-block" />
+                    {testimonial.quote}
+                  </blockquote>
                 </Card>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Enhanced CTA Section */}
-        <div className="container mx-auto px-4 py-16">
-          <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
-            <div className="relative z-10">
-              <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-              <p className="text-lg mb-8 max-w-2xl mx-auto">
-                Contact us today for a free consultation and quote. Our expert team is ready to help!
+        {/* Blog Section */}
+        <div className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
+                From Our Blog
+              </h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+                Stay updated with the latest news, tips, and insights from our experts.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
-                  <Link href="/contact" className="flex items-center gap-2">
-                    <PhoneCall className="h-5 w-5 text-white" />
-                    Contact Us
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
-                  <Link href="/services">View All Services</Link>
-                </Button>
-              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredPosts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.id}`} className="block group">
+                  <Card className="overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 h-full flex flex-col hover:scale-[1.02] transition-transform duration-300">
+                    {post.image_url && (
+                      <div className="relative h-48">
+                        <Image
+                          src={post.image_url}
+                          alt={post.title}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                          className="group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-sky-400">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
+                        {post.body.substring(0, 100)}...
+                      </p>
+                      <div className="mt-auto flex items-center text-sm text-primary dark:text-sky-400 font-semibold">
+                        Read More <ArrowRight className="ml-2 h-4 w-4" />
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
+        {/* CTA Section */}
+        <CTA />
       </div>
     </>
   );

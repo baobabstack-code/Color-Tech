@@ -9,7 +9,7 @@ import {
   MessageSquare, Plus, Filter, ArrowUpDown,
   Edit, Trash2, Star, Calendar, User,
   CheckCircle, XCircle, Flag, ThumbsUp,
-  AlertCircle
+  AlertCircle, RefreshCw
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";

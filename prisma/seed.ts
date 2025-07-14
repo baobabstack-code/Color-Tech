@@ -5,6 +5,7 @@ import {
   bookings as mockBookings,
   reviews as mockReviews,
 } from '../src/lib/mock-db.ts';
+import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +33,18 @@ async function main() {
     console.log(`Created user with id: ${user.id}`);
   }
 
+  console.log('Seeding admin user...');
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: {},
+    create: {
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: await hash('password123', 12),
+    },
+  });
+  console.log(`Created admin user with id: ${admin.id}`);
+
   console.log('Seeding services...');
   const createdServices = [];
   for (const service of mockServices) {
@@ -48,6 +61,40 @@ async function main() {
     createdServices.push(newService);
     console.log(`Created service with id: ${newService.id}`);
   }
+
+  const sampleServices = await Promise.all([
+    prisma.service.upsert({
+      where: { name: 'Haircut' },
+      update: {},
+      create: {
+        name: 'Haircut',
+        description: 'Professional haircut service',
+        price: 30.00,
+        duration: 30,
+      },
+    }),
+    prisma.service.upsert({
+      where: { name: 'Massage' },
+      update: {},
+      create: {
+        name: 'Massage',
+        description: 'Professional massage service',
+        price: 60.00,
+        duration: 60,
+      },
+    }),
+    prisma.service.upsert({
+      where: { name: 'Nail Care' },
+      update: {},
+      create: {
+        name: 'Nail Care',
+        description: 'Professional nail care service',
+        price: 45.00,
+        duration: 45,
+      },
+    }),
+  ]);
+  console.log(`Created sample services: ${sampleServices.map((service) => service.name).join(', ')}`);
 
   console.log('Seeding bookings...');
   const createdBookings = [];

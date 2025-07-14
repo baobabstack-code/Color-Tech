@@ -61,6 +61,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        google: {
+          primary: '#4285F4', // Google blue
+          success: '#34A853', // Google green
+          danger: '#EA4335',  // Google red
+          warning: '#FBBC05', // Google yellow
+          background: '#F8F9FA',
+          card: '#FFFFFF',
+          text: '#202124',
+          muted: '#5F6368'
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
