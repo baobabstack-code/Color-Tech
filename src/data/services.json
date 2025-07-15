@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": 1,
     "name": "Oil Change",
     "description": "Standard oil change service",
     "basePrice": 39.99,
@@ -11,7 +11,7 @@
     "updatedAt": "2023-10-26"
   },
   {
-    "id": "2",
+    "id": 2,
     "name": "Brake Inspection",
     "description": "Thorough brake inspection service",
     "basePrice": 49.99,
@@ -22,7 +22,7 @@
     "updatedAt": "2023-10-27"
   },
   {
-    "id": "3",
+    "id": 3,
     "name": "Tire Rotation",
     "description": "Complete tire rotation and pressure check",
     "basePrice": 29.99,
@@ -33,7 +33,7 @@
     "updatedAt": "2023-10-28"
   },
   {
-    "id": "4",
+    "id": 4,
     "name": "Battery Check",
     "description": "Test battery health and charging system",
     "basePrice": 19.99,
@@ -44,7 +44,7 @@
     "updatedAt": "2023-10-28"
   },
   {
-    "id": "5",
+    "id": 5,
     "name": "Full Body Detail",
     "description": "Interior and exterior cleaning and polish",
     "basePrice": 149.99,
@@ -55,7 +55,7 @@
     "updatedAt": "2023-10-29"
   },
   {
-    "id": "6",
+    "id": 6,
     "name": "Engine Diagnostic",
     "description": "Comprehensive engine performance check",
     "basePrice": 89.99,

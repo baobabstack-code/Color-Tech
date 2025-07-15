@@ -31,25 +31,10 @@ async function getAllServices() {
   }
 }
 
-async function getServiceCategories(): Promise<ServiceCategory[]> {
-  const headersList = await headers();
-  const host = headersList.get('host');
-  const protocol = headersList.get('x-forwarded-proto') || 'http';
-  const baseUrl = `${protocol}://${host}`;
-  const res = await fetch(`${baseUrl}/api/service-categories`, { next: { revalidate: 3600 } }); // Revalidate every hour
-  if (!res.ok) {
-    console.error('Failed to fetch service categories:', res.status, res.statusText);
-    return [];
-  }
-  const data = await res.json();
-  return data.categories || [];
-}
-
 const ServicesPage = async () => {
-  const [services, categories] = await Promise.all([
-    getAllServices(),
-    getServiceCategories()
-  ]);
+  const services = await getAllServices();
+  // Categories are derived from services, so we don't need a separate fetch
+  const categories = [...new Set(services.map(s => s.category))];
 
   // Define stages for ProgressTracker (can be fetched from API if dynamic)
   const repairStages: Stage[] = [
@@ -97,6 +82,7 @@ const ServicesPage = async () => {
 
   // Map fetched services to the display format
   const displayedServices = services.map(service => ({
+    id: service.id,
     icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-white" /> :
           service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-white" /> :
           service.name.includes('Rust') ? <Shield className="h-12 w-12 text-white" /> :
@@ -109,8 +95,7 @@ const ServicesPage = async () => {
       "State-of-the-art equipment",
       "Quality materials",
       "Guaranteed results"
-    ],
-    link: service.name.toLowerCase().replace(/\s/g, '-')
+    ]
   }));
 
   return (
@@ -129,7 +114,7 @@ const ServicesPage = async () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service, index) => (
-            <Link key={index} href={`/services#${service.link}`} className="block">
+            <Link key={index} href={`/services/${service.id}`} className="block">
               <Card className="p-6 bg-white/90 dark:bg-slate-800 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
                 <div className="mb-4">
                   {service.icon}
@@ -152,6 +137,27 @@ const ServicesPage = async () => {
               </Card>
             </Link>
           ))}
+        </div>
+      </div>
+
+       {/* Map Section */}
+      <div className="container mx-auto mt-16">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Find Our Workshop</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
+            Visit us at our state-of-the-art facility. Use the map below to get directions.
+          </p>
+        </div>
+        <div className="aspect-w-16 aspect-h-20 rounded-2xl overflow-hidden shadow-2xl border border-white/30">
+          <iframe
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=123+Industrial+Road,Harare,Zimbabwe`}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={true}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
       </div>
 
@@ -192,27 +198,6 @@ const ServicesPage = async () => {
         />
       </div>
       */}
-
-      {/* Map Section */}
-      <div className="container mx-auto mt-16">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Find Our Workshop</h2>
-          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
-            Visit us at our state-of-the-art facility. Use the map below to get directions.
-          </p>
-        </div>
-        <div className="aspect-w-16 aspect-h-20 rounded-2xl overflow-hidden shadow-2xl border border-white/30">
-          <iframe
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=123+Industrial+Road,Harare,Zimbabwe`}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </div>
     </div>
   );
 };

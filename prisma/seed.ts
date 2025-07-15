@@ -4,7 +4,7 @@ import {
   services as mockServices,
   bookings as mockBookings,
   reviews as mockReviews,
-} from '../src/lib/mock-db.ts';
+} from '../src/lib/mock-db';
 import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -23,7 +23,7 @@ async function main() {
   for (const customer of mockCustomers) {
     const user = await prisma.user.create({
       data: {
-        id: customer.id,
+        id: Number(customer.id), // Convert to number
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
@@ -50,7 +50,7 @@ async function main() {
   for (const service of mockServices) {
     const newService = await prisma.service.create({
       data: {
-        id: service.id,
+        id: Number(service.id), // Convert to number
         name: service.name,
         description: service.description,
         price: service.price,
@@ -101,9 +101,9 @@ async function main() {
   for (const booking of mockBookings) {
     const newBooking = await prisma.booking.create({
       data: {
-        id: booking.id,
-        customerId: booking.customerId,
-        serviceId: booking.serviceId,
+        id: Number(booking.id), // Convert to number
+        customerId: Number(booking.customerId), // Convert to number
+        serviceId: Number(booking.serviceId), // Convert to number
         startTime: booking.startTime,
         endTime: booking.endTime,
         status: booking.status as any, // Cast because enum name differs slightly
@@ -118,10 +118,10 @@ async function main() {
   for (const review of mockReviews) {
     await prisma.review.create({
       data: {
-        id: review.id,
-        bookingId: review.bookingId,
-        customerId: review.customerId,
-        serviceId: review.serviceId,
+        id: Number(review.id), // Convert to number
+        bookingId: Number(review.bookingId), // Convert to number
+        customerId: Number(review.customerId), // Convert to number
+        serviceId: Number(review.serviceId), // Convert to number
         rating: review.rating,
         comment: review.comment,
       },

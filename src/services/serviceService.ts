@@ -1,70 +1,52 @@
-import api from './api';
+import fs from 'fs';
+import path from 'path';
 
+// Define the structure of a Service object based on services.json
 export interface Service {
   id: number;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-  category_id: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  category_name: string;
-}
-
-export interface CreateServiceData {
   name: string;
   description: string;
   basePrice: number;
   durationMinutes: number;
   category: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface UpdateServiceData {
-  name?: string;
-  description?: string;
-  basePrice?: number;
-  durationMinutes?: number;
-  category?: string;
-  status?: 'active' | 'inactive';
-}
+const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
 
-// Get all services
+// Get all services from the local JSON file
 export const getAllServices = async (): Promise<Service[]> => {
-  if (typeof window === 'undefined') {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(process.cwd(), 'src/data/services.json');
-    const fileContent = fs.readFileSync(filePath, 'utf8');
+  try {
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
     const services: Service[] = JSON.parse(fileContent);
     return services;
-  } else {
-    return [];
+  } catch (error) {
+    console.error('Error reading or parsing services.json:', error);
+    return []; // Return an empty array or re-throw a custom error
   }
 };
 
-// Get service by ID
-export const getServiceById = async (id: number): Promise<Service> => {
+// Get a single service by its ID
+export const getServiceById = async (id: string | number): Promise<Service | undefined> => {
   const services = await getAllServices();
-  const service = services.find((s) => s.id === Number(id));
-  return service as Service;
+  const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+  if (isNaN(numericId)) return undefined;
+  return services.find((s) => s.id === numericId);
 };
 
-// Create new service (admin only)
-export const createService = async (data: CreateServiceData): Promise<Service> => {
-  const response = await api.post('/services', data);
-  return response.data;
+// Get all unique service categories
+export const getServiceCategories = async (): Promise<string[]> => {
+  const services = await getAllServices();
+  const categories = services.map(s => s.category);
+  return [...new Set(categories)];
 };
 
-// Update service (admin only)
-export const updateService = async (id: string, data: UpdateServiceData): Promise<Service> => {
-  const response = await api.put(`/services/${id}`, data);
-  return response.data;
-};
-
-// Delete service (admin only)
-export const deleteService = async (id: string): Promise<{ message: string; service?: Service }> => {
-  const response = await api.delete(`/services/${id}`);
-  return response.data;
+// Function to generate static paths for service pages
+export const getServiceStaticPaths = async () => {
+  const services = await getAllServices();
+  return services.map(service => ({
+    id: service.id.toString(),
+  }));
 }; 

@@ -2,7 +2,7 @@
 
 export let services = [
   {
-    id: '1',
+    id: 1,
     name: 'Premium Car Wash',
     description: 'A thorough wash and wax for your vehicle.',
     price: 59.99,
@@ -10,7 +10,7 @@ export let services = [
     isActive: true,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Interior Detailing',
     description: 'Complete interior vacuum, shampoo, and conditioning.',
     price: 129.99,
@@ -18,7 +18,7 @@ export let services = [
     isActive: true,
   },
   {
-    id: '3',
+    id: 3,
     name: 'Paint Correction',
     description: 'Multi-stage paint correction to remove swirls and scratches.',
     price: 499.99,
@@ -29,13 +29,13 @@ export let services = [
 
 export let customers = [
   {
-    id: '1',
+    id: 1,
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '555-0101',
   },
   {
-    id: '2',
+    id: 2,
     name: 'Jane Smith',
     email: 'jane.smith@example.com',
     phone: '555-0102',
@@ -44,18 +44,18 @@ export let customers = [
 
 export let bookings = [
   {
-    id: '1',
-    customerId: '1',
-    serviceId: '2',
+    id: 1,
+    customerId: 1,
+    serviceId: 2,
     startTime: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(),
     endTime: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(),
     status: 'confirmed',
     notes: 'Customer has a dog, be mindful of pet hair.',
   },
   {
-    id: '2',
-    customerId: '2',
-    serviceId: '1',
+    id: 2,
+    customerId: 2,
+    serviceId: 1,
     startTime: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
     endTime: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString(),
     status: 'completed',
@@ -65,19 +65,19 @@ export let bookings = [
 
 export let reviews = [
     {
-        id: '1',
-        bookingId: '2',
-        customerId: '2',
-        serviceId: '1',
+        id: 1,
+        bookingId: 2,
+        customerId: 2,
+        serviceId: 1,
         rating: 5,
         comment: 'Fantastic job! My car looks brand new.',
         createdAt: new Date().toISOString(),
     },
     {
-        id: '2',
-        bookingId: '1',
-        customerId: '1',
-        serviceId: '2',
+        id: 2,
+        bookingId: 1,
+        customerId: 1,
+        serviceId: 2,
         rating: 4,
         comment: 'Very thorough, but took a bit longer than expected.',
         createdAt: new Date().toISOString(),

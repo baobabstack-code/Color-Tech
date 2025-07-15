@@ -11,8 +11,9 @@ interface Params {
 export async function GET(request: Request, { params }: { params: Params }) {
   try {
     const { id } = params;
+    const serviceId = Number(id); // Convert id to a number
     const service = await prisma.service.findUnique({
-      where: { id },
+      where: { id: serviceId },
     });
 
     if (!service) {
@@ -33,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     const data = await request.json();
 
     const updatedService = await prisma.service.update({
-      where: { id },
+      where: { id: Number(id) }, // Convert id to a number
       data: {
         name: data.name,
         description: data.description,
@@ -59,7 +60,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     const { id } = params;
     await prisma.service.delete({
-      where: { id },
+      where: { id: Number(id) }, // Convert id to a number
     });
 
     return new NextResponse(null, { status: 204 }); // No Content
