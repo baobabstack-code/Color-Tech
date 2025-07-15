@@ -198,14 +198,15 @@ const Contact = () => {
                 />
               </div>
  
-              <Button
-                type="submit"
-                variant="secondary"
-                className="w-full shadow-xl flex items-center justify-center"
-              >
-                <Send className="w-5 h-5 mr-2 text-white" />
-                Send Message
-              </Button>
+              <div className="flex justify-center pt-4">
+                <Button
+                  type="submit"
+                  className="shadow-xl flex items-center justify-center font-bold text-white bg-gradient-to-r from-primary to-fuchsia-500 hover:opacity-90 transition-opacity duration-300 py-3 px-8 rounded-full"
+                >
+                  <Send className="w-5 h-5 mr-2" />
+                  Send Message
+                </Button>
+              </div>
             </form>
           </div>
         </div>

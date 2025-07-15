@@ -179,7 +179,7 @@ const GalleryPage = () => {
           {galleryImages.map((image, index) => (
             <Card
               key={index}
-              className="group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300"
+              className="group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300 flex flex-col min-h-[480px]"
               onClick={() => setSelectedImage(image.src)}
             >
               <CardHeader className="p-0 relative">
@@ -204,14 +204,12 @@ const GalleryPage = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-4 pb-2 px-4">
-                <CardTitle className="text-lg truncate">{image.alt}</CardTitle>
-                <CardDescription className="truncate text-xs text-gray-500">{image.category}</CardDescription>
+              <CardContent className="p-6 flex-grow">
+                <CardTitle className="text-lg font-semibold leading-tight mb-1 text-white">{image.alt}</CardTitle>
+                <CardDescription className="text-sm text-gray-300">{image.category}</CardDescription>
               </CardContent>
               <CardFooter className="px-4 pb-4 pt-0 flex justify-end">
-                <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white">
-                  View
-                </Button>
+                <Button size="sm" className="mt-2 sm:mt-0 bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">View</Button>
               </CardFooter>
             </Card>
           ))}

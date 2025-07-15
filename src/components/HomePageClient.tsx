@@ -173,63 +173,66 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
       <Toaster />
       <div className="min-h-screen">
         {/* Hero Section */}
-        <motion.div
-          className="relative h-[600px] flex items-center justify-center mt-24"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        >
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
-            <Image
-              src="/images/hero/colorful-car.png"
-              alt="Colorful car"
-              fill
-              style={{ objectFit: "contain", objectPosition: "center" }}
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
-          </div>
+        <div className="mx-auto px-4 sm:px-8 md:px-16 lg:px-24 mt-24">
           <motion.div
-            className="relative z-10 container mx-auto px-4 text-center mt-auto pb-16"
+            className="relative h-[75vh] flex items-center justify-center"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <motion.h1
-              className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-            >
-              Transform Your Vehicle
-            </motion.h1>
-            <motion.p
-              className="text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
-            >
-              Expert panel beating and spray painting services with guaranteed results
-            </motion.p>
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
+              <Image
+                src="/images/hero/colorful-car.png"
+                alt="Colorful car"
+                fill
+                style={{ objectFit: "cover", objectPosition: "center" }}
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+            </div>
+            {/* Content */}
             <motion.div
-              className="flex flex-col sm:flex-row justify-center gap-4"
-              initial={{ opacity: 0, y: 20 }}
+              className="relative z-10 text-center"
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.7 }}
+              transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
             >
-              <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
-                <Link href="/contact" className="flex items-center gap-2">
-                  <PhoneCall className="h-5 w-5 text-blue" />
-                  Get a Quote
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
-                <Link href="/services">Our Services</Link>
-              </Button>
+              <motion.h1
+                className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+              >
+                Transform Your Vehicle
+              </motion.h1>
+              <motion.p
+                className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.7 }}
+              >
+                Expert panel beating and spray painting services with guaranteed results
+              </motion.p>
+              <motion.div
+                className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.7 }}
+              >
+                <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
+                  <Link href="/contact" className="flex items-center gap-2">
+                    <PhoneCall className="h-5 w-5 text-blue" />
+                    Get a Quote
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
+                  <Link href="/services">Our Services</Link>
+                </Button>
+              </motion.div>
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Enhanced Features Section */}
         <div className="container mx-auto px-4 py-16">

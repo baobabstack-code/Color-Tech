@@ -107,32 +107,32 @@ const About = () => {
 
   const values = [
     {
-      icon: <Star className="w-8 h-8 text-secondary" />,
+      icon: <Star className="w-8 h-8 text-yellow-500" />,
       title: "Excellence",
       description: "We strive for excellence in every repair and service we provide."
     },
     {
-      icon: <Users className="w-8 h-8 text-secondary" />,
+      icon: <Users className="w-8 h-8 text-blue-500" />,
       title: "Customer Focus",
       description: "Our customers' satisfaction is at the heart of everything we do."
     },
     {
-      icon: <Award className="w-8 h-8 text-secondary" />,
+      icon: <Award className="w-8 h-8 text-green-500" />,
       title: "Quality",
       description: "We use only the highest quality materials and latest techniques."
     },
     {
-      icon: <Clock className="w-8 h-8 text-secondary" />,
+      icon: <Clock className="w-8 h-8 text-red-500" />,
       title: "Efficiency",
       description: "Quick turnaround without compromising on quality."
     },
     {
-      icon: <Wrench className="w-8 h-8 text-secondary" />,
+      icon: <Wrench className="w-8 h-8 text-indigo-500" />,
       title: "Expertise",
       description: "Our team brings years of experience and technical knowledge."
     },
     {
-      icon: <Heart className="w-8 h-8 text-secondary" />,
+      icon: <Heart className="w-8 h-8 text-pink-500" />,
       title: "Passion",
       description: "We're passionate about restoring vehicles to their former glory."
     }
