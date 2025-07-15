@@ -4,7 +4,7 @@ import { Stage } from '@/components/ProgressTracker';
 import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings, CheckCircle, ArrowRight } from 'lucide-react';
 import CostCalculator from '@/components/CostCalculator';
 import ProgressTracker from '@/components/ProgressTracker';
-import VirtualTour from '@/components/VirtualTour';
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -178,6 +178,7 @@ const ServicesPage = async () => {
       </div>
 
       {/* Progress Tracking Section */}
+      {/*
       <div className="container mx-auto mt-16">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Track Your Repair Progress</h2>
@@ -190,16 +191,27 @@ const ServicesPage = async () => {
           currentStage={2} // Index of the current stage (0-based)
         />
       </div>
+      */}
 
-      {/* Virtual Tour Section */}
-      <div className="container mx-auto mt-16 glassmorphic p-8 animate-fade-in">
+      {/* Map Section */}
+      <div className="container mx-auto mt-16">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Explore Our Workshop</h2>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            Take a virtual tour of our state-of-the-art facility and discover where the magic happens.
+          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Find Our Workshop</h2>
+          <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
+            Visit us at our state-of-the-art facility. Use the map below to get directions.
           </p>
         </div>
-        <VirtualTour />
+        <div className="aspect-w-16 aspect-h-20 rounded-2xl overflow-hidden shadow-2xl border border-white/30">
+          <iframe
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=123+Industrial+Road,Harare,Zimbabwe`}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen={true}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
       </div>
     </div>
   );
