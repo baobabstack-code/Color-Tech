@@ -148,7 +148,7 @@ const ServicesPage = async () => {
             Visit us at our state-of-the-art facility. Use the map below to get directions.
           </p>
         </div>
-        <div className="aspect-w-16 aspect-h-20 rounded-2xl overflow-hidden shadow-2xl border border-white/30">
+        <div className="w-full h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-white/30">
           <iframe
             src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=123+Industrial+Road,Harare,Zimbabwe`}
             width="100%"
