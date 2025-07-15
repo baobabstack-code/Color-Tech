@@ -110,7 +110,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-8 shadow-xl border border-white/30 hover:scale-[1.02] transition-transform duration-300">
+          <div className="bg-white/90 dark:bg-slate-800 rounded-2xl p-8 shadow-xl border border-white/30 hover:scale-[1.02] transition-transform duration-300">
             <h2 className="text-2xl font-bold text-primary dark:text-white mb-6">Send Us a Message</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">

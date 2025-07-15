@@ -157,7 +157,7 @@ const About = () => {
 
       {/* Story Section */}
       <div className="container mx-auto mb-16">
-        <div className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+        <div className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
           <div className="md:flex">
             <div className="md:w-1/2">
               <img
@@ -195,7 +195,7 @@ const About = () => {
           {values.map((value, index) => (
             <div
               key={index}
-              className="bg-white/90 dark:bg-slate-900/90 p-6 rounded-2xl shadow-xl border border-white/30 hover:scale-105 hover:shadow-2xl transition-all duration-300"
+              className="bg-white/90 dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-white/30 hover:scale-105 hover:shadow-2xl transition-all duration-300"
             >
               <div className="mb-4">
                 {value.icon}
@@ -216,7 +216,7 @@ const About = () => {
         <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">Our Expert Team</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member, index) => (
-            <div key={index} className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+            <div key={index} className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
               <div className="aspect-w-4 aspect-h-3">
                 <img
                   src={member.image}
@@ -339,7 +339,7 @@ const About = () => {
 
       {/* FAQ Section */}
       <div className="container mx-auto mb-16">
-        <div className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 p-8 md:p-12">
+        <div className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 p-8 md:p-12">
           <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">
             Frequently Asked Questions
           </h2>
@@ -367,7 +367,7 @@ const About = () => {
                 
                 <div
                   id={`faq-answer-${index}`}
-                  className={`p-4 bg-white/90 dark:bg-slate-900/90 transition-all duration-200 ${
+                  className={`p-4 bg-white/90 dark:bg-slate-800 transition-all duration-200 ${
                     openFaq === index ? 'block' : 'hidden'
                   }`}
                   role="region"

@@ -130,7 +130,7 @@ const ServicesPage = async () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service, index) => (
             <Link key={index} href={`/services#${service.link}`} className="block">
-              <Card className="p-6 glassmorphic flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
+              <Card className="p-6 bg-white/90 dark:bg-slate-800 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
                 <div className="mb-4">
                   {service.icon}
                 </div>
