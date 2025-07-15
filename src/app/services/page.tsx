@@ -1,15 +1,25 @@
-import React from 'react';
-import { PhoneCall } from 'lucide-react';
-import { Stage } from '@/components/ProgressTracker';
-import { Wrench, Paintbrush, Car, Shield, Hammer, Clock, Settings, CheckCircle, ArrowRight } from 'lucide-react';
-import CostCalculator from '@/components/CostCalculator';
-import ProgressTracker from '@/components/ProgressTracker';
+import React from "react";
+import { PhoneCall } from "lucide-react";
+import { Stage } from "@/components/ProgressTracker";
+import {
+  Wrench,
+  Paintbrush,
+  Car,
+  Shield,
+  Hammer,
+  Clock,
+  Settings,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react";
+import CostCalculator from "@/components/CostCalculator";
+import ProgressTracker from "@/components/ProgressTracker";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getAllServices as getServices } from '@/services/serviceService';
-import { headers } from 'next/headers';
+import { getAllServices as getServices } from "@/services/serviceService";
+import { headers } from "next/headers";
 
 // Define interfaces for fetched data
 interface ServiceCategory {
@@ -26,7 +36,7 @@ async function getAllServices() {
     // Use the imported service function
     return await getServices();
   } catch (error) {
-    console.error('Failed to fetch services:', error);
+    console.error("Failed to fetch services:", error);
     return [];
   }
 }
@@ -34,7 +44,7 @@ async function getAllServices() {
 const ServicesPage = async () => {
   const services = await getAllServices();
   // Categories are derived from services, so we don't need a separate fetch
-  const categories = [...new Set(services.map(s => s.category))];
+  const categories = [...new Set(services.map((s) => s.category))];
 
   // Define stages for ProgressTracker (can be fetched from API if dynamic)
   const repairStages: Stage[] = [
@@ -44,7 +54,7 @@ const ServicesPage = async () => {
       description: "Initial inspection and documentation",
       status: "completed",
       date: "2024-03-10",
-      details: "Vehicle received and documented"
+      details: "Vehicle received and documented",
     },
     {
       id: 2,
@@ -52,7 +62,7 @@ const ServicesPage = async () => {
       description: "Detailed evaluation of repairs needed",
       status: "completed",
       date: "2024-03-11",
-      details: "Full assessment completed"
+      details: "Full assessment completed",
     },
     {
       id: 3,
@@ -60,7 +70,7 @@ const ServicesPage = async () => {
       description: "Active repair and restoration",
       status: "in-progress",
       date: "2024-03-12",
-      details: "Panel beating in progress"
+      details: "Panel beating in progress",
     },
     {
       id: 4,
@@ -68,7 +78,7 @@ const ServicesPage = async () => {
       description: "Final inspection and testing",
       status: "pending",
       date: "2024-03-13",
-      details: "Awaiting completion"
+      details: "Awaiting completion",
     },
     {
       id: 5,
@@ -76,17 +86,22 @@ const ServicesPage = async () => {
       description: "Vehicle ready for collection",
       status: "pending",
       date: "2024-03-14",
-      details: "Not started"
-    }
+      details: "Not started",
+    },
   ];
 
   // Map fetched services to the display format
-  const displayedServices = services.map(service => ({
+  const displayedServices = services.map((service) => ({
     id: service.id,
-    icon: service.name.includes('Panel') ? <Wrench className="h-12 w-12 text-white" /> :
-          service.name.includes('Paint') ? <Paintbrush className="h-12 w-12 text-white" /> :
-          service.name.includes('Rust') ? <Shield className="h-12 w-12 text-white" /> :
-          <Car className="h-12 w-12 text-white" />, // Default icon
+    icon: service.name.includes("Panel") ? (
+      <Wrench className="h-12 w-12 text-white" />
+    ) : service.name.includes("Paint") ? (
+      <Paintbrush className="h-12 w-12 text-white" />
+    ) : service.name.includes("Rust") ? (
+      <Shield className="h-12 w-12 text-white" />
+    ) : (
+      <Car className="h-12 w-12 text-white" />
+    ), // Default icon
     title: service.name,
     description: service.description,
     features: [
@@ -94,8 +109,8 @@ const ServicesPage = async () => {
       "Expert technicians",
       "State-of-the-art equipment",
       "Quality materials",
-      "Guaranteed results"
-    ]
+      "Guaranteed results",
+    ],
   }));
 
   return (
@@ -106,24 +121,34 @@ const ServicesPage = async () => {
           Our Services
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto">
-          We offer a comprehensive range of automotive repair and refinishing services,
-          delivered by our team of experienced professionals using state-of-the-art equipment.
+          We offer a comprehensive range of automotive repair and refinishing
+          services, delivered by our team of experienced professionals using
+          state-of-the-art equipment.
         </p>
       </div>
 
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service, index) => (
-            <Link key={index} href={`/services/${service.id}`} className="block">
+            <Link
+              key={index}
+              href={`/services/${service.id}`}
+              className="block"
+            >
               <Card className="p-6 bg-white/90 dark:bg-slate-800 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
-                <div className="mb-4">
-                  {service.icon}
-                </div>
-                <h2 className="text-2xl font-semibold mb-2 text-white group-hover:text-slate-200">{service.title}</h2>
-                <p className="text-slate-300 mb-6 group-hover:text-slate-400">{service.description}</p>
+                <div className="mb-4">{service.icon}</div>
+                <h2 className="text-2xl font-semibold mb-2 text-white group-hover:text-slate-200">
+                  {service.title}
+                </h2>
+                <p className="text-slate-300 mb-6 group-hover:text-slate-400">
+                  {service.description}
+                </p>
                 <ul className="space-y-2 text-left w-full mb-6">
                   {service.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-slate-300">
+                    <li
+                      key={featureIndex}
+                      className="flex items-center text-slate-300"
+                    >
                       <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
                       {feature}
                     </li>
@@ -131,7 +156,8 @@ const ServicesPage = async () => {
                 </ul>
                 <Button className="w-full" asChild>
                   <span className="text-white hover:text-slate-200 flex items-center font-semibold">
-                    Learn More <ArrowRight className="ml-2 h-4 w-4 text-white group-hover:text-slate-200" />
+                    Learn More{" "}
+                    <ArrowRight className="ml-2 h-4 w-4 text-white group-hover:text-slate-200" />
                   </span>
                 </Button>
               </Card>
@@ -140,12 +166,15 @@ const ServicesPage = async () => {
         </div>
       </div>
 
-       {/* Map Section */}
+      {/* Map Section */}
       <div className="container mx-auto mt-16">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Find Our Workshop</h2>
+          <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
+            Find Our Workshop
+          </h2>
           <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto">
-            Visit us at our state-of-the-art facility. Use the map below to get directions.
+            Visit us at our state-of-the-art facility. Use the map below to get
+            directions.
           </p>
         </div>
         <div className="w-full h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-white/30">
@@ -170,10 +199,15 @@ const ServicesPage = async () => {
               Ready to Transform Your Vehicle?
             </h2>
             <p className="text-lg mb-8 max-w-2xl mx-auto">
-              Contact us today for a consultation and quote. Our team is ready to help restore
-              your vehicle to its former glory.
+              Contact us today for a consultation and quote. Our team is ready
+              to help restore your vehicle to its former glory.
             </p>
-            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full sm:w-auto shadow-xl"
+              asChild
+            >
               <Link href="/contact" className="flex items-center gap-2">
                 <PhoneCall className="h-5 w-5 text-white" />
                 Get a Quote

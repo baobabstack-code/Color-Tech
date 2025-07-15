@@ -1,95 +1,96 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ImagePlus, Loader2 } from 'lucide-react'
-import toast from '@/components/ui/toast'
+"use client";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ImagePlus, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-export default function GalleryPicker({ 
+export default function GalleryPicker({
   onSelect,
-  className = ''
+  className = "",
 }: {
-  onSelect: (url: string) => void
-  className?: string
+  onSelect: (url: string) => void;
+  className?: string;
 }) {
-  const [images, setImages] = useState<{id: string, url: string}[]>([])
-  const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
+  const { toast } = useToast();
+  const [images, setImages] = useState<{ id: string; url: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const fetchImages = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await fetch('/api/media')
-      const data = await res.json()
-      setImages(data)
+      const res = await fetch("/api/media");
+      const data = await res.json();
+      setImages(data);
     } catch (error) {
-      console.error('Failed to fetch images:', error)
+      console.error("Failed to fetch images:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setUploading(true)
-    const formData = new FormData()
-    formData.append('file', file)
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const uploadedMedia = await fetch('/api/media', {
-        method: 'POST',
-        body: formData
-      })
-      const newImage = await uploadedMedia.json()
-      setImages(prev => [newImage, ...prev])
-      setUploadProgress(0)
+      const uploadedMedia = await fetch("/api/media", {
+        method: "POST",
+        body: formData,
+      });
+      const newImage = await uploadedMedia.json();
+      setImages((prev) => [newImage, ...prev]);
+      setUploadProgress(0);
       toast({
-        title: 'Success',
-        description: 'Image uploaded successfully',
-        variant: 'default'
-      })
+        title: "Success",
+        description: "Image uploaded successfully",
+        variant: "default",
+      });
     } catch (error: any) {
-      console.error('Upload failed:', error)
-      setUploadProgress(0)
+      console.error("Upload failed:", error);
+      setUploadProgress(0);
       toast({
-        title: 'Upload Failed',
-        description: error.error || 'Failed to upload image',
-        variant: 'destructive'
-      })
-      
+        title: "Upload Failed",
+        description: error.error || "Failed to upload image",
+        variant: "destructive",
+      });
+
       if (error.details) {
         toast({
-          title: 'Upload Requirements',
-          description: `Max size: ${error.details.maxFileSize}, Formats: ${error.details.allowedTypes.join(', ')}`,
-          variant: 'default',
-          duration: 8000
-        })
+          title: "Upload Requirements",
+          description: `Max size: ${error.details.maxFileSize}, Formats: ${error.details.allowedTypes.join(", ")}`,
+          variant: "default",
+          duration: 8000,
+        });
       }
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchImages()
-  }, [])
+    fetchImages();
+  }, []);
 
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center gap-2">
-        <Input 
-          type="file" 
-          accept="image/*" 
-          className="hidden" 
+        <Input
+          type="file"
+          accept="image/*"
+          className="hidden"
           id="media-upload"
           onChange={handleUpload}
           disabled={uploading}
         />
-        <label 
-          htmlFor="media-upload" 
+        <label
+          htmlFor="media-upload"
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer hover:bg-primary/90"
         >
           {uploading ? (
@@ -107,15 +108,15 @@ export default function GalleryPicker({
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {images.map(img => (
-            <div 
-              key={img.id} 
+          {images.map((img) => (
+            <div
+              key={img.id}
               className="relative group cursor-pointer"
               onClick={() => onSelect(img.url)}
             >
               <div className="aspect-square overflow-hidden rounded-md border border-gray-200 group-hover:border-primary group-hover:ring-2 group-hover:ring-primary/50 transition-all">
-                <img 
-                  src={img.url} 
+                <img
+                  src={img.url}
                   alt=""
                   className="w-full h-full object-cover"
                 />
@@ -128,5 +129,5 @@ export default function GalleryPicker({
         </div>
       )}
     </div>
-  )
+  );
 }

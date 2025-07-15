@@ -1,26 +1,32 @@
 [
   {
     "id": "1",
-    "userId": "1",
-    "vehicleId": "1",
+    "customerId": "1",
     "serviceId": "1",
-    "scheduledDate": "2023-11-01",
-    "scheduledTime": "10:00",
+    "scheduledAt": "2024-01-20T10:00:00Z",
     "status": "confirmed",
-    "notes": "Oil change and tire rotation",
-    "createdAt": "2023-10-26",
-    "updatedAt": "2023-10-26"
+    "notes": "Customer requested early morning appointment",
+    "createdAt": "2024-01-15T09:00:00Z",
+    "updatedAt": "2024-01-15T09:00:00Z"
   },
   {
     "id": "2",
-    "userId": "2",
-    "vehicleId": "2",
+    "customerId": "2",
     "serviceId": "2",
-    "scheduledDate": "2023-11-02",
-    "scheduledTime": "14:00",
+    "scheduledAt": "2024-01-22T14:30:00Z",
     "status": "pending",
-    "notes": "Brake inspection",
-    "createdAt": "2023-10-27",
-    "updatedAt": "2023-10-27"
+    "notes": "Follow up needed for insurance details",
+    "createdAt": "2024-01-16T11:30:00Z",
+    "updatedAt": "2024-01-16T11:30:00Z"
+  },
+  {
+    "id": "3",
+    "customerId": "1",
+    "serviceId": "3",
+    "scheduledAt": "2024-01-18T09:00:00Z",
+    "status": "completed",
+    "notes": "Job completed successfully, customer satisfied",
+    "createdAt": "2024-01-10T08:00:00Z",
+    "updatedAt": "2024-01-18T16:00:00Z"
   }
 ]

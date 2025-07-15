@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 // Define the structure of a Service object based on services.json
 export interface Service {
   id: number;
@@ -14,26 +11,52 @@ export interface Service {
   updatedAt: string;
 }
 
-const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
-
-// Get all services from the local JSON file
+// Get all services from the API
 export const getAllServices = async (): Promise<Service[]> => {
   try {
-    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
-    const services: Service[] = JSON.parse(fileContent);
-    return services;
+    // Check if we're on the server side (for static generation)
+    if (typeof window === 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
+      const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+      const services: Service[] = JSON.parse(fileContent);
+      return services;
+    } else {
+      // Client side - use API
+      const response = await fetch('/api/services');
+      if (!response.ok) {
+        throw new Error('Failed to fetch services');
+      }
+      return response.json();
+    }
   } catch (error) {
-    console.error('Error reading or parsing services.json:', error);
+    console.error('Error reading or parsing services:', error);
     return []; // Return an empty array or re-throw a custom error
   }
 };
 
 // Get a single service by its ID
 export const getServiceById = async (id: string | number): Promise<Service | undefined> => {
-  const services = await getAllServices();
-  const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-  if (isNaN(numericId)) return undefined;
-  return services.find((s) => s.id === numericId);
+  try {
+    // Check if we're on the server side (for static generation)
+    if (typeof window === 'undefined') {
+      const services = await getAllServices();
+      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+      if (isNaN(numericId)) return undefined;
+      return services.find((s) => s.id === numericId);
+    } else {
+      // Client side - use API
+      const response = await fetch(`/api/services/${id}`);
+      if (!response.ok) {
+        return undefined;
+      }
+      return response.json();
+    }
+  } catch (error) {
+    console.error('Error fetching service:', error);
+    return undefined;
+  }
 };
 
 // Get all unique service categories

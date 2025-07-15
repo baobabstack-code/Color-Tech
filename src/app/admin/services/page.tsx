@@ -29,13 +29,14 @@ interface Service {
   averageRating: number;
 }
 
-const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, onSave: (service: Omit<Service, 'id' | 'bookingCount' | 'averageRating'>) => void, onCancel: () => void }) => {
+const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, onSave: (service: any) => void, onCancel: () => void }) => {
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
-    price: service?.price || 0,
-    duration: service?.duration || 30,
-    isActive: service?.isActive ?? true,
+    basePrice: service?.price || 0,
+    durationMinutes: service?.duration || 30,
+    category: service?.category || 'General',
+    status: service?.isActive ? 'active' : 'inactive',
   });
 
   const handleSubmit = (e: FormEvent) => {
@@ -56,15 +57,19 @@ const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="price">Price ($)</Label>
-          <Input id="price" type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })} required />
+          <Input id="price" type="number" step="0.01" value={formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })} required />
         </div>
         <div>
           <Label htmlFor="duration">Duration (minutes)</Label>
-          <Input id="duration" type="number" value={formData.duration} onChange={e => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })} required />
+          <Input id="duration" type="number" value={formData.durationMinutes} onChange={e => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })} required />
         </div>
       </div>
+      <div>
+        <Label htmlFor="category">Category</Label>
+        <Input id="category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required />
+      </div>
       <div className="flex items-center space-x-2">
-        <Switch id="isActive" checked={formData.isActive} onCheckedChange={checked => setFormData({ ...formData, isActive: checked })} />
+        <Switch id="isActive" checked={formData.status === 'active'} onCheckedChange={checked => setFormData({ ...formData, status: checked ? 'active' : 'inactive' })} />
         <Label htmlFor="isActive">Service is Active</Label>
       </div>
       <DialogFooter>

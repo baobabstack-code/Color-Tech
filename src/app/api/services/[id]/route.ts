@@ -1,25 +1,36 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-const prisma = new PrismaClient();
+const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
 
-interface Params {
-  id: string;
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  durationMinutes: number;
+  category: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
 }
 
-// GET: Fetch a single service by ID
-export async function GET(request: Request, { params }: { params: Params }) {
+// GET: Fetch single service
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = params;
-    const serviceId = Number(id); // Convert id to a number
-    const service = await prisma.service.findUnique({
-      where: { id: serviceId },
-    });
-
+    const id = parseInt(params.id);
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
+    
+    const service = services.find(s => s.id === id);
     if (!service) {
       return NextResponse.json({ message: 'Service not found' }, { status: 404 });
     }
-
+    
     return NextResponse.json(service);
   } catch (error) {
     console.error('Failed to fetch service:', error);
@@ -27,48 +38,73 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 }
 
-// PUT: Update an existing service
-export async function PUT(request: Request, { params }: { params: Params }) {
+// PUT: Update service
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = params;
+    const id = parseInt(params.id);
     const data = await request.json();
 
-    const updatedService = await prisma.service.update({
-      where: { id: Number(id) }, // Convert id to a number
-      data: {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        duration: data.duration,
-        isActive: data.isActive,
-      },
-    });
+    // Read existing services
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
 
-    return NextResponse.json(updatedService);
-  } catch (error) {
-    // Prisma's P2025 error code indicates that the record to update was not found.
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-        return NextResponse.json({ message: 'Service not found' }, { status: 404 });
+    // Find service index
+    const serviceIndex = services.findIndex(s => s.id === id);
+    if (serviceIndex === -1) {
+      return NextResponse.json({ message: 'Service not found' }, { status: 404 });
     }
+
+    // Update service
+    services[serviceIndex] = {
+      ...services[serviceIndex],
+      name: data.name || services[serviceIndex].name,
+      description: data.description || services[serviceIndex].description,
+      basePrice: data.basePrice || services[serviceIndex].basePrice,
+      durationMinutes: data.durationMinutes || services[serviceIndex].durationMinutes,
+      category: data.category || services[serviceIndex].category,
+      status: data.status || services[serviceIndex].status,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Write back to file
+    fs.writeFileSync(servicesFilePath, JSON.stringify(services, null, 2));
+
+    return NextResponse.json(services[serviceIndex]);
+  } catch (error) {
     console.error('Failed to update service:', error);
     return NextResponse.json({ message: 'Failed to update service' }, { status: 500 });
   }
 }
 
-// DELETE: Remove a service
-export async function DELETE(request: Request, { params }: { params: Params }) {
+// DELETE: Delete service
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = params;
-    await prisma.service.delete({
-      where: { id: Number(id) }, // Convert id to a number
-    });
+    const id = parseInt(params.id);
 
-    return new NextResponse(null, { status: 204 }); // No Content
-  } catch (error) {
-    // Prisma's P2025 error code indicates that the record to delete was not found.
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-        return NextResponse.json({ message: 'Service not found' }, { status: 404 });
+    // Read existing services
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
+
+    // Find service index
+    const serviceIndex = services.findIndex(s => s.id === id);
+    if (serviceIndex === -1) {
+      return NextResponse.json({ message: 'Service not found' }, { status: 404 });
     }
+
+    // Remove service
+    services.splice(serviceIndex, 1);
+
+    // Write back to file
+    fs.writeFileSync(servicesFilePath, JSON.stringify(services, null, 2));
+
+    return NextResponse.json({ message: 'Service deleted successfully' });
+  } catch (error) {
     console.error('Failed to delete service:', error);
     return NextResponse.json({ message: 'Failed to delete service' }, { status: 500 });
   }

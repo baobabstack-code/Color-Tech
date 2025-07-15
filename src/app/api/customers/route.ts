@@ -1,20 +1,36 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
 
-const prisma = new PrismaClient();
+const customersFilePath = path.join(process.cwd(), 'src/data/customers.json');
 
-// GET: Fetch all customers (users)
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
+
+// GET: Fetch all customers
 export async function GET() {
   try {
-    const users = await prisma.user.findMany();
-    return NextResponse.json(users);
+    const customers = readJsonFile(customersFilePath);
+    return NextResponse.json(customers);
   } catch (error) {
-    console.error('Failed to fetch users:', error);
-    return NextResponse.json({ message: 'Failed to fetch users' }, { status: 500 });
+    console.error('Failed to fetch customers:', error);
+    return NextResponse.json({ message: 'Failed to fetch customers' }, { status: 500 });
   }
 }
 
-// POST: Create a new customer (user)
+// POST: Create a new customer
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -24,17 +40,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
-    const newUser = await prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-      },
-    });
+    const customers = readJsonFile(customersFilePath);
+    
+    const newCustomer = {
+      id: (customers.length + 1).toString(),
+      name: data.name,
+      email: data.email,
+      phone: data.phone || '',
+      address: data.address || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    return NextResponse.json(newUser, { status: 201 });
+    customers.push(newCustomer);
+    writeJsonFile(customersFilePath, customers);
+
+    return NextResponse.json(newCustomer, { status: 201 });
   } catch (error) {
-    console.error('Failed to create user:', error);
-    return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
+    console.error('Failed to create customer:', error);
+    return NextResponse.json({ message: 'Failed to create customer' }, { status: 500 });
   }
 }

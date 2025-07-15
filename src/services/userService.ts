@@ -1,101 +1,46 @@
-import api from './api';
-
 export interface User {
   id: string;
-  email: string;
   fullName: string;
-  phone: string;
-  role: 'client' | 'admin' | 'staff';
-  status: 'active' | 'inactive';
+  email: string;
+  phone?: string;
+  role: 'customer' | 'admin';
   createdAt: string;
   updatedAt: string;
 }
 
-export interface AuthResponse {
-  user: User;
-  token: string;
-}
-
-export interface RegisterData {
-  email: string;
-  password: string;
-  fullName: string;
-  phone: string;
-  role?: 'client' | 'admin';
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface UpdateUserData {
-  fullName?: string;
-  phone?: string;
-  email?: string;
-  password?: string;
-  role?: 'client' | 'admin' | 'staff';
-  status?: 'active' | 'inactive';
-}
-
-// User authentication
-export const register = async (data: RegisterData): Promise<AuthResponse> => {
-  const response = await api.post('/auth/local/register', {
-    username: data.email,
-    email: data.email,
-    password: data.password,
-    fullName: data.fullName,
-    phone: data.phone,
-    role: data.role || 'client'
-  });
-  return response.data;
-};
-
-export const login = async (data: LoginData): Promise<AuthResponse> => {
-  const response = await api.post('/auth/local', {
-    identifier: data.email,
-    password: data.password
-  });
-  return response.data;
-};
-
-// User profile management
-export const getCurrentUser = async (): Promise<User> => {
-  const response = await api.get('/users/me');
-  return response.data;
-};
-
-export const updateProfile = async (data: UpdateUserData): Promise<User> => {
-  const response = await api.put('/users/me', data);
-  return response.data;
-};
-
-// Admin user management
 export const getAllUsers = async (): Promise<User[]> => {
-  if (typeof window === 'undefined') {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(process.cwd(), 'src/data/users.json');
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const users: User[] = JSON.parse(fileContent);
-    return users;
-  } else {
-    return [];
+  const response = await fetch('/api/customers');
+  if (!response.ok) {
+    throw new Error('Failed to fetch users');
   }
+  const customers = await response.json();
+  
+  // Transform customer data to user format
+  return customers.map((customer: any) => ({
+    id: customer.id?.toString() || customer.id,
+    fullName: customer.name || customer.fullName,
+    email: customer.email,
+    phone: customer.phone,
+    role: 'customer' as const,
+    createdAt: customer.createdAt || new Date().toISOString(),
+    updatedAt: customer.updatedAt || new Date().toISOString()
+  }));
 };
 
-export const getUserById = async (id: string): Promise<User> => {
-  const users = await getAllUsers();
-  const user = users.find((u) => u.id === id);
-  return user as User;
-};
-
-export const updateUser = async (id: string, data: UpdateUserData): Promise<User> => {
-  const response = await api.put(`/users/${id}`, data);
-  return response.data;
-};
-
-export const deleteUser = async (id: string): Promise<{ message: string; user?: User }> => {
-  const response = await api.delete(`/users/${id}`);
-  return response.data;
+export const getUserById = async (id: string): Promise<User | null> => {
+  const response = await fetch(`/api/customers/${id}`);
+  if (!response.ok) {
+    return null;
+  }
+  const customer = await response.json();
+  
+  return {
+    id: customer.id?.toString() || customer.id,
+    fullName: customer.name || customer.fullName,
+    email: customer.email,
+    phone: customer.phone,
+    role: 'customer' as const,
+    createdAt: customer.createdAt || new Date().toISOString(),
+    updatedAt: customer.updatedAt || new Date().toISOString()
+  };
 };

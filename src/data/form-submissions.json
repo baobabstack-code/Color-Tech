@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "type": "contact",
+    "name": "John Smith",
+    "email": "john.smith@example.com",
+    "phone": "+1 234 567 8900",
+    "service": "panel-beating",
+    "message": "I need help with dent repair on my car door. When can I schedule an appointment?",
+    "status": "new",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+]

@@ -1,70 +1,99 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-const prisma = new PrismaClient();
+const customersFilePath = path.join(process.cwd(), 'src/data/customers.json');
 
-interface Params {
-  id: string;
-}
-
-// GET: Fetch a single customer (user) by ID
-export async function GET(request: Request, { params }: { params: Params }) {
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
   try {
-    const { id } = params;
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(user);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContent);
   } catch (error) {
-    console.error('Failed to fetch user:', error);
-    return NextResponse.json({ message: 'Failed to fetch user' }, { status: 500 });
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
+
+// GET: Fetch single customer
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = params.id;
+    const customers = readJsonFile(customersFilePath);
+    
+    const customer = customers.find((c: any) => c.id === id);
+    if (!customer) {
+      return NextResponse.json({ message: 'Customer not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json(customer);
+  } catch (error) {
+    console.error('Failed to fetch customer:', error);
+    return NextResponse.json({ message: 'Failed to fetch customer' }, { status: 500 });
   }
 }
 
-// PUT: Update an existing customer (user)
-export async function PUT(request: Request, { params }: { params: Params }) {
+// PUT: Update customer
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = params;
+    const id = params.id;
     const data = await request.json();
+    const customers = readJsonFile(customersFilePath);
 
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-      },
-    });
-
-    return NextResponse.json(updatedUser);
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    const customerIndex = customers.findIndex((c: any) => c.id === id);
+    if (customerIndex === -1) {
+      return NextResponse.json({ message: 'Customer not found' }, { status: 404 });
     }
-    console.error('Failed to update user:', error);
-    return NextResponse.json({ message: 'Failed to update user' }, { status: 500 });
+
+    // Update customer
+    customers[customerIndex] = {
+      ...customers[customerIndex],
+      name: data.name || customers[customerIndex].name,
+      email: data.email || customers[customerIndex].email,
+      phone: data.phone !== undefined ? data.phone : customers[customerIndex].phone,
+      address: data.address !== undefined ? data.address : customers[customerIndex].address,
+      updatedAt: new Date().toISOString()
+    };
+
+    writeJsonFile(customersFilePath, customers);
+    return NextResponse.json(customers[customerIndex]);
+  } catch (error) {
+    console.error('Failed to update customer:', error);
+    return NextResponse.json({ message: 'Failed to update customer' }, { status: 500 });
   }
 }
 
-// DELETE: Remove a customer (user)
-export async function DELETE(request: Request, { params }: { params: Params }) {
+// DELETE: Delete customer
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { id } = params;
-    await prisma.user.delete({
-      where: { id },
-    });
+    const id = params.id;
+    const customers = readJsonFile(customersFilePath);
 
-    return new NextResponse(null, { status: 204 }); // No Content
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    const customerIndex = customers.findIndex((c: any) => c.id === id);
+    if (customerIndex === -1) {
+      return NextResponse.json({ message: 'Customer not found' }, { status: 404 });
     }
-    console.error('Failed to delete user:', error);
-    return NextResponse.json({ message: 'Failed to delete user' }, { status: 500 });
+
+    // Remove customer
+    customers.splice(customerIndex, 1);
+    writeJsonFile(customersFilePath, customers);
+
+    return NextResponse.json({ message: 'Customer deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete customer:', error);
+    return NextResponse.json({ message: 'Failed to delete customer' }, { status: 500 });
   }
 }

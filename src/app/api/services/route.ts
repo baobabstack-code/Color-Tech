@@ -1,12 +1,26 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
 
-const prisma = new PrismaClient();
+const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
+
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  basePrice: number;
+  durationMinutes: number;
+  category: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
 
 // GET: Fetch all services
 export async function GET() {
   try {
-    const services = await prisma.service.findMany();
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
     return NextResponse.json(services);
   } catch (error) {
     console.error('Failed to fetch services:', error);
@@ -20,19 +34,32 @@ export async function POST(request: Request) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.name || !data.price || !data.duration) {
+    if (!data.name || !data.basePrice || !data.durationMinutes) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
-    const newService = await prisma.service.create({
-      data: {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        duration: data.duration,
-        isActive: data.isActive !== undefined ? data.isActive : true,
-      },
-    });
+    // Read existing services
+    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
+    const services: Service[] = JSON.parse(fileContent);
+
+    // Create new service
+    const newService: Service = {
+      id: services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1,
+      name: data.name,
+      description: data.description || '',
+      basePrice: data.basePrice,
+      durationMinutes: data.durationMinutes,
+      category: data.category || 'General',
+      status: data.status || 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Add to services array
+    services.push(newService);
+
+    // Write back to file
+    fs.writeFileSync(servicesFilePath, JSON.stringify(services, null, 2));
 
     return NextResponse.json(newService, { status: 201 });
   } catch (error) {

@@ -13,18 +13,40 @@ const Contact = () => {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', formData);
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      service: '',
-      message: ''
-    });
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch('/api/form-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitMessage('Thank you! Your message has been sent successfully. We\'ll get back to you soon.');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          service: '',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      setSubmitMessage('Sorry, there was an error sending your message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -198,13 +220,24 @@ const Contact = () => {
                 />
               </div>
  
+              {submitMessage && (
+                <div className={`p-4 rounded-lg text-center ${
+                  submitMessage.includes('Thank you') 
+                    ? 'bg-green-100 text-green-800 border border-green-200' 
+                    : 'bg-red-100 text-red-800 border border-red-200'
+                }`}>
+                  {submitMessage}
+                </div>
+              )}
+ 
               <div className="flex justify-center pt-4">
                 <Button
                   type="submit"
-                  className="shadow-xl flex items-center justify-center font-bold text-white bg-gradient-to-r from-primary to-fuchsia-500 hover:opacity-90 transition-opacity duration-300 py-3 px-8 rounded-full"
+                  disabled={isSubmitting}
+                  className="shadow-xl flex items-center justify-center font-bold text-white bg-gradient-to-r from-primary to-fuchsia-500 hover:opacity-90 transition-opacity duration-300 py-3 px-8 rounded-full disabled:opacity-50"
                 >
                   <Send className="w-5 h-5 mr-2" />
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </div>
             </form>
