@@ -136,21 +136,24 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
   ];
 
   // Process data for rendering
-  const displayedServices = services.slice(0, 3).map((service: Service, index: number) => ({
+  const displayedServices = services.slice(0, 3).map((service: any, index: number) => ({
+    id: service.id,
     icon: service.name.includes('Panel') ? <Wrench className="h-10 w-10 text-primary dark:text-sky-400" /> :
           service.name.includes('Paint') ? <Paintbrush className="h-10 w-10 text-primary dark:text-sky-400" /> :
-          <Shield className="h-10 w-10 text-primary dark:text-sky-400" />, // Default or more specific logic
+          service.name.includes('Oil') ? <Settings className="h-10 w-10 text-primary dark:text-sky-400" /> :
+          service.name.includes('Brake') ? <Shield className="h-10 w-10 text-primary dark:text-sky-400" /> :
+          <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />, // Default
     title: service.name,
     description: service.description,
     link: service.name.toLowerCase().replace(/\s/g, '-') // Generate slug from name
   }));
 
-  const displayedTestimonials = testimonials.slice(0, 3).map((t: Testimonial, index: number) => ({
-    name: `${t.user_first_name} ${t.user_last_name}`,
-    role: t.user_email, // Or a more appropriate role if available
-    image: "/images/default-avatar.png", // Placeholder, ideally fetch from user profile or content
-    quote: t.comment,
-    rating: t.rating
+  const displayedTestimonials = testimonials.slice(0, 3).map((t: any, index: number) => ({
+    name: t.name || `${t.user_first_name || ''} ${t.user_last_name || ''}`.trim(),
+    role: t.role || t.user_email || 'Customer',
+    image: t.image || "/images/default-avatar.png",
+    quote: t.quote || t.comment || 'Great service!',
+    rating: t.rating || 5
   }));
 
   const displayedGalleryPreviews = galleryPreviews.slice(0, 2).map((g: GalleryItem, index: number) => {
@@ -299,7 +302,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
               {displayedServices.map((service, index) => (
                 <Link
                   key={index}
-                  href={`/services#${service.link}`}
+                  href={`/services/${service.id}`}
                   className="block" // Make the link a block element to wrap the card
                 >
                   <motion.div
@@ -349,7 +352,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Stats Section */}
-        <div className="py-16 bg-gray-50 dark:bg-slate-900">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {stats.map((stat, index) => (
@@ -384,6 +387,10 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                         width={600}
                         height={338}
                         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 rounded-2xl"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/images/hero/colorful-car.png";
+                        }}
                       />
                       <Image
                         src={preview.before}
@@ -391,6 +398,10 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                         width={600}
                         height={338}
                         className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-2xl"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/images/hero/colorful-car.png";
+                        }}
                       />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6 rounded-2xl">
@@ -412,7 +423,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         </div>
 
         {/* Testimonials Section */}
-        <div className="py-16 bg-gray-50 dark:bg-slate-900">
+        <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">

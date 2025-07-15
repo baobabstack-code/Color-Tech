@@ -43,7 +43,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="backdrop-blur-2xl bg-white/30 dark:bg-slate-900/70 border-t border-white/20 shadow-2xl ring-1 ring-white/30 ring-inset text-gray-800 dark:text-gray-200">
+    <footer className="backdrop-blur-2xl bg-white/30 dark:bg-slate-900/70 border-t border-white/20 shadow-2xl ring-1 ring-white/30 ring-inset text-gray-800 dark:text-gray-200 mx-4 md:mx-8 lg:mx-12 mb-4 rounded-2xl">
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
