@@ -1,10 +1,14 @@
-import React from 'react';
+import React from "react";
 
 export async function generateStaticParams() {
-  return [{ testId: '1' }, { testId: '2' }];
+  return [{ testId: "1" }, { testId: "2" }];
 }
 
-const TestPage = async ({ params }: { params: { testId: string } }) => {
+interface PageProps {
+  params: Promise<{ testId: string }>;
+}
+
+const TestPage = async ({ params }: PageProps) => {
   const { testId } = await params;
 
   return (
