@@ -56,8 +56,8 @@ export default function ReviewManagement() {
   const parseReviewData = (review: Review): EnrichedReview => {
     return {
       ...review,
-      customerName: review.userName || "Unknown User",
-      serviceName: review.serviceName || "Unknown Service",
+      customerName: review.user?.name || "Unknown User",
+      serviceName: review.service?.name || "Unknown Service",
       source: "website", // Placeholder
       helpful: 0, // Placeholder
       response: undefined, // Placeholder
