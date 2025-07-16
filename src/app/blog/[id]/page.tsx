@@ -1,9 +1,9 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Calendar, Clock, User, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface BlogPost {
   id: number;
@@ -20,36 +20,49 @@ interface BlogPost {
   updated_at: string;
 }
 
-const SingleBlogPostPage = ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+const SingleBlogPostPage = ({ params }: PageProps) => {
+  const [paramId, setParamId] = useState<string>("");
+
+  useEffect(() => {
+    params.then(({ id }) => setParamId(id));
+  }, [params]);
   const [blogPost, setBlogPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchBlogPost() {
+      if (!paramId) return;
+
       try {
-        const res = await fetch(`/api/content/${params.id}`);
+        const res = await fetch(`/api/content/${paramId}`);
         if (!res.ok) {
-          setError('Blog post not found');
+          setError("Blog post not found");
           setBlogPost(null);
           return;
         }
         const data = await res.json();
         setBlogPost(data.content);
       } catch (e) {
-        setError('Failed to fetch blog post');
+        setError("Failed to fetch blog post");
         setBlogPost(null);
       } finally {
         setIsLoading(false);
       }
     }
     fetchBlogPost();
-  }, [params.id]);
+  }, [paramId]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20">
-        <p className="text-lg text-gray-700 dark:text-gray-300">Loading blog post...</p>
+        <p className="text-lg text-gray-700 dark:text-gray-300">
+          Loading blog post...
+        </p>
       </div>
     );
   }
@@ -65,19 +78,28 @@ const SingleBlogPostPage = ({ params }: { params: { id: string } }) => {
   if (!blogPost) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20">
-        <p className="text-lg text-gray-700 dark:text-gray-300">Blog post not found.</p>
+        <p className="text-lg text-gray-700 dark:text-gray-300">
+          Blog post not found.
+        </p>
       </div>
     );
   }
 
   const readTime = `${Math.ceil(blogPost.body.length / 200)} min`;
-  const category = blogPost.tags ? blogPost.tags.split(',')[0].trim() : 'Uncategorized';
-  const imageUrl = blogPost.image_url || 'https://via.placeholder.com/1200x600?text=Blog+Image';
+  const category = blogPost.tags
+    ? blogPost.tags.split(",")[0].trim()
+    : "Uncategorized";
+  const imageUrl =
+    blogPost.image_url ||
+    "https://via.placeholder.com/1200x600?text=Blog+Image";
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       <div className="container mx-auto max-w-4xl">
-        <Link href="/blog" className="inline-flex items-center text-primary dark:text-sky-300 hover:underline mb-8">
+        <Link
+          href="/blog"
+          className="inline-flex items-center text-primary dark:text-sky-300 hover:underline mb-8"
+        >
           <ArrowLeft size={20} className="mr-2" /> Back to Blog
         </Link>
 
@@ -100,10 +122,11 @@ const SingleBlogPostPage = ({ params }: { params: { id: string } }) => {
             </h1>
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300 mb-6">
               <span className="flex items-center gap-2">
-                <User size={16} /> {blogPost.author || 'Admin'}
+                <User size={16} /> {blogPost.author || "Admin"}
               </span>
               <span className="flex items-center gap-2">
-                <Calendar size={16} /> {new Date(blogPost.created_at).toLocaleDateString()}
+                <Calendar size={16} />{" "}
+                {new Date(blogPost.created_at).toLocaleDateString()}
               </span>
               <span className="flex items-center gap-2">
                 <Clock size={16} /> {readTime} read
