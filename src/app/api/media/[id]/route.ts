@@ -5,11 +5,12 @@ import path from 'path'
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const media = await prisma.media.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
     
     if (!media) {
@@ -25,7 +26,7 @@ export async function DELETE(
     
     // Delete from database
     await prisma.media.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     })
     
     return NextResponse.json({ success: true })

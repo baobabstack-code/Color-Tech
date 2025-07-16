@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { DatabaseService } from '@/lib/database';
 
-const prisma = new PrismaClient();
-
-// GET: Fetch all reviews with details
-export async function GET() {
+// GET: Fetch all reviews with optional status filter
+export async function GET(request: NextRequest) {
   try {
-    const reviews = await prisma.review.findMany({
-      include: {
-        customer: true,
-        service: true,
-        booking: true,
-      },
-    });
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+
+    let reviews;
+    if (status === 'published') {
+      reviews = await DatabaseService.getPublishedReviews();
+    } else {
+      reviews = await DatabaseService.getReviews();
+    }
+
     return NextResponse.json(reviews);
   } catch (error) {
     console.error('Failed to fetch reviews:', error);
@@ -20,24 +21,18 @@ export async function GET() {
   }
 }
 
-// POST: Create a new review
-export async function POST(request: Request) {
+// POST: Create new review
+export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    // Basic validation
-    if (!data.bookingId || !data.customerId || !data.serviceId || !data.rating) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
-
-    const newReview = await prisma.review.create({
-      data: {
-        bookingId: data.bookingId,
-        customerId: data.customerId,
-        serviceId: data.serviceId,
-        rating: data.rating,
-        comment: data.comment,
-      },
+    const newReview = await DatabaseService.createReview({
+      user: { connect: { id: data.userId } },
+      service: { connect: { id: data.serviceId } },
+      ...(data.bookingId && { booking: { connect: { id: data.bookingId } } }),
+      rating: data.rating,
+      comment: data.comment,
+      status: data.status || 'pending',
     });
 
     return NextResponse.json(newReview, { status: 201 });

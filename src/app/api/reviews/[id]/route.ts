@@ -1,29 +1,24 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { DatabaseService } from '@/lib/database';
 
-const prisma = new PrismaClient();
-
-interface Params {
-  id: string;
-}
-
-// GET: Fetch a single review by ID
-export async function GET(request: Request, { params }: { params: Params }) {
+// GET: Fetch single review
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
-    const review = await prisma.review.findUnique({
-      where: { id },
-      include: {
-        customer: true,
-        service: true,
-        booking: true,
-      },
-    });
+    const { id } = await params;
+    const reviewId = parseInt(id);
+    
+    if (isNaN(reviewId)) {
+      return NextResponse.json({ message: 'Invalid review ID' }, { status: 400 });
+    }
 
+    const review = await DatabaseService.getReviewById(reviewId);
     if (!review) {
       return NextResponse.json({ message: 'Review not found' }, { status: 404 });
     }
-
+    
     return NextResponse.json(review);
   } catch (error) {
     console.error('Failed to fetch review:', error);
@@ -31,43 +26,50 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 }
 
-// PUT: Update an existing review
-export async function PUT(request: Request, { params }: { params: Params }) {
+// PUT: Update review
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
+    const { id } = await params;
+    const reviewId = parseInt(id);
+    
+    if (isNaN(reviewId)) {
+      return NextResponse.json({ message: 'Invalid review ID' }, { status: 400 });
+    }
+
     const data = await request.json();
 
-    const updatedReview = await prisma.review.update({
-      where: { id },
-      data: {
-        rating: data.rating,
-        comment: data.comment,
-      },
+    const updatedReview = await DatabaseService.updateReview(reviewId, {
+      ...(data.rating !== undefined && { rating: data.rating }),
+      ...(data.comment !== undefined && { comment: data.comment }),
+      ...(data.status && { status: data.status }),
     });
 
     return NextResponse.json(updatedReview);
   } catch (error) {
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-      return NextResponse.json({ message: 'Review not found' }, { status: 404 });
-    }
     console.error('Failed to update review:', error);
     return NextResponse.json({ message: 'Failed to update review' }, { status: 500 });
   }
 }
 
-// DELETE: Remove a review
-export async function DELETE(request: Request, { params }: { params: Params }) {
+// DELETE: Delete review
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params;
-    await prisma.review.delete({
-      where: { id },
-    });
-
-    return new NextResponse(null, { status: 204 }); // No Content
-  } catch (error) {
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-      return NextResponse.json({ message: 'Review not found' }, { status: 404 });
+    const { id } = await params;
+    const reviewId = parseInt(id);
+    
+    if (isNaN(reviewId)) {
+      return NextResponse.json({ message: 'Invalid review ID' }, { status: 400 });
     }
+
+    await DatabaseService.deleteReview(reviewId);
+    return NextResponse.json({ message: 'Review deleted successfully' });
+  } catch (error) {
     console.error('Failed to delete review:', error);
     return NextResponse.json({ message: 'Failed to delete review' }, { status: 500 });
   }

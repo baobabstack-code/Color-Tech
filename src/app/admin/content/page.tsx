@@ -3,9 +3,13 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  FileText, Image, MessageSquare, 
-  HelpCircle, Settings, RefreshCw
+import {
+  FileText,
+  Image,
+  MessageSquare,
+  HelpCircle,
+  Settings,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { contentService } from "@/services/contentService";
@@ -18,11 +22,11 @@ export default function ContentManagement() {
     blogPosts: 0,
     gallery: 0,
     testimonials: 0,
-    faqs: 0
+    faqs: 0,
   });
-  
+
   const { toast } = useToast();
-  
+
   const fetchContentCounts = async () => {
     setIsLoading(true);
     setError(null);
@@ -32,18 +36,18 @@ export default function ContentManagement() {
         contentService.getBlogPosts(),
         contentService.getGalleryItems(),
         contentService.getTestimonials(),
-        contentService.getFAQs()
+        contentService.getFAQs(),
       ]);
-      
+
       setContentCounts({
         blogPosts: blogPosts.length,
         gallery: gallery.length,
         testimonials: testimonials.length,
-        faqs: faqs.length
+        faqs: faqs.length,
       });
     } catch (err) {
-      console.error('Error fetching content counts:', err);
-      setError('Failed to load content counts');
+      console.error("Error fetching content counts:", err);
+      setError("Failed to load content counts");
       toast({
         title: "Error",
         description: "Failed to load content counts. Please try again.",
@@ -53,86 +57,99 @@ export default function ContentManagement() {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchContentCounts();
   }, []);
-  
+
   const contentSections = [
     {
       title: "Blog Posts",
       icon: <FileText className="h-6 w-6" />,
       description: "Manage blog articles and content",
       path: "/admin/content/blog",
-      count: contentCounts.blogPosts
+      count: contentCounts.blogPosts,
     },
     {
       title: "Gallery",
       icon: <Image className="h-6 w-6" />,
       description: "Manage project photos and videos",
       path: "/admin/content/gallery",
-      count: contentCounts.gallery
+      count: contentCounts.gallery,
     },
     {
       title: "Testimonials",
       icon: <MessageSquare className="h-6 w-6" />,
       description: "Manage customer testimonials",
       path: "/admin/content/testimonials",
-      count: contentCounts.testimonials
+      count: contentCounts.testimonials,
     },
     {
       title: "FAQs",
       icon: <HelpCircle className="h-6 w-6" />,
       description: "Manage frequently asked questions",
       path: "/admin/content/faqs",
-      count: contentCounts.faqs
-    }
+      count: contentCounts.faqs,
+    },
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Content Management</h1>
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          Content Management
+        </h1>
+        <div className="flex gap-3">
           <Button
             variant="outline"
             onClick={fetchContentCounts}
             disabled={isLoading}
-            className="w-full sm:w-auto"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
-          <Button variant="outline" className="w-full sm:w-auto">
+          <Button
+            variant="outline"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+          >
             <Settings className="h-4 w-4 mr-2" />
             Content Settings
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {contentSections.map((section) => (
-          <Card key={section.title} className="p-4 sm:p-6 flex flex-col items-center text-center">
-            <Link href={section.path} className="block w-full">
+          <Link key={section.title} href={section.path} className="block group">
+            <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200 h-full">
               <div className="flex flex-col items-center text-center">
-                <div className="p-3 bg-primary/10 rounded-full mb-3 sm:mb-4">
-                  {section.icon}
+                <div className="p-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                  <div className="text-indigo-400">{section.icon}</div>
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">{section.title}</h3>
-                <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4">{section.description}</p>
-                <div className="text-xs sm:text-sm text-gray-500">
+                <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-indigo-300 transition-colors">
+                  {section.title}
+                </h3>
+                <p className="text-slate-300 text-sm mb-4 flex-grow">
+                  {section.description}
+                </p>
+                <div className="text-sm">
                   {isLoading ? (
-                    <span className="flex items-center justify-center">
+                    <span className="flex items-center justify-center text-slate-400">
                       <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
                       Loading...
                     </span>
                   ) : (
-                    <span>{section.count} Items</span>
+                    <span className="bg-slate-700/50 px-3 py-1 rounded-full text-slate-300">
+                      {section.count} Items
+                    </span>
                   )}
                 </div>
               </div>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>

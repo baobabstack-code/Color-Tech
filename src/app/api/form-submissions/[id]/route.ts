@@ -20,10 +20,11 @@ interface FormSubmission {
 // PUT: Update form submission status
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
     const body = await request.json();
     const { status } = body;
 
@@ -69,10 +70,11 @@ export async function PUT(
 // DELETE: Delete form submission
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
 
     // Read existing submissions
     const fileContent = fs.readFileSync(submissionsFilePath, 'utf8');

@@ -1,15 +1,5 @@
 [
   {
-    "id": "1",
-    "customerId": "1",
-    "serviceId": "1",
-    "scheduledAt": "2024-01-20T10:00:00Z",
-    "status": "confirmed",
-    "notes": "Customer requested early morning appointment",
-    "createdAt": "2024-01-15T09:00:00Z",
-    "updatedAt": "2024-01-15T09:00:00Z"
-  },
-  {
     "id": "2",
     "customerId": "2",
     "serviceId": "2",

@@ -1,26 +1,19 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from 'next/server';
+import { DatabaseService } from '@/lib/database';
 
-const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
-
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  basePrice: number;
-  durationMinutes: number;
-  category: string;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
-}
-
-// GET: Fetch all services
-export async function GET() {
+// GET: Fetch all services with optional status filter
+export async function GET(request: NextRequest) {
   try {
-    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
-    const services: Service[] = JSON.parse(fileContent);
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+
+    let services;
+    if (status === 'active') {
+      services = await DatabaseService.getActiveServices();
+    } else {
+      services = await DatabaseService.getServices();
+    }
+
     return NextResponse.json(services);
   } catch (error) {
     console.error('Failed to fetch services:', error);
@@ -29,37 +22,23 @@ export async function GET() {
 }
 
 // POST: Create a new service
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
     // Basic validation
-    if (!data.name || !data.basePrice || !data.durationMinutes) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    if (!data.name || data.basePrice === undefined || !data.duration) {
+      return NextResponse.json({ message: 'Missing required fields: name, basePrice, duration' }, { status: 400 });
     }
 
-    // Read existing services
-    const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
-    const services: Service[] = JSON.parse(fileContent);
-
-    // Create new service
-    const newService: Service = {
-      id: services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1,
+    const newService = await DatabaseService.createService({
       name: data.name,
       description: data.description || '',
       basePrice: data.basePrice,
-      durationMinutes: data.durationMinutes,
+      duration: data.duration,
       category: data.category || 'General',
       status: data.status || 'active',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Add to services array
-    services.push(newService);
-
-    // Write back to file
-    fs.writeFileSync(servicesFilePath, JSON.stringify(services, null, 2));
+    });
 
     return NextResponse.json(newService, { status: 201 });
   } catch (error) {

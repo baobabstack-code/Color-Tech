@@ -126,25 +126,29 @@ const Sidebar = () => {
         <div className="flex items-center">
           <Link
             href={item.href}
-            className={`flex items-center flex-1 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group ${
+            className={`flex items-center flex-1 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${
               active
-                ? "bg-blue-600 text-white shadow-lg"
-                : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                : "text-slate-100 hover:text-white hover:bg-slate-800/50"
             } ${level > 0 ? "ml-6 pl-6" : ""}`}
           >
             <span
-              className={`mr-3 ${active ? "text-white" : "text-gray-400 group-hover:text-gray-300"}`}
+              className={`mr-3 transition-colors ${active ? "text-white" : "text-slate-200 group-hover:text-white"}`}
             >
               {item.icon}
             </span>
             <span className="flex-1">{item.name}</span>
+            {active && (
+              <div className="ml-auto w-2 h-2 bg-white rounded-full opacity-75" />
+            )}
           </Link>
 
           {hasChildren && (
             <button
+              type="button"
               onClick={() => toggleExpanded(item.name)}
               className={`p-1.5 rounded-md transition-colors ${
-                active ? "text-white" : "text-gray-400 hover:text-gray-300"
+                active ? "text-white" : "text-slate-200 hover:text-white"
               }`}
             >
               {isExpanded ? (
@@ -166,40 +170,44 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-50 w-64 h-full bg-gray-800 border-r border-gray-700 shadow-xl">
+    <aside className="fixed left-0 top-0 z-50 w-64 h-full bg-slate-900/95 backdrop-blur-xl border-r border-slate-800/50 shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
+      <div className="flex items-center justify-between p-4 border-b border-slate-800/50">
         <div className="flex items-center space-x-3">
-          <Logo className="h-8 w-auto" />
+          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <Logo className="h-6 w-auto text-white" />
+          </div>
           <div>
-            <h1 className="text-lg font-bold text-white">Color-Tech</h1>
-            <p className="text-xs text-gray-400">Admin Panel</p>
+            <h1 className="text-lg font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              Color-Tech
+            </h1>
+            <p className="text-xs text-slate-400">Admin Panel</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="p-4 border-b border-gray-700">
+      <div className="p-4 border-b border-slate-800/50">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center w-full px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+          className="flex items-center w-full px-3 py-2.5 text-sm text-slate-100 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
         >
-          <Home className="h-4 w-4 mr-3" />
+          <Home className="h-4 w-4 mr-3 text-slate-200 group-hover:text-indigo-400 transition-colors" />
           <span>View Website</span>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => renderNavItem(item))}
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-700">
-        <div className="text-xs text-gray-500 text-center">
-          <p>Color-Tech Admin v1.0</p>
-          <p className="mt-1">© 2024 All rights reserved</p>
+      <div className="p-4 border-t border-slate-800/50">
+        <div className="text-xs text-slate-500 text-center">
+          <p className="font-medium">Color-Tech Admin v1.0</p>
+          <p className="mt-1 text-slate-600">© 2024 All rights reserved</p>
         </div>
       </div>
     </aside>

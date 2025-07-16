@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,73 +12,192 @@ datasource db {
 
 model User {
   id        Int       @id @default(autoincrement())
-  name      String   @db.VarChar(100)
+  name      String    @db.VarChar(100)
   email     String    @unique @db.VarChar(255)
-  phone     String?  @db.VarChar(20)
-  password  String?  @db.VarChar(255) // Added password field
+  phone     String?   @db.VarChar(20)
+  password  String?   @db.VarChar(255)
+  address   String?   @db.VarChar(500)
+  role      UserRole  @default(customer)
   bookings  Booking[]
   reviews   Review[]
   posts     Post[]
+  vehicles  Vehicle[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@map("users")
 }
 
 model Service {
-  id       Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  description String   @db.Text
-  price       Float
-  duration    Int // Duration in minutes
-  isActive    Boolean   @default(true)
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  description String    @db.Text
+  basePrice   Float
+  duration    Int       // Duration in minutes
+  category    String    @db.VarChar(50)
+  status      ServiceStatus @default(active)
   bookings    Booking[]
   reviews     Review[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("services")
 }
 
 model Booking {
-  id         Int      @id @default(autoincrement())
-  customerId Int
-  serviceId  Int
-  startTime  DateTime
-  endTime    DateTime
-  status     BookingStatus @default(pending)
-  notes      String?  @db.VarChar(500)
-  customer   User     @relation(fields: [customerId], references: [id])
-  service    Service  @relation(fields: [serviceId], references: [id])
-  review     Review?   // A booking can have one review
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          Int           @id @default(autoincrement())
+  customerId  Int
+  serviceId   Int
+  scheduledAt DateTime
+  status      BookingStatus @default(pending)
+  notes       String?       @db.VarChar(1000)
+  customer    User          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service     Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("bookings")
 }
 
 model Review {
-  id         Int      @id @default(autoincrement())
-  bookingId  Int     @unique // Each booking can only be reviewed once
-  customerId Int
+  id         Int         @id @default(autoincrement())
+  userId     Int
   serviceId  Int
-  rating     Int
-  comment    String?  @db.VarChar(500)
-  booking    Booking  @relation(fields: [bookingId], references: [id])
-  customer   User     @relation(fields: [customerId], references: [id])
-  service    Service  @relation(fields: [serviceId], references: [id])
-  createdAt  DateTime @default(now())
+  bookingId  Int?        // Optional - reviews can exist without bookings
+  rating     Int         @db.SmallInt
+  comment    String?     @db.Text
+  status     ReviewStatus @default(pending)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service    Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  booking    Booking?    @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("reviews")
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  content   String   @db.Text
-  excerpt   String?  @db.VarChar(500)
-  imageUrl  String?  @db.VarChar(512)
-  isPublished Boolean @default(false)
-  slug      String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  body        String   @db.Text
+  imageUrl    String?  @db.VarChar(512)
+  isPublished Boolean  @default(false)
+  tags        String?  @db.VarChar(500)
+  author      String   @db.VarChar(100)
+  slug        String   @unique @db.VarChar(255)
+  createdBy   Int
+  updatedBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creator     User     @relation(fields: [createdBy], references: [id])
+
   @@index([slug])
   @@index([isPublished])
+  @@map("posts")
+}
+
+model Testimonial {
+  id        Int               @id @default(autoincrement())
+  name      String            @db.VarChar(100)
+  role      String?           @db.VarChar(100)
+  image     String?           @db.VarChar(512)
+  quote     String            @db.Text
+  rating    Int               @db.SmallInt
+  status    TestimonialStatus @default(pending)
+  source    String            @db.VarChar(50)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@map("testimonials")
+}
+
+model FAQ {
+  id          Int       @id @default(autoincrement())
+  question    String    @db.VarChar(500)
+  answer      String    @db.Text
+  category    String    @db.VarChar(100)
+  status      FAQStatus @default(published)
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("faqs")
+}
+
+model FormSubmission {
+  id        Int                    @id @default(autoincrement())
+  type      String                 @db.VarChar(50)
+  name      String                 @db.VarChar(100)
+  email     String                 @db.VarChar(255)
+  phone     String?                @db.VarChar(20)
+  service   String?                @db.VarChar(100)
+  message   String                 @db.Text
+  status    FormSubmissionStatus   @default(new)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  @@map("form_submissions")
+}
+
+model GalleryItem {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  body        String?  @db.Text
+  imageUrl    String   @db.VarChar(512)
+  isPublished Boolean  @default(false)
+  tags        String?  @db.VarChar(500)
+  author      String   @db.VarChar(100)
+  createdBy   Int
+  updatedBy   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("gallery_items")
+}
+
+model Inventory {
+  id          Int             @id @default(autoincrement())
+  name        String          @db.VarChar(255)
+  description String?         @db.Text
+  category    String          @db.VarChar(100)
+  quantity    Int
+  minStock    Int             @default(0)
+  price       Float?
+  supplier    String?         @db.VarChar(255)
+  status      InventoryStatus @default(active)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("inventory")
+}
+
+model Vehicle {
+  id           Int      @id @default(autoincrement())
+  customerId   Int
+  make         String   @db.VarChar(50)
+  model        String   @db.VarChar(50)
+  year         Int
+  color        String?  @db.VarChar(50)
+  licensePlate String?  @db.VarChar(20)
+  vin          String?  @db.VarChar(50)
+  customer     User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("vehicles")
+}
+
+// Enums
+enum UserRole {
+  customer
+  admin
+  staff
+}
+
+enum ServiceStatus {
+  active
+  inactive
 }
 
 enum BookingStatus {
@@ -89,4 +205,34 @@ enum BookingStatus {
   confirmed
   completed
   cancelled
+}
+
+enum ReviewStatus {
+  pending
+  published
+  flagged
+  archived
+}
+
+enum TestimonialStatus {
+  pending
+  approved
+  rejected
+}
+
+enum FAQStatus {
+  published
+  draft
+}
+
+enum FormSubmissionStatus {
+  new
+  responded
+  closed
+}
+
+enum InventoryStatus {
+  active
+  inactive
+  discontinued
 }

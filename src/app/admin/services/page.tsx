@@ -47,34 +47,83 @@ const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name">Service Name</Label>
-        <Input id="name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+        <Label htmlFor="name" className="text-slate-200">Service Name</Label>
+        <Input 
+          id="name" 
+          value={formData.name} 
+          onChange={e => setFormData({ ...formData, name: e.target.value })} 
+          required 
+          className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+        />
       </div>
       <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea id="description" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} required />
+        <Label htmlFor="description" className="text-slate-200">Description</Label>
+        <Textarea 
+          id="description" 
+          value={formData.description} 
+          onChange={e => setFormData({ ...formData, description: e.target.value })} 
+          required 
+          className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+        />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="price">Price ($)</Label>
-          <Input id="price" type="number" step="0.01" value={formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })} required />
+          <Label htmlFor="price" className="text-slate-200">Price ($)</Label>
+          <Input 
+            id="price" 
+            type="number" 
+            step="0.01" 
+            value={formData.basePrice} 
+            onChange={e => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })} 
+            required 
+            className="bg-slate-800 border-slate-600 text-white"
+          />
         </div>
         <div>
-          <Label htmlFor="duration">Duration (minutes)</Label>
-          <Input id="duration" type="number" value={formData.durationMinutes} onChange={e => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })} required />
+          <Label htmlFor="duration" className="text-slate-200">Duration (minutes)</Label>
+          <Input 
+            id="duration" 
+            type="number" 
+            value={formData.durationMinutes} 
+            onChange={e => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })} 
+            required 
+            className="bg-slate-800 border-slate-600 text-white"
+          />
         </div>
       </div>
       <div>
-        <Label htmlFor="category">Category</Label>
-        <Input id="category" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required />
+        <Label htmlFor="category" className="text-slate-200">Category</Label>
+        <Input 
+          id="category" 
+          value={formData.category} 
+          onChange={e => setFormData({ ...formData, category: e.target.value })} 
+          required 
+          className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+        />
       </div>
       <div className="flex items-center space-x-2">
-        <Switch id="isActive" checked={formData.status === 'active'} onCheckedChange={checked => setFormData({ ...formData, status: checked ? 'active' : 'inactive' })} />
-        <Label htmlFor="isActive">Service is Active</Label>
+        <Switch 
+          id="isActive" 
+          checked={formData.status === 'active'} 
+          onCheckedChange={checked => setFormData({ ...formData, status: checked ? 'active' : 'inactive' })} 
+        />
+        <Label htmlFor="isActive" className="text-slate-200">Service is Active</Label>
       </div>
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button type="submit">Save Service</Button>
+      <DialogFooter className="gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+        >
+          Cancel
+        </Button>
+        <Button 
+          type="submit"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+        >
+          Save Service
+        </Button>
       </DialogFooter>
     </form>
   );
@@ -152,45 +201,89 @@ export default function ServiceManagement() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Service Management</h1>
-          <Button onClick={() => openModal()} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" /> Add New Service
-          </Button>
-        </div>
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          Service Management
+        </h1>
+        <Button 
+          onClick={() => openModal()} 
+          className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
+        >
+          <Plus className="h-4 w-4" /> Add New Service
+        </Button>
+      </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-12 w-12 animate-spin text-indigo-400" />
+          </div>
         ) : services.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Wrench className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>No services found</p>
-            <Button onClick={() => openModal()} className="mt-4"><Plus className="h-4 w-4 mr-2" />Add Your First Service</Button>
+          <div className="text-center py-12 text-slate-400">
+            <Wrench className="h-16 w-16 mx-auto mb-4 text-slate-600" />
+            <p className="text-lg mb-2">No services found</p>
+            <p className="text-sm text-slate-500 mb-6">Create your first service to get started</p>
+            <Button 
+              onClick={() => openModal()} 
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />Add Your First Service
+            </Button>
           </div>
         ) : (
           <div className="grid gap-6">
             {services.map((service) => (
-              <Card key={service.id} className="p-6 shadow-sm hover:shadow-md transition-shadow">
+              <Card key={service.id} className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200 shadow-xl">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="text-xl font-semibold">{service.name}</h3>
-                      <Badge variant={service.isActive ? 'default' : 'secondary'}>{service.isActive ? 'Active' : 'Inactive'}</Badge>
+                    <div className="flex items-center space-x-3">
+                      <h3 className="text-xl font-semibold text-white">{service.name}</h3>
+                      <Badge 
+                        className={`${service.isActive 
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                          : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                        }`}
+                      >
+                        {service.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
                     </div>
-                    <p className="text-gray-600 mt-1 max-w-2xl">{service.description}</p>
+                    <p className="text-slate-300 mt-2 max-w-2xl">{service.description}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => openModal(service)}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="destructive" size="sm" onClick={() => handleDeleteService(service.id)}><Trash2 className="h-4 w-4" /></Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => openModal(service)}
+                      className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      onClick={() => handleDeleteService(service.id)}
+                      className="bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 border-t pt-4">
-                  <div className="flex items-center space-x-2"><Clock className="w-4 h-4 text-gray-500" /><span>{service.duration} minutes</span></div>
-                  <div className="flex items-center space-x-2"><Users className="w-4 h-4 text-gray-500" /><span>{service.bookingCount} bookings</span></div>
-                  <div className="flex items-center space-x-2"><Star className="w-4 h-4 text-gray-500" /><span>{service.averageRating > 0 ? `${service.averageRating.toFixed(1)} stars` : 'No ratings'}</span></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-4 border-t border-slate-700">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-300">{service.duration} minutes</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-300">{service.bookingCount} bookings</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Star className="w-4 h-4 text-slate-400" />
+                    <span className="text-slate-300">
+                      {service.averageRating > 0 ? `${service.averageRating.toFixed(1)} stars` : 'No ratings'}
+                    </span>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -198,9 +291,11 @@ export default function ServiceManagement() {
         )}
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent onEscapeKeyDown={closeModal} onPointerDownOutside={closeModal}>
+        <DialogContent onEscapeKeyDown={closeModal} onPointerDownOutside={closeModal} className="bg-slate-900 border-slate-700 text-white">
           <DialogHeader>
-            <DialogTitle>{selectedService ? 'Edit Service' : 'Add New Service'}</DialogTitle>
+            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              {selectedService ? 'Edit Service' : 'Add New Service'}
+            </DialogTitle>
           </DialogHeader>
           <ServiceForm service={selectedService} onSave={handleSaveService} onCancel={closeModal} />
         </DialogContent>

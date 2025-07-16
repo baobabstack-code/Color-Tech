@@ -4,7 +4,7 @@ import AdminHeader from "./AdminHeader";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
       <div className="flex">
         <Sidebar />
         <div className="flex-1 flex flex-col min-h-screen ml-64">

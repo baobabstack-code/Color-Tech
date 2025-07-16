@@ -1,28 +1,12 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from 'next/server';
+import { DatabaseService } from '@/lib/database';
 
-const customersFilePath = path.join(process.cwd(), 'src/data/customers.json');
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
-
-// GET: Fetch all customers
+// GET: Fetch all customers (users with customer role)
 export async function GET() {
   try {
-    const customers = readJsonFile(customersFilePath);
+    const users = await DatabaseService.getUsers();
+    // Filter to only return customers
+    const customers = users.filter(user => user.role === 'customer');
     return NextResponse.json(customers);
   } catch (error) {
     console.error('Failed to fetch customers:', error);
@@ -31,29 +15,22 @@ export async function GET() {
 }
 
 // POST: Create a new customer
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
     // Basic validation
     if (!data.name || !data.email) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ message: 'Missing required fields: name, email' }, { status: 400 });
     }
 
-    const customers = readJsonFile(customersFilePath);
-    
-    const newCustomer = {
-      id: (customers.length + 1).toString(),
+    const newCustomer = await DatabaseService.createUser({
       name: data.name,
       email: data.email,
-      phone: data.phone || '',
-      address: data.address || '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    customers.push(newCustomer);
-    writeJsonFile(customersFilePath, customers);
+      phone: data.phone,
+      address: data.address,
+      role: 'customer',
+    });
 
     return NextResponse.json(newCustomer, { status: 201 });
   } catch (error) {

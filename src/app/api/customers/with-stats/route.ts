@@ -1,29 +1,43 @@
 import { NextResponse } from 'next/server';
-import { customers, bookings } from '@/lib/mock-db';
+import fs from 'fs';
+import path from 'path';
 
-// GET: Fetch all customers with aggregated stats
+const customersFilePath = path.join(process.cwd(), 'src/data/customers.json');
+const bookingsFilePath = path.join(process.cwd(), 'src/data/bookings.json');
+
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// GET: Fetch all customers with statistics
 export async function GET() {
   try {
-    const customerStats = customers.map(customer => {
-      const customerBookings = bookings.filter(b => b.customerId === customer.id);
-      const bookingCount = customerBookings.length;
-      
-      let lastActivity = null;
-      if (bookingCount > 0) {
-        // Sort bookings by date to find the most recent one
-        customerBookings.sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
-        lastActivity = customerBookings[0].scheduledAt;
-      }
+    const customers = readJsonFile(customersFilePath);
+    const bookings = readJsonFile(bookingsFilePath);
+
+    // Add statistics to each customer
+    const customersWithStats = customers.map((customer: any) => {
+      const customerBookings = bookings.filter((booking: any) => 
+        booking.customerId === customer.id || booking.customerId === customer.id.toString()
+      );
+
+      const lastBooking = customerBookings
+        .sort((a: any, b: any) => new Date(b.scheduledAt || b.createdAt).getTime() - new Date(a.scheduledAt || a.createdAt).getTime())[0];
 
       return {
         ...customer,
-        bookingCount,
-        lastActivity: lastActivity || customer.createdAt, // Fallback to join date if no bookings
+        bookingCount: customerBookings.length,
+        lastActivity: lastBooking ? (lastBooking.scheduledAt || lastBooking.createdAt) : customer.createdAt
       };
     });
 
-    return NextResponse.json(customerStats);
-
+    return NextResponse.json(customersWithStats);
   } catch (error) {
     console.error('Failed to fetch customers with stats:', error);
     return NextResponse.json({ message: 'Failed to fetch customers with stats' }, { status: 500 });
