@@ -393,7 +393,7 @@ function BookingForm({
                 {services.map((service) => (
                   <SelectItem
                     key={service.id}
-                    value={service.id}
+                    value={service.id.toString()}
                     className="text-white hover:bg-slate-700"
                   >
                     {service.name}
