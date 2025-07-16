@@ -4,16 +4,29 @@ import { useState, useEffect, FormEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, 
-  DialogFooter, DialogTrigger, DialogClose
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Wrench, Clock, Users, Star, Loader2, Plus, Edit, Trash2, AlertCircle
+import {
+  Wrench,
+  Clock,
+  Users,
+  Star,
+  Loader2,
+  Plus,
+  Edit,
+  Trash2,
+  AlertCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,14 +42,22 @@ interface Service {
   averageRating: number;
 }
 
-const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, onSave: (service: any) => void, onCancel: () => void }) => {
+const ServiceForm = ({
+  service,
+  onSave,
+  onCancel,
+}: {
+  service?: Service | null;
+  onSave: (service: any) => void;
+  onCancel: () => void;
+}) => {
   const [formData, setFormData] = useState({
-    name: service?.name || '',
-    description: service?.description || '',
+    name: service?.name || "",
+    description: service?.description || "",
     basePrice: service?.price || 0,
     durationMinutes: service?.duration || 30,
-    category: service?.category || 'General',
-    status: service?.isActive ? 'active' : 'inactive',
+    category: service?.category || "General",
+    status: service?.isActive ? "active" : "inactive",
   });
 
   const handleSubmit = (e: FormEvent) => {
@@ -47,78 +68,109 @@ const ServiceForm = ({ service, onSave, onCancel }: { service?: Service | null, 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="name" className="text-slate-200">Service Name</Label>
-        <Input 
-          id="name" 
-          value={formData.name} 
-          onChange={e => setFormData({ ...formData, name: e.target.value })} 
-          required 
+        <Label htmlFor="name" className="text-slate-200">
+          Service Name
+        </Label>
+        <Input
+          id="name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
           className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
         />
       </div>
       <div>
-        <Label htmlFor="description" className="text-slate-200">Description</Label>
-        <Textarea 
-          id="description" 
-          value={formData.description} 
-          onChange={e => setFormData({ ...formData, description: e.target.value })} 
-          required 
+        <Label htmlFor="description" className="text-slate-200">
+          Description
+        </Label>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+          required
           className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="price" className="text-slate-200">Price ($)</Label>
-          <Input 
-            id="price" 
-            type="number" 
-            step="0.01" 
-            value={formData.basePrice} 
-            onChange={e => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })} 
-            required 
+          <Label htmlFor="price" className="text-slate-200">
+            Price ($)
+          </Label>
+          <Input
+            id="price"
+            type="number"
+            step="0.01"
+            value={formData.basePrice}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                basePrice: parseFloat(e.target.value) || 0,
+              })
+            }
+            required
             className="bg-slate-800 border-slate-600 text-white"
           />
         </div>
         <div>
-          <Label htmlFor="duration" className="text-slate-200">Duration (minutes)</Label>
-          <Input 
-            id="duration" 
-            type="number" 
-            value={formData.durationMinutes} 
-            onChange={e => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })} 
-            required 
+          <Label htmlFor="duration" className="text-slate-200">
+            Duration (minutes)
+          </Label>
+          <Input
+            id="duration"
+            type="number"
+            value={formData.durationMinutes}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                durationMinutes: parseInt(e.target.value) || 0,
+              })
+            }
+            required
             className="bg-slate-800 border-slate-600 text-white"
           />
         </div>
       </div>
       <div>
-        <Label htmlFor="category" className="text-slate-200">Category</Label>
-        <Input 
-          id="category" 
-          value={formData.category} 
-          onChange={e => setFormData({ ...formData, category: e.target.value })} 
-          required 
+        <Label htmlFor="category" className="text-slate-200">
+          Category
+        </Label>
+        <Input
+          id="category"
+          value={formData.category}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
+          required
           className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
         />
       </div>
       <div className="flex items-center space-x-2">
-        <Switch 
-          id="isActive" 
-          checked={formData.status === 'active'} 
-          onCheckedChange={checked => setFormData({ ...formData, status: checked ? 'active' : 'inactive' })} 
+        <Switch
+          id="isActive"
+          checked={formData.status === "active"}
+          onCheckedChange={(checked) =>
+            setFormData({
+              ...formData,
+              status: checked ? "active" : "inactive",
+            })
+          }
         />
-        <Label htmlFor="isActive" className="text-slate-200">Service is Active</Label>
+        <Label htmlFor="isActive" className="text-slate-200">
+          Service is Active
+        </Label>
       </div>
       <DialogFooter className="gap-2">
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={onCancel}
           className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
         >
           Cancel
         </Button>
-        <Button 
+        <Button
           type="submit"
           className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
         >
@@ -143,50 +195,74 @@ export default function ServiceManagement() {
   const fetchServices = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/services/with-stats');
-      if (!response.ok) throw new Error('Failed to fetch services.');
+      const response = await fetch("/api/services/with-stats");
+      if (!response.ok) throw new Error("Failed to fetch services.");
       const data = await response.json();
       setServices(data);
     } catch (err) {
-      toast({ title: "Error", description: (err as Error).message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (err as Error).message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveService = async (serviceData: Omit<Service, 'id' | 'bookingCount' | 'averageRating'>) => {
-    const method = selectedService ? 'PUT' : 'POST';
-    const url = selectedService ? `/api/services/${selectedService.id}` : '/api/services';
+  const handleSaveService = async (
+    serviceData: Omit<Service, "id" | "bookingCount" | "averageRating">
+  ) => {
+    const method = selectedService ? "PUT" : "POST";
+    const url = selectedService
+      ? `/api/services/${selectedService.id}`
+      : "/api/services";
 
     try {
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(serviceData),
       });
 
-      if (!response.ok) throw new Error(`Failed to ${selectedService ? 'update' : 'create'} service.`);
-      
-      toast({ title: 'Success', description: `Service successfully ${selectedService ? 'updated' : 'created'}.` });
+      if (!response.ok)
+        throw new Error(
+          `Failed to ${selectedService ? "update" : "create"} service.`
+        );
+
+      toast({
+        title: "Success",
+        description: `Service successfully ${selectedService ? "updated" : "created"}.`,
+      });
       setIsModalOpen(false);
       setSelectedService(null);
       fetchServices(); // Refresh data
     } catch (err) {
-      toast({ title: "Error", description: (err as Error).message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (err as Error).message,
+        variant: "destructive",
+      });
     }
   };
 
   const handleDeleteService = async (serviceId: string) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
+    if (!confirm("Are you sure you want to delete this service?")) return;
 
     try {
-      const response = await fetch(`/api/services/${serviceId}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Failed to delete service.');
+      const response = await fetch(`/api/services/${serviceId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete service.");
 
-      toast({ title: 'Success', description: 'Service deleted successfully.' });
+      toast({ title: "Success", description: "Service deleted successfully." });
       fetchServices(); // Refresh data
     } catch (err) {
-      toast({ title: "Error", description: (err as Error).message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: (err as Error).message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -206,98 +282,122 @@ export default function ServiceManagement() {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
           Service Management
         </h1>
-        <Button 
-          onClick={() => openModal()} 
+        <Button
+          onClick={() => openModal()}
           className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg"
         >
           <Plus className="h-4 w-4" /> Add New Service
         </Button>
       </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-12 w-12 animate-spin text-indigo-400" />
-          </div>
-        ) : services.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
-            <Wrench className="h-16 w-16 mx-auto mb-4 text-slate-600" />
-            <p className="text-lg mb-2">No services found</p>
-            <p className="text-sm text-slate-500 mb-6">Create your first service to get started</p>
-            <Button 
-              onClick={() => openModal()} 
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-12 w-12 animate-spin text-indigo-400" />
+        </div>
+      ) : services.length === 0 ? (
+        <div className="text-center py-12 text-slate-400">
+          <Wrench className="h-16 w-16 mx-auto mb-4 text-slate-600" />
+          <p className="text-lg mb-2">No services found</p>
+          <p className="text-sm text-slate-500 mb-6">
+            Create your first service to get started
+          </p>
+          <Button
+            onClick={() => openModal()}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Your First Service
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-6">
+          {services.map((service) => (
+            <Card
+              key={service.id}
+              className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200 shadow-xl"
             >
-              <Plus className="h-4 w-4 mr-2" />Add Your First Service
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {services.map((service) => (
-              <Card key={service.id} className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200 shadow-xl">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center space-x-3">
-                      <h3 className="text-xl font-semibold text-white">{service.name}</h3>
-                      <Badge 
-                        className={`${service.isActive 
-                          ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                          : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-                        }`}
-                      >
-                        {service.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </div>
-                    <p className="text-slate-300 mt-2 max-w-2xl">{service.description}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => openModal(service)}
-                      className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center space-x-3">
+                    <h3 className="text-xl font-semibold text-white">
+                      {service.name}
+                    </h3>
+                    <Badge
+                      className={`${
+                        service.isActive
+                          ? "bg-green-500/20 text-green-400 border-green-500/30"
+                          : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                      }`}
                     >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="destructive" 
-                      size="sm" 
-                      onClick={() => handleDeleteService(service.id)}
-                      className="bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      {service.isActive ? "Active" : "Inactive"}
+                    </Badge>
                   </div>
+                  <p className="text-slate-300 mt-2 max-w-2xl">
+                    {service.description}
+                  </p>
                 </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openModal(service)}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteService(service.id)}
+                    className="bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-4 border-t border-slate-700">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-300">{service.duration} minutes</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-300">{service.bookingCount} bookings</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Star className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-300">
-                      {service.averageRating > 0 ? `${service.averageRating.toFixed(1)} stars` : 'No ratings'}
-                    </span>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-4 border-t border-slate-700">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-300">
+                    {service.duration} minutes
+                  </span>
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-300">
+                    {service.bookingCount} bookings
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Star className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-300">
+                    {service.averageRating > 0
+                      ? `${service.averageRating.toFixed(1)} stars`
+                      : "No ratings"}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent onEscapeKeyDown={closeModal} onPointerDownOutside={closeModal} className="bg-slate-900 border-slate-700 text-white">
+        <DialogContent
+          onEscapeKeyDown={closeModal}
+          onPointerDownOutside={closeModal}
+          className="bg-slate-900 border-slate-700 text-white"
+        >
           <DialogHeader>
             <DialogTitle className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-              {selectedService ? 'Edit Service' : 'Add New Service'}
+              {selectedService ? "Edit Service" : "Add New Service"}
             </DialogTitle>
           </DialogHeader>
-          <ServiceForm service={selectedService} onSave={handleSaveService} onCancel={closeModal} />
+          <ServiceForm
+            service={selectedService}
+            onSave={handleSaveService}
+            onCancel={closeModal}
+          />
         </DialogContent>
       </Dialog>
     </div>
