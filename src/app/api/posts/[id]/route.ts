@@ -42,10 +42,12 @@ export async function PUT(
       where: { id: parseInt(id) },
       data: {
         title: body.title,
-        content: body.content,
-        excerpt: body.excerpt,
+        body: body.content || body.body,
         imageUrl: body.imageUrl,
         isPublished: body.isPublished,
+        tags: body.tags,
+        author: body.author,
+        updatedBy: body.updatedBy || 1,
       },
     });
     return NextResponse.json(post);
