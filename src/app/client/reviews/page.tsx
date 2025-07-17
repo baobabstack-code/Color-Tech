@@ -181,7 +181,7 @@ const ClientReviews = () => {
   const openEditDialog = (review: Review) => {
     setEditingReview(review);
     setRating(review.rating);
-    setComment(review.comment);
+    setComment(review.comment || "");
     setIsDialogOpen(true);
   };
 
