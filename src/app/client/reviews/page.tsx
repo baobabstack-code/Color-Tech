@@ -95,7 +95,8 @@ const ClientReviews = () => {
     setIsSubmitting(true);
 
     const reviewData: CreateReviewData = {
-      serviceId: selectedService,
+      userId: 1, // TODO: Replace with actual user ID from auth context
+      serviceId: parseInt(selectedService),
       rating,
       comment,
     };
@@ -157,7 +158,7 @@ const ClientReviews = () => {
     }
   };
 
-  const handleDeleteReview = async (id: string) => {
+  const handleDeleteReview = async (id: number) => {
     if (!confirm("Are you sure you want to delete this review?")) return;
 
     try {
@@ -313,7 +314,7 @@ const ClientReviews = () => {
             <Card key={review.id} className="p-6">
               <div className="flex justify-between">
                 <h3 className="font-semibold text-lg">
-                  {review.serviceName || "Service"}
+                  {review.service?.name || "Service"}
                 </h3>
                 <div className="flex gap-2">
                   <Button
@@ -336,9 +337,7 @@ const ClientReviews = () => {
               <div className="flex items-center mt-2">
                 {renderStars(review.rating)}
                 <span className="ml-2 text-sm text-gray-500">
-                  {new Date(
-                    review.date || review.createdAt
-                  ).toLocaleDateString()}
+                  {new Date(review.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
