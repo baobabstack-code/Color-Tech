@@ -42,8 +42,7 @@ const ClientBookings = () => {
       // Sort bookings by date, with upcoming bookings first
       const sortedBookings = data.sort((a, b) => {
         return (
-          new Date(a.scheduledDate).getTime() -
-          new Date(b.scheduledDate).getTime()
+          new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
         );
       });
       setBookings(sortedBookings);
@@ -172,11 +171,20 @@ const ClientBookings = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4 shrink-0" />
-                          <span>{formatDate(booking.scheduledDate)}</span>
+                          <span>{formatDate(booking.scheduledAt)}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4 shrink-0" />
-                          <span>{formatTime(booking.scheduledTime)}</span>
+                          <span>
+                            {new Date(booking.scheduledAt).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
