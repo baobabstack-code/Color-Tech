@@ -66,7 +66,6 @@ export default function GalleryPicker({
           title: "Upload Requirements",
           description: `Max size: ${error.details.maxFileSize}, Formats: ${error.details.allowedTypes.join(", ")}`,
           variant: "default",
-          duration: 8000,
         });
       }
     } finally {
