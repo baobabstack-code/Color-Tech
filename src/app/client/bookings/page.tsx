@@ -159,7 +159,7 @@ const ClientBookings = () => {
                     <div className="flex-grow">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 mb-1">
                         <h3 className="font-semibold text-lg sm:text-xl">
-                          {booking.serviceName || "Service"}
+                          {booking.service?.name || "Service"}
                         </h3>
                         <span
                           className={`text-xs sm:text-sm font-medium px-2 py-0.5 rounded-full ${getStatusBadgeClass(booking.status)}`}
