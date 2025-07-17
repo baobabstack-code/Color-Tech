@@ -183,7 +183,8 @@ export default function ReviewManagement() {
       const filtered = reviews.filter(
         (review) =>
           review.customerName.toLowerCase().includes(lowercasedSearch) ||
-          review.comment.toLowerCase().includes(lowercasedSearch) ||
+          (review.comment &&
+            review.comment.toLowerCase().includes(lowercasedSearch)) ||
           review.serviceName.toLowerCase().includes(lowercasedSearch) ||
           review.status.toLowerCase().includes(lowercasedSearch)
       );

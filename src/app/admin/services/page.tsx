@@ -37,6 +37,7 @@ interface Service {
   description: string;
   price: number;
   duration: number; // in minutes
+  category?: string; // Optional category field
   isActive: boolean;
   bookingCount: number;
   averageRating: number;
