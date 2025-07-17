@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
@@ -10,27 +10,24 @@ export async function GET(
     const post = await prisma.post.findUnique({
       where: { id: parseInt(id) },
       include: {
-        author: {
+        creator: {
           select: {
-            name: true
-          }
-        }
-      }
-    })
-    
+            name: true,
+          },
+        },
+      },
+    });
+
     if (!post) {
-      return NextResponse.json(
-        { error: 'Post not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-    
-    return NextResponse.json(post)
+
+    return NextResponse.json(post);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch post' },
+      { error: "Failed to fetch post" },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -40,7 +37,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json()
+    const body = await request.json();
     const post = await prisma.post.update({
       where: { id: parseInt(id) },
       data: {
@@ -48,15 +45,15 @@ export async function PUT(
         content: body.content,
         excerpt: body.excerpt,
         imageUrl: body.imageUrl,
-        isPublished: body.isPublished
-      }
-    })
-    return NextResponse.json(post)
+        isPublished: body.isPublished,
+      },
+    });
+    return NextResponse.json(post);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to update post' },
+      { error: "Failed to update post" },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -67,13 +64,13 @@ export async function DELETE(
   try {
     const { id } = await params;
     await prisma.post.delete({
-      where: { id: parseInt(id) }
-    })
-    return NextResponse.json({ success: true })
+      where: { id: parseInt(id) },
+    });
+    return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to delete post' },
+      { error: "Failed to delete post" },
       { status: 500 }
-    )
+    );
   }
 }
