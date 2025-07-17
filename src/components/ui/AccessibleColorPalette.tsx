@@ -125,9 +125,7 @@ function ColorCombinationCard({
                     ? "text-green-600 dark:text-green-400"
                     : wcagLevel === "AA"
                       ? "text-green-600 dark:text-green-400"
-                      : wcagLevel === "AA Large"
-                        ? "text-yellow-600 dark:text-yellow-400"
-                        : "text-red-600 dark:text-red-400"
+                      : "text-red-600 dark:text-red-400"
                 }
               >
                 {wcagLevel}
