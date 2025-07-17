@@ -1,19 +1,8 @@
-import React from 'react';
-import { Calendar, User, Tag, ChevronRight } from 'lucide-react';
+import React from "react";
+import { Calendar, User, Tag, ChevronRight } from "lucide-react";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  author: string;
-  date: string;
-  image: string;
-  readTime: string;
-}
-
-import { contentService } from '../services/contentService';
-import { useEffect, useState } from 'react';
+import { contentService, BlogPost } from "../services/contentService";
+import { useEffect, useState } from "react";
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -30,32 +19,38 @@ const Blog = () => {
   return (
     <div className="container mx-auto py-12">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-primary mb-4">Latest Updates & Tips</h2>
+        <h2 className="text-3xl font-bold text-primary mb-4">
+          Latest Updates & Tips
+        </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Stay informed with the latest automotive care tips, industry news, and expert advice 
-          from our experienced team.
+          Stay informed with the latest automotive care tips, industry news, and
+          expert advice from our experienced team.
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {blogPosts.map((post) => (
-          <article 
-            key={post.id} 
+          <article
+            key={post.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
           >
             <div className="relative">
               <img
-                src={post.image}
+                src={
+                  post.image_url ||
+                  "https://source.unsplash.com/800x400/?car-repair"
+                }
                 alt={post.title}
                 className="w-full h-48 object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = 'https://source.unsplash.com/800x400/?car-repair';
+                  target.src =
+                    "https://source.unsplash.com/800x400/?car-repair";
                 }}
               />
               <div className="absolute top-4 left-4">
                 <span className="bg-secondary text-white px-3 py-1 rounded-full text-sm">
-                  {post.category}
+                  {post.tags?.split(",")[0] || "Blog"}
                 </span>
               </div>
             </div>
@@ -65,25 +60,27 @@ const Blog = () => {
                 {post.title}
               </h3>
               <p className="text-gray-600 mb-4">
-                {post.excerpt}
+                {post.body.length > 150
+                  ? post.body.substring(0, 150) + "..."
+                  : post.body}
               </p>
 
               <div className="flex items-center text-sm text-gray-500 mb-4">
                 <div className="flex items-center">
                   <User className="w-4 h-4 mr-1" />
-                  {post.author}
+                  {post.author || "Admin"}
                 </div>
                 <div className="mx-3">•</div>
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
+                  {new Date(post.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                   })}
                 </div>
                 <div className="mx-3">•</div>
-                <div>{post.readTime}</div>
+                <div>{Math.ceil(post.body.length / 200)} min read</div>
               </div>
 
               <button className="flex items-center text-secondary hover:text-secondary/80 transition-colors duration-200">
@@ -97,9 +94,17 @@ const Blog = () => {
 
       {/* Categories */}
       <div className="mt-12 text-center">
-        <h3 className="text-xl font-semibold text-primary mb-6">Popular Categories</h3>
+        <h3 className="text-xl font-semibold text-primary mb-6">
+          Popular Categories
+        </h3>
         <div className="flex flex-wrap justify-center gap-4">
-          {['Car Care Tips', 'Industry News', 'Expert Advice', 'Case Studies', 'How-To Guides'].map((category) => (
+          {[
+            "Car Care Tips",
+            "Industry News",
+            "Expert Advice",
+            "Case Studies",
+            "How-To Guides",
+          ].map((category) => (
             <button
               key={category}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-full transition-colors duration-200"
@@ -114,8 +119,8 @@ const Blog = () => {
       <div className="mt-16 bg-primary text-white rounded-lg p-8 text-center">
         <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
         <p className="mb-6 max-w-xl mx-auto">
-          Subscribe to our newsletter for the latest automotive care tips, industry news, 
-          and exclusive offers.
+          Subscribe to our newsletter for the latest automotive care tips,
+          industry news, and exclusive offers.
         </p>
         <form className="flex max-w-md mx-auto">
           <input
@@ -135,4 +140,4 @@ const Blog = () => {
   );
 };
 
-export default Blog; 
+export default Blog;
