@@ -1,46 +1,50 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const posts = await prisma.post.findMany({
       include: {
-        author: {
+        creator: {
           select: {
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
-    return NextResponse.json(posts)
+        createdAt: "desc",
+      },
+    });
+    return NextResponse.json(posts);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch posts' },
+      { error: "Failed to fetch posts" },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const body = await request.json();
     const post = await prisma.post.create({
       data: {
         title: body.title,
-        content: body.content,
-        excerpt: body.excerpt,
+        body: body.content || body.body,
         imageUrl: body.imageUrl,
-        authorId: 1 // TODO: Replace with actual user ID from session
-      }
-    })
-    return NextResponse.json(post)
+        isPublished: body.isPublished || false,
+        tags: body.tags,
+        author: body.author || "Admin",
+        slug: body.slug || body.title.toLowerCase().replace(/\s+/g, "-"),
+        createdBy: 1, // TODO: Replace with actual user ID from session
+        updatedBy: 1,
+      },
+    });
+    return NextResponse.json(post);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to create post' },
+      { error: "Failed to create post" },
       { status: 500 }
-    )
+    );
   }
 }
