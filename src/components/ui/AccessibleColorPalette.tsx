@@ -65,11 +65,17 @@ function ColorCombinationCard({
   textSize,
 }: ColorCombinationCardProps) {
   const contrastRatio = getContrastRatio(foreground, background);
-  const wcagLevel = meetsContrastStandard(
+  const meetsAA = meetsContrastStandard(
     contrastRatio,
     "AA",
     textSize === "large"
   );
+  const meetsAAA = meetsContrastStandard(
+    contrastRatio,
+    "AAA",
+    textSize === "large"
+  );
+  const wcagLevel = meetsAAA ? "AAA" : meetsAA ? "AA" : "Fail";
 
   // Determine if the contrast is sufficient for the text size
   const isAccessible =
