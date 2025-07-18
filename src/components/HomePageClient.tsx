@@ -5,12 +5,22 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Wrench, Car, Star, Clock,
-  CheckCircle, PhoneCall, Users,
-  Shield, ArrowRight, Quote,
-  Camera, Settings, Hammer, Paintbrush
+  Wrench,
+  Car,
+  Star,
+  Clock,
+  CheckCircle,
+  PhoneCall,
+  Users,
+  Shield,
+  ArrowRight,
+  Quote,
+  Camera,
+  Settings,
+  Hammer,
+  Paintbrush,
 } from "lucide-react";
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Toaster } from "@/components/ui/sonner";
 import CTA from "@/components/CTA";
 
@@ -81,107 +91,127 @@ interface HomePageClientProps {
   services: Service[];
 }
 
-export default function HomePageClient({ featuredPosts, testimonials, galleryPreviews, services }: HomePageClientProps) {
+export default function HomePageClient({
+  featuredPosts,
+  testimonials,
+  galleryPreviews,
+  services,
+}: HomePageClientProps) {
   const features = [
     {
       icon: <Wrench className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Expert Panel Beating",
-      description: "Professional repair services for all vehicle types"
+      description: "Professional repair services for all vehicle types",
     },
     {
       icon: <Car className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Spray Painting",
-      description: "Premium quality paint jobs and color matching"
+      description: "Premium quality paint jobs and color matching",
     },
     {
       icon: <Star className="h-8 w-8 text-yellow-400 dark:text-yellow-400" />,
       title: "Quality Guaranteed",
-      description: "100% satisfaction guarantee on all services"
+      description: "100% satisfaction guarantee on all services",
     },
     {
       icon: <Clock className="h-8 w-8 text-primary dark:text-sky-400" />,
       title: "Quick Turnaround",
-      description: "Efficient service with minimal downtime"
-    }
+      description: "Efficient service with minimal downtime",
+    },
   ];
 
   const stats = [
     { value: "1000+", label: "Satisfied Customers" },
     { value: "15+", label: "Years Experience" },
     { value: "4.9", label: "Average Rating" },
-    { value: "100%", label: "Quality Guarantee" }
+    { value: "100%", label: "Quality Guarantee" },
   ];
 
   const process = [
     {
       icon: <Camera className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Initial Assessment",
-      description: "We thoroughly inspect your vehicle and document all damage"
+      description: "We thoroughly inspect your vehicle and document all damage",
     },
     {
       icon: <Settings className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Repair Planning",
-      description: "Our experts create a detailed repair plan and timeline"
+      description: "Our experts create a detailed repair plan and timeline",
     },
     {
       icon: <Wrench className="h-12 w-12 text-primary dark:text-sky-400" />,
       title: "Expert Repairs",
-      description: "Skilled technicians perform the necessary repairs"
+      description: "Skilled technicians perform the necessary repairs",
     },
     {
-      icon: <CheckCircle className="h-12 w-12 text-green-500 dark:text-green-400" />,
+      icon: (
+        <CheckCircle className="h-12 w-12 text-green-500 dark:text-green-400" />
+      ),
       title: "Quality Check",
-      description: "Multiple quality checks ensure perfect results"
-    }
+      description: "Multiple quality checks ensure perfect results",
+    },
   ];
 
   // Process data for rendering
-  const displayedServices = services.slice(0, 3).map((service: any, index: number) => ({
-    id: service.id,
-    icon: service.name.includes('Panel') ? <Wrench className="h-10 w-10 text-primary dark:text-sky-400" /> :
-          service.name.includes('Paint') ? <Paintbrush className="h-10 w-10 text-primary dark:text-sky-400" /> :
-          service.name.includes('Oil') ? <Settings className="h-10 w-10 text-primary dark:text-sky-400" /> :
-          service.name.includes('Brake') ? <Shield className="h-10 w-10 text-primary dark:text-sky-400" /> :
-          <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />, // Default
-    title: service.name,
-    description: service.description,
-    link: service.name.toLowerCase().replace(/\s/g, '-') // Generate slug from name
-  }));
+  const displayedServices = services
+    .slice(0, 3)
+    .map((service: any, index: number) => ({
+      id: service.id,
+      icon: service.name.includes("Panel") ? (
+        <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />
+      ) : service.name.includes("Paint") ? (
+        <Paintbrush className="h-10 w-10 text-primary dark:text-sky-400" />
+      ) : service.name.includes("Oil") ? (
+        <Settings className="h-10 w-10 text-primary dark:text-sky-400" />
+      ) : service.name.includes("Brake") ? (
+        <Shield className="h-10 w-10 text-primary dark:text-sky-400" />
+      ) : (
+        <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />
+      ), // Default
+      title: service.name,
+      description: service.description,
+      link: service.name.toLowerCase().replace(/\s/g, "-"), // Generate slug from name
+    }));
 
-  const displayedTestimonials = testimonials.slice(0, 3).map((t: any, index: number) => ({
-    name: t.name || `${t.user_first_name || ''} ${t.user_last_name || ''}`.trim(),
-    role: t.role || t.user_email || 'Customer',
-    image: t.image || "/images/default-avatar.png",
-    quote: t.quote || t.comment || 'Great service!',
-    rating: t.rating || 5
-  }));
+  const displayedTestimonials = testimonials
+    .slice(0, 3)
+    .map((t: any, index: number) => ({
+      name:
+        t.name || `${t.user_first_name || ""} ${t.user_last_name || ""}`.trim(),
+      role: t.role || t.user_email || "Customer",
+      image: t.image || "/images/default-avatar.png",
+      quote: t.quote || t.comment || "Great service!",
+      rating: t.rating || 5,
+    }));
 
-  const displayedGalleryPreviews = galleryPreviews.slice(0, 2).map((g: GalleryItem, index: number) => {
-    let bodyContent = { original_name: g.title };
-    try {
-      bodyContent = typeof g.body === 'string' ? JSON.parse(g.body) : g.body;
-    } catch (e) {
-      console.error("Failed to parse gallery item body:", e);
-    }
-    return {
-      before: g.image_url || "/images/hero/colorful-car.png",
-      after: g.image_url || "/images/hero/colorful-car.png",
-      title: g.title,
-      description: (bodyContent as any).original_name || g.title
-    };
-  });
+  const displayedGalleryPreviews = galleryPreviews
+    .slice(0, 2)
+    .map((g: GalleryItem, index: number) => {
+      let bodyContent = { original_name: g.title };
+      try {
+        bodyContent = typeof g.body === "string" ? JSON.parse(g.body) : g.body;
+      } catch (e) {
+        console.error("Failed to parse gallery item body:", e);
+      }
+      return {
+        before: g.image_url || "/images/hero/colorful-car.png",
+        after: g.image_url || "/images/hero/colorful-car.png",
+        title: g.title,
+        description: (bodyContent as any).original_name || g.title,
+      };
+    });
 
   return (
     <>
       <Toaster />
       <div className="min-h-screen">
         {/* Hero Section */}
-        <div className="mx-auto px-4 sm:px-8 md:px-16 lg:px-24 mt-24">
+        <div className="mx-auto px-4 sm:px-8 md:px-16 lg:px-24 mt-32 md:mt-36">
           <motion.div
             className="relative h-[75vh] flex items-center justify-center"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Background Image */}
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
@@ -199,7 +229,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
               className="relative z-10 text-center"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
+              transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
             >
               <motion.h1
                 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
@@ -215,7 +245,8 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.7 }}
               >
-                Expert panel beating and spray painting services with guaranteed results
+                Expert panel beating and spray painting services with guaranteed
+                results
               </motion.p>
               <motion.div
                 className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto"
@@ -223,13 +254,23 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
               >
-                <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary"
+                  asChild
+                >
                   <Link href="/contact" className="flex items-center gap-2">
                     <PhoneCall className="h-5 w-5 text-blue" />
                     Get a Quote
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary" asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/90 hover:bg-white w-full sm:w-auto shadow-xl text-primary"
+                  asChild
+                >
                   <Link href="/services">Our Services</Link>
                 </Button>
               </motion.div>
@@ -240,9 +281,12 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         {/* Enhanced Features Section */}
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">Why Choose Us</h2>
+            <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
+              Why Choose Us
+            </h2>
             <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-              We combine expertise, quality, and customer service to deliver the best auto body repair experience
+              We combine expertise, quality, and customer service to deliver the
+              best auto body repair experience
             </p>
           </div>
           <motion.div
@@ -253,9 +297,9 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
               hidden: {},
               visible: {
                 transition: {
-                  staggerChildren: 0.15
-                }
-              }
+                  staggerChildren: 0.15,
+                },
+              },
             }}
           >
             {features.map((feature, index) => (
@@ -269,8 +313,12 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
               >
                 <div className="flex flex-col items-center text-center">
                   {feature.icon}
-                  <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">{feature.title}</h3>
-                  <p className="text-gray-700 dark:text-gray-300">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {feature.description}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -281,7 +329,9 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">Our Services</h2>
+              <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">
+                Our Services
+              </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300">
                 Comprehensive auto body repair and painting services
               </p>
@@ -294,9 +344,9 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 hidden: {},
                 visible: {
                   transition: {
-                    staggerChildren: 0.15
-                  }
-                }
+                    staggerChildren: 0.15,
+                  },
+                },
               }}
             >
               {displayedServices.map((service, index) => (
@@ -313,8 +363,12 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                     whileHover={{ scale: 1.07 }}
                   >
                     {service.icon}
-                    <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">{service.title}</h3>
-                    <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">{service.description}</p>
+                    <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">
+                      {service.description}
+                    </p>
                     <div className="mt-auto flex items-center text-primary dark:text-sky-400 font-semibold">
                       Learn More <ArrowRight className="ml-2 h-4 w-4" />
                     </div>
@@ -329,21 +383,31 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
         <div className="py-16">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-primary dark:text-white">Our Process</h2>
+              <h2 className="text-3xl font-bold text-primary dark:text-white">
+                Our Process
+              </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-                A streamlined and transparent process from start to finish, ensuring your peace of mind.
+                A streamlined and transparent process from start to finish,
+                ensuring your peace of mind.
               </p>
             </div>
             <div className="relative">
               <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 dark:bg-slate-700" />
               <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8">
                 {process.map((step, index) => (
-                  <div key={index} className="flex flex-col items-center text-center">
+                  <div
+                    key={index}
+                    className="flex flex-col items-center text-center"
+                  >
                     <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-lg">
                       {step.icon}
                     </div>
-                    <h3 className="text-xl font-semibold mt-6 mb-2 text-slate-900 dark:text-white">{step.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
+                    <h3 className="text-xl font-semibold mt-6 mb-2 text-slate-900 dark:text-white">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {step.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -357,8 +421,12 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {stats.map((stat, index) => (
                 <div key={index}>
-                  <h3 className="text-4xl font-bold text-primary dark:text-white">{stat.value}</h3>
-                  <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">{stat.label}</p>
+                  <h3 className="text-4xl font-bold text-primary dark:text-white">
+                    {stat.value}
+                  </h3>
+                  <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+                    {stat.label}
+                  </p>
                 </div>
               ))}
             </div>
@@ -373,7 +441,8 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 Transformation Gallery
               </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                See the dramatic transformations we achieve through our expert repair and restoration work
+                See the dramatic transformations we achieve through our expert
+                repair and restoration work
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
@@ -430,21 +499,31 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 What Our Customers Say
               </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                Real stories from satisfied clients who trust us with their vehicles.
+                Real stories from satisfied clients who trust us with their
+                vehicles.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {displayedTestimonials.map((testimonial, index) => (
-                <Card key={index} className="p-6 bg-white dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col">
+                <Card
+                  key={index}
+                  className="p-6 bg-white dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col"
+                >
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center mr-4">
                       <Users className="h-6 w-6 text-primary dark:text-sky-400" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white">{testimonial.name}</h4>
+                      <h4 className="font-semibold text-slate-900 dark:text-white">
+                        {testimonial.name}
+                      </h4>
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`h-4 w-4 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-slate-600'}`} fill="currentColor" />
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-400" : "text-gray-300 dark:text-slate-600"}`}
+                            fill="currentColor"
+                          />
                         ))}
                       </div>
                     </div>
@@ -467,12 +546,17 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                 From Our Blog
               </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                Stay updated with the latest news, tips, and insights from our experts.
+                Stay updated with the latest news, tips, and insights from our
+                experts.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {featuredPosts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.id}`} className="block group">
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.id}`}
+                  className="block group"
+                >
                   <Card className="overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 h-full flex flex-col hover:scale-[1.02] transition-transform duration-300">
                     {post.image_url && (
                       <div className="relative h-48">
@@ -480,7 +564,7 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
                           src={post.image_url}
                           alt={post.title}
                           fill
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: "cover" }}
                           className="group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -508,5 +592,3 @@ export default function HomePageClient({ featuredPosts, testimonials, galleryPre
     </>
   );
 }
-
-
