@@ -1,15 +1,16 @@
 // Test file needs to be updated to work with Strapi instead of local API routes
 // import { POST } from '@/app/api/auth/register/route';
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import pool from '@/lib/db';
-import { jwtConfig } from '@/config/jwt';
-import { createAuditLog } from '@/utils/auditLogger';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import pool from "@/lib/db";
+import { jwtConfig } from "@/config/jwt";
+import { createAuditLog } from "@/utils/auditLogger";
 
 // This test suite needs to be updated to work with Strapi authentication
 // Commenting out for now as part of the cleanup process
-/* describe('POST /api/auth/register', () => {
+/* 
+describe('POST /api/auth/register', () => {
   const mockRequest = (body: any, headers?: Record<string, string>) => ({
     json: async () => body,
     headers: new Headers(headers),
@@ -20,9 +21,9 @@ import { createAuditLog } from '@/utils/auditLogger';
     await pool.exec('DELETE FROM user_sessions;');
     await pool.exec('DELETE FROM users;');
     jest.clearAllMocks();
-  });*/
+  });
 
-  /*it('should return 400 if any required field is missing', async () => {
+  it('should return 400 if any required field is missing', async () => {
     const incompleteBody = {
       email: 'test@example.com',
       password: 'password123',
@@ -40,7 +41,6 @@ import { createAuditLog } from '@/utils/auditLogger';
 
   it('should return 400 if email already exists', async () => {
     // This test needs to be updated for Strapi
-    /*
     // Seed an existing user
     const hashedPassword = await bcrypt.hash('password123', 10);
     await pool.run(
@@ -61,12 +61,10 @@ import { createAuditLog } from '@/utils/auditLogger';
 
     expect(response.status).toBe(400);
     expect(json.message).toBe('Email already in use');
-    */
   });
 
   it('should return 201 and new user/token on successful registration', async () => {
     // This test needs to be updated for Strapi
-    /*
     const req = mockRequest({
       email: 'newuser@example.com',
       password: 'newpassword123',
@@ -92,12 +90,10 @@ import { createAuditLog } from '@/utils/auditLogger';
     const sessionInDb = pool.prepare('SELECT * FROM user_sessions WHERE user_id = ?').get(userInDb.id);
     expect(sessionInDb).toBeDefined();
     expect(sessionInDb.token).toBe(json.token);
-    */
   });
 
   it('should handle server errors gracefully', async () => {
     // This test needs to be updated for Strapi
-    /*
     // Temporarily break the database connection to simulate an error
     const originalRun = pool.run;
     pool.run = jest.fn(() => { throw new Error('Simulated database error'); });
@@ -117,6 +113,6 @@ import { createAuditLog } from '@/utils/auditLogger';
 
     // Restore the original run function
     pool.run = originalRun;
-    */
   });
 });
+*/

@@ -1,3 +1,7 @@
-import { supabase } from '@/config/database';
+import { Pool } from "pg";
+import { dbConfig } from "@/config/database";
 
-export default supabase;
+// Create a PostgreSQL connection pool
+const pool = new Pool(dbConfig);
+
+export default pool;

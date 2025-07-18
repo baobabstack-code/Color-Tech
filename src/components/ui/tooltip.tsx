@@ -1,13 +1,13 @@
-import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import * as React from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider
+const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root
+const Tooltip = TooltipPrimitive.Root;
 
-const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
@@ -26,15 +26,15 @@ const TooltipContent = React.forwardRef<
     aria-live="polite"
     {...props}
   />
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName
+));
+TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 /**
  * Accessible Tooltip component
- * 
+ *
  * This component provides an accessible tooltip that appears when hovering or focusing on an element.
  * It follows accessibility best practices by being keyboard accessible and providing appropriate ARIA attributes.
- * 
+ *
  * @example
  * <AccessibleTooltip content="This is a helpful tooltip">
  *   <Button>Hover me</Button>
@@ -45,23 +45,23 @@ interface AccessibleTooltipProps {
    * The content to display in the tooltip
    */
   content: React.ReactNode;
-  
+
   /**
    * The element that triggers the tooltip
    */
   children: React.ReactNode;
-  
+
   /**
    * The delay before showing the tooltip (in ms)
    * @default 700
    */
   delayDuration?: number;
-  
+
   /**
    * Additional classes to apply to the tooltip content
    */
   contentClassName?: string;
-  
+
   /**
    * Whether the tooltip should skip the delay when showing
    * @default false
@@ -78,14 +78,18 @@ function AccessibleTooltip({
 }: AccessibleTooltipProps) {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={delayDuration} skipDelayDuration={skipDelayDuration}>
+      <Tooltip delayDuration={delayDuration}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent className={contentClassName}>
-          {content}
-        </TooltipContent>
+        <TooltipContent className={contentClassName}>{content}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, AccessibleTooltip }
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  AccessibleTooltip,
+};

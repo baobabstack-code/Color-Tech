@@ -1,14 +1,15 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// Database configuration for PostgreSQL
+export const dbConfig = {
+  host: process.env.DB_HOST || "localhost",
+  port: parseInt(process.env.DB_PORT || "5432"),
+  database: process.env.DB_NAME || "color_tech_db",
+  user: process.env.DB_USER || "postgres",
+  password: process.env.DB_PASSWORD || "",
+};
 
-if (!supabaseUrl || !supabaseKey) {
-  // eslint-disable-next-line no-console
-  console.error('Supabase URL or Key is missing in environment variables.');
-}
-
-export const supabase = createClient(supabaseUrl!, supabaseKey!);
+// Export for backward compatibility if needed
+export default dbConfig;

@@ -1,14 +1,15 @@
 // Test file needs to be updated to work with Strapi instead of local API routes
 // import { POST } from '@/app/api/auth/login/route';
-import { NextResponse } from 'next/server';
-import { compare } from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import pool from '@/lib/db';
-import { jwtConfig } from '@/config/jwt';
+import { NextResponse } from "next/server";
+import { compare } from "bcryptjs";
+import jwt from "jsonwebtoken";
+import pool from "@/lib/db";
+import { jwtConfig } from "@/config/jwt";
 
 // This test suite needs to be updated to work with Strapi authentication
 // Commenting out for now as part of the cleanup process
-/* describe('POST /api/auth/login', () => {
+/* 
+describe('POST /api/auth/login', () => {
   const mockRequest = (body: any, headers?: Record<string, string>) => ({
     json: async () => body,
     headers: new Headers(headers),
@@ -17,9 +18,9 @@ import { jwtConfig } from '@/config/jwt';
   beforeEach(() => {
     // Clear mocks if they were used in other tests, but for real data, we don't mock these directly
     jest.clearAllMocks();
-  });*/
+  });
 
-  /*it('should return 400 if email or password are missing', async () => {
+  it('should return 400 if email or password are missing', async () => {
     const req = mockRequest({ email: 'test@example.com' });
     const response = await POST(req);
     const json = await response.json();
@@ -83,3 +84,4 @@ import { jwtConfig } from '@/config/jwt';
   //   expect(json.message).toBe('Server error during login');
   // });
 });
+*/

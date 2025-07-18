@@ -1,19 +1,30 @@
-import db from './db';
-import logger from './logger';
+import db from "./db";
+import logger from "./logger";
 
+// Define types for audit log data
 export interface AuditLogData {
   user_id: number;
-  action: 'insert' | 'update' | 'delete' | 'login' | 'logout' | 'view';
+  action: string;
   table_name: string;
-  record_id: number;
+  record_id?: number;
   old_values?: any;
   new_values?: any;
   ip_address?: string;
   metadata?: any;
 }
 
+export interface AuditLogFilters {
+  tableName?: string;
+  action?: string;
+  userId?: number;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
+  offset?: number;
+}
+
 /**
- * Create an audit log entry in the database
+ * Create an audit log entry
  */
 export async function createAuditLog(data: AuditLogData): Promise<void> {
   try {
@@ -25,19 +36,17 @@ export async function createAuditLog(data: AuditLogData): Promise<void> {
       old_values,
       new_values,
       ip_address,
-      metadata
+      metadata,
     } = data;
 
     const query = `
       INSERT INTO audit_logs (
-        user_id, action, table_name, record_id, old_values, new_values, 
-        ip_address, metadata, created_at
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, NOW()
-      )
+        user_id, action, table_name, record_id, 
+        old_values, new_values, ip_address, metadata, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `;
 
-    await db.query(query, [
+    const values = [
       user_id,
       action,
       table_name,
@@ -45,12 +54,15 @@ export async function createAuditLog(data: AuditLogData): Promise<void> {
       old_values ? JSON.stringify(old_values) : null,
       new_values ? JSON.stringify(new_values) : null,
       ip_address || null,
-      metadata ? JSON.stringify(metadata) : null
-    ]);
+      metadata ? JSON.stringify(metadata) : null,
+      new Date().toISOString(),
+    ];
+
+    await db.query(query, values);
+    logger.info(`Audit log created for ${action} on ${table_name}`);
   } catch (error) {
-    // Log the error but don't throw - audit logging should not break main functionality
-    logger.error('Error creating audit log:', error);
-    logger.error('Audit log data:', JSON.stringify(data));
+    logger.error("Error creating audit log:", error);
+    throw error;
   }
 }
 
@@ -67,16 +79,21 @@ export async function getAuditLogsForRecord(
     const query = `
       SELECT al.*, u.first_name, u.last_name, u.email
       FROM audit_logs al
-      JOIN users u ON al.user_id = u.id
+      LEFT JOIN users u ON al.user_id = u.id
       WHERE al.table_name = $1 AND al.record_id = $2
       ORDER BY al.created_at DESC
       LIMIT $3 OFFSET $4
     `;
 
-    const { rows } = await db.query(query, [tableName, recordId, limit, offset]);
+    const { rows } = await db.query(query, [
+      tableName,
+      recordId,
+      limit,
+      offset,
+    ]);
     return rows;
   } catch (error) {
-    logger.error('Error getting audit logs for record:', error);
+    logger.error("Error getting audit logs for record:", error);
     throw error;
   }
 }
@@ -91,8 +108,7 @@ export async function getAuditLogsForUser(
 ): Promise<any[]> {
   try {
     const query = `
-      SELECT *
-      FROM audit_logs
+      SELECT * FROM audit_logs
       WHERE user_id = $1
       ORDER BY created_at DESC
       LIMIT $2 OFFSET $3
@@ -101,28 +117,32 @@ export async function getAuditLogsForUser(
     const { rows } = await db.query(query, [userId, limit, offset]);
     return rows;
   } catch (error) {
-    logger.error('Error getting audit logs for user:', error);
+    logger.error("Error getting audit logs for user:", error);
     throw error;
   }
 }
 
 /**
- * Get all audit logs with optional filtering
+ * Get audit logs with optional filters
  */
 export async function getAuditLogs(
-  limit: number = 100,
-  offset: number = 0,
-  tableName?: string,
-  action?: string,
-  userId?: number,
-  startDate?: Date,
-  endDate?: Date
+  filters: AuditLogFilters = {}
 ): Promise<any[]> {
   try {
+    const {
+      tableName,
+      action,
+      userId,
+      startDate,
+      endDate,
+      limit = 100,
+      offset = 0,
+    } = filters;
+
     let query = `
       SELECT al.*, u.first_name, u.last_name, u.email
       FROM audit_logs al
-      JOIN users u ON al.user_id = u.id
+      LEFT JOIN users u ON al.user_id = u.id
       WHERE 1=1
     `;
 
@@ -169,14 +189,40 @@ export async function getAuditLogs(
     const { rows } = await db.query(query, values);
     return rows;
   } catch (error) {
-    logger.error('Error getting audit logs:', error);
+    logger.error("Error getting audit logs:", error);
     throw error;
   }
+}
+
+/**
+ * Helper function to log user actions
+ */
+export async function logUserAction(
+  userId: number,
+  action: string,
+  tableName: string,
+  recordId?: number,
+  oldValues?: any,
+  newValues?: any,
+  ipAddress?: string,
+  metadata?: any
+): Promise<void> {
+  await createAuditLog({
+    user_id: userId,
+    action,
+    table_name: tableName,
+    record_id: recordId,
+    old_values: oldValues,
+    new_values: newValues,
+    ip_address: ipAddress,
+    metadata,
+  });
 }
 
 export default {
   createAuditLog,
   getAuditLogsForRecord,
   getAuditLogsForUser,
-  getAuditLogs
-}; 
+  getAuditLogs,
+  logUserAction,
+};
