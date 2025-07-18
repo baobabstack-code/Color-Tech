@@ -213,15 +213,9 @@ const Navigation = () => {
         ))}
       </div>
 
-      {/* Search bar and login button with modern style */}
+      {/* Reserved space for future features */}
       <div className="hidden md:flex items-center gap-3 ml-auto pr-2">
-        <Button
-          asChild
-          variant="ghost"
-          className="px-4 py-2 text-sm rounded-full text-slate-800/90 dark:text-slate-100/90 font-semibold hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors duration-200 lg:px-6 lg:py-2 lg:text-base"
-        >
-          <Link href="/login">Login</Link>
-        </Button>
+        {/* Login removed - admin access via direct URL */}
       </div>
 
       {/* Mobile menu button (hamburger) */}
@@ -285,17 +279,6 @@ const Navigation = () => {
                 Logout
               </button>
             </>
-          ) : (
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2 flex flex-col gap-2">
-              <Link
-                href="/login"
-                className="flex items-center gap-2 px-4 py-3 rounded-full text-gray-700 dark:text-gray-200 font-medium hover:bg-primary/10 hover:text-primary transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                {shieldIcon}
-                <span>Admin Login</span>
-              </Link>
-            </div>
           )}
         </div>
       </div>
