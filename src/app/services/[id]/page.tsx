@@ -27,7 +27,7 @@ const ServiceDetailPage = async ({ params }: PageProps) => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen pt-32 md:pt-36 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 p-8 md:p-12">
           <div className="mb-8">
