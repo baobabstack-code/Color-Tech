@@ -1,14 +1,25 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  Star, Users, Award, Clock, Wrench, Heart, Quote, 
-  ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
-  Phone, Mail, Award as Certification
-} from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Star,
+  Users,
+  Award,
+  Clock,
+  Wrench,
+  Heart,
+  Quote,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Phone,
+  Mail,
+  Award as Certification,
+} from "lucide-react";
 import Link from "next/link"; // Import Link from next/link
 import { Button } from "@/components/ui/button";
-import { PhoneCall } from 'lucide-react';
+import { PhoneCall } from "lucide-react";
 
 const About = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -18,21 +29,24 @@ const About = () => {
     {
       name: "John Smith",
       role: "BMW Owner",
-      content: "The quality of work at Color-tech is exceptional. They restored my BMW to better than new condition after an accident.",
-      rating: 5
+      content:
+        "The quality of work at Color-tech is exceptional. They restored my BMW to better than new condition after an accident.",
+      rating: 5,
     },
     {
       name: "Sarah Johnson",
       role: "Mercedes Owner",
-      content: "Professional service from start to finish. Their attention to detail in paint matching is remarkable.",
-      rating: 5
+      content:
+        "Professional service from start to finish. Their attention to detail in paint matching is remarkable.",
+      rating: 5,
     },
     {
       name: "Michael Brown",
       role: "Toyota Owner",
-      content: "Fast, efficient, and highly professional. The team kept me updated throughout the repair process.",
-      rating: 5
-    }
+      content:
+        "Fast, efficient, and highly professional. The team kept me updated throughout the repair process.",
+      rating: 5,
+    },
   ];
 
   const teamMembers = [
@@ -45,8 +59,8 @@ const About = () => {
       experience: "15+ years",
       contact: {
         email: "david@color-tech.co.zw",
-        phone: "+263 77 123 4567"
-      }
+        phone: "+263 77 123 4567",
+      },
     },
     {
       name: "James Thompson",
@@ -57,44 +71,52 @@ const About = () => {
       experience: "12+ years",
       contact: {
         email: "james@color-tech.co.zw",
-        phone: "+263 77 123 4568"
-      }
+        phone: "+263 77 123 4568",
+      },
     },
     {
       name: "Robert Chen",
       role: "Quality Control Manager",
       image: "/team/robert.jpg",
-      certifications: ["Quality Management Certified", "Vehicle Safety Inspector"],
+      certifications: [
+        "Quality Management Certified",
+        "Vehicle Safety Inspector",
+      ],
       specializations: ["Final Inspection", "Customer Relations"],
       experience: "10+ years",
       contact: {
         email: "robert@color-tech.co.zw",
-        phone: "+263 77 123 4569"
-      }
-    }
+        phone: "+263 77 123 4569",
+      },
+    },
   ];
 
   const faqs = [
     {
       question: "What types of vehicles do you service?",
-      answer: "We service all types of vehicles including cars, SUVs, trucks, and luxury vehicles. Our team is certified to work on both domestic and imported vehicles, with special expertise in European luxury brands."
+      answer:
+        "We service all types of vehicles including cars, SUVs, trucks, and luxury vehicles. Our team is certified to work on both domestic and imported vehicles, with special expertise in European luxury brands.",
     },
     {
       question: "How long does a typical repair take?",
-      answer: "Repair time varies depending on the extent of damage and required work. Minor repairs might take 2-3 days, while major repairs could take 1-2 weeks. We provide detailed timelines during initial assessment."
+      answer:
+        "Repair time varies depending on the extent of damage and required work. Minor repairs might take 2-3 days, while major repairs could take 1-2 weeks. We provide detailed timelines during initial assessment.",
     },
     {
       question: "Do you provide warranty on your work?",
-      answer: "Yes, we offer a comprehensive warranty on all our work. Paint jobs are warranted for 3 years, and structural repairs come with a lifetime warranty against defects in workmanship."
+      answer:
+        "Yes, we offer a comprehensive warranty on all our work. Paint jobs are warranted for 3 years, and structural repairs come with a lifetime warranty against defects in workmanship.",
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major payment methods including cash, credit cards, bank transfers, and mobile money. We also work directly with all major insurance companies."
+      answer:
+        "We accept all major payment methods including cash, credit cards, bank transfers, and mobile money. We also work directly with all major insurance companies.",
     },
     {
       question: "Do you provide free estimates?",
-      answer: "Yes, we provide free detailed estimates for all repair work. Our experts will thoroughly assess the damage and provide you with a comprehensive quote before beginning any work."
-    }
+      answer:
+        "Yes, we provide free detailed estimates for all repair work. Our experts will thoroughly assess the damage and provide you with a comprehensive quote before beginning any work.",
+    },
   ];
 
   const nextTestimonial = () => {
@@ -102,40 +124,47 @@ const About = () => {
   };
 
   const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentTestimonial(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
   };
 
   const values = [
     {
       icon: <Star className="w-8 h-8 text-yellow-500" />,
       title: "Excellence",
-      description: "We strive for excellence in every repair and service we provide."
+      description:
+        "We strive for excellence in every repair and service we provide.",
     },
     {
       icon: <Users className="w-8 h-8 text-blue-500" />,
       title: "Customer Focus",
-      description: "Our customers' satisfaction is at the heart of everything we do."
+      description:
+        "Our customers' satisfaction is at the heart of everything we do.",
     },
     {
       icon: <Award className="w-8 h-8 text-green-500" />,
       title: "Quality",
-      description: "We use only the highest quality materials and latest techniques."
+      description:
+        "We use only the highest quality materials and latest techniques.",
     },
     {
       icon: <Clock className="w-8 h-8 text-red-500" />,
       title: "Efficiency",
-      description: "Quick turnaround without compromising on quality."
+      description: "Quick turnaround without compromising on quality.",
     },
     {
       icon: <Wrench className="w-8 h-8 text-indigo-500" />,
       title: "Expertise",
-      description: "Our team brings years of experience and technical knowledge."
+      description:
+        "Our team brings years of experience and technical knowledge.",
     },
     {
       icon: <Heart className="w-8 h-8 text-pink-500" />,
       title: "Passion",
-      description: "We're passionate about restoring vehicles to their former glory."
-    }
+      description:
+        "We're passionate about restoring vehicles to their former glory.",
+    },
   ];
 
   const toggleFaq = (index: number) => {
@@ -143,15 +172,15 @@ const About = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen pt-32 md:pt-36 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
           About Color-tech
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto">
-          Your trusted partner in vehicle restoration and repair, delivering excellence
-          through expertise and dedication.
+          Your trusted partner in vehicle restoration and repair, delivering
+          excellence through expertise and dedication.
         </p>
       </div>
 
@@ -166,22 +195,26 @@ const About = () => {
                 className="w-full h-full object-cover rounded-l-2xl"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = 'https://placehold.co/800x600/F97316/ffffff?text=Workshop';
+                  target.src =
+                    "https://placehold.co/800x600/F97316/ffffff?text=Workshop";
                 }}
               />
             </div>
             <div className="md:w-1/2 p-8 md:p-12">
-              <h2 className="text-3xl font-bold text-primary dark:text-white mb-6">Our Story</h2>
+              <h2 className="text-3xl font-bold text-primary dark:text-white mb-6">
+                Our Story
+              </h2>
               <p className="text-gray-600 dark:text-gray-200 mb-4">
-                Founded with a passion for automotive excellence, Color-tech has been serving
-                the community for over a decade. What started as a small workshop has grown
-                into a full-service automotive repair and refinishing center.
+                Founded with a passion for automotive excellence, Color-tech has
+                been serving the community for over a decade. What started as a
+                small workshop has grown into a full-service automotive repair
+                and refinishing center.
               </p>
               <p className="text-gray-600 dark:text-gray-200">
-                Our commitment to quality workmanship and customer satisfaction has earned us
-                a reputation as one of the most trusted names in the industry. We continue to
-                invest in the latest technology and training to provide the best possible service
-                to our clients.
+                Our commitment to quality workmanship and customer satisfaction
+                has earned us a reputation as one of the most trusted names in
+                the industry. We continue to invest in the latest technology and
+                training to provide the best possible service to our clients.
               </p>
             </div>
           </div>
@@ -190,16 +223,16 @@ const About = () => {
 
       {/* Values Section */}
       <div className="container mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">Our Values</h2>
+        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">
+          Our Values
+        </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {values.map((value, index) => (
             <div
               key={index}
               className="bg-white/90 dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-white/30 hover:scale-105 hover:shadow-2xl transition-all duration-300"
             >
-              <div className="mb-4">
-                {value.icon}
-              </div>
+              <div className="mb-4">{value.icon}</div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
                 {value.title}
               </h3>
@@ -213,10 +246,15 @@ const About = () => {
 
       {/* Enhanced Team Section */}
       <div className="container mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">Our Expert Team</h2>
+        <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">
+          Our Expert Team
+        </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member, index) => (
-            <div key={index} className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+            <div
+              key={index}
+              className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300"
+            >
               <div className="aspect-w-4 aspect-h-3">
                 <img
                   src={member.image}
@@ -224,19 +262,26 @@ const About = () => {
                   className="w-full h-full object-cover rounded-t-2xl"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = 'https://source.unsplash.com/random/400x300?mechanic';
+                    target.src =
+                      "https://source.unsplash.com/random/400x300?mechanic";
                   }}
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">{member.name}</h3>
-                <p className="text-secondary font-medium dark:text-gray-200 mb-4">{member.role}</p>
-                
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+                  {member.name}
+                </h3>
+                <p className="text-secondary font-medium dark:text-gray-200 mb-4">
+                  {member.role}
+                </p>
+
                 <div className="space-y-4">
                   <div className="flex items-start gap-2">
                     <Certification className="w-5 h-5 text-secondary dark:text-white mt-1" />
                     <div>
-                      <p className="font-medium text-gray-700 dark:text-gray-200">Certifications:</p>
+                      <p className="font-medium text-gray-700 dark:text-gray-200">
+                        Certifications:
+                      </p>
                       <ul className="text-sm text-gray-600 dark:text-gray-300">
                         {member.certifications.map((cert, i) => (
                           <li key={i}>{cert}</li>
@@ -244,11 +289,13 @@ const About = () => {
                       </ul>
                     </div>
                   </div>
- 
+
                   <div className="flex items-start gap-2">
                     <Wrench className="w-5 h-5 text-secondary dark:text-white mt-1" />
                     <div>
-                      <p className="font-medium text-gray-700 dark:text-gray-200">Specializations:</p>
+                      <p className="font-medium text-gray-700 dark:text-gray-200">
+                        Specializations:
+                      </p>
                       <ul className="text-sm text-gray-600 dark:text-gray-300">
                         {member.specializations.map((spec, i) => (
                           <li key={i}>{spec}</li>
@@ -256,17 +303,23 @@ const About = () => {
                       </ul>
                     </div>
                   </div>
- 
+
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
                       <Mail className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                      <a href={`mailto:${member.contact.email}`} className="hover:text-secondary dark:hover:text-white">
+                      <a
+                        href={`mailto:${member.contact.email}`}
+                        className="hover:text-secondary dark:hover:text-white"
+                      >
                         {member.contact.email}
                       </a>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                       <Phone className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                      <a href={`tel:${member.contact.phone}`} className="hover:text-secondary dark:hover:text-white">
+                      <a
+                        href={`tel:${member.contact.phone}`}
+                        className="hover:text-secondary dark:hover:text-white"
+                      >
                         {member.contact.phone}
                       </a>
                     </div>
@@ -281,8 +334,10 @@ const About = () => {
       {/* Testimonials Section */}
       <div className="container mx-auto mb-16">
         <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-lg p-8 md:p-12">
-          <h2 className="text-3xl font-bold mb-12 text-center text-white">Client Testimonials</h2>
-          
+          <h2 className="text-3xl font-bold mb-12 text-center text-white">
+            Client Testimonials
+          </h2>
+
           <div className="relative max-w-3xl mx-auto">
             <div className="flex items-center justify-between">
               <button
@@ -292,16 +347,21 @@ const About = () => {
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
- 
+
               <div className="text-center px-16">
                 <Quote className="w-12 h-12 mx-auto mb-6 opacity-50 text-white" />
                 <p className="text-lg md:text-xl mb-6 text-white">
                   {testimonials[currentTestimonial].content}
                 </p>
                 <div className="flex justify-center mb-2">
-                  {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                  ))}
+                  {[...Array(testimonials[currentTestimonial].rating)].map(
+                    (_, i) => (
+                      <Star
+                        key={i}
+                        className="w-5 h-5 text-yellow-400 fill-current"
+                      />
+                    )
+                  )}
                 </div>
                 <p className="font-semibold text-lg text-white">
                   {testimonials[currentTestimonial].name}
@@ -310,7 +370,7 @@ const About = () => {
                   {testimonials[currentTestimonial].role}
                 </p>
               </div>
- 
+
               <button
                 onClick={nextTestimonial}
                 className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors duration-200 text-white"
@@ -319,7 +379,7 @@ const About = () => {
                 <ChevronRight className="w-6 h-6" />
               </button>
             </div>
- 
+
             {/* Dots indicator */}
             <div className="flex justify-center space-x-2 mt-6">
               {testimonials.map((_, index) => (
@@ -327,7 +387,9 @@ const About = () => {
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                    index === currentTestimonial ? 'bg-white w-4' : 'bg-white/50'
+                    index === currentTestimonial
+                      ? "bg-white w-4"
+                      : "bg-white/50"
                   }`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
@@ -343,7 +405,7 @@ const About = () => {
           <h2 className="text-3xl font-bold text-primary dark:text-white text-center mb-12">
             Frequently Asked Questions
           </h2>
-          
+
           <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
               <div
@@ -354,26 +416,30 @@ const About = () => {
                   onClick={() => toggleFaq(index)}
                   className="w-full flex items-center justify-between p-4 text-left bg-white/80 dark:bg-slate-800/80 hover:bg-white/90 dark:hover:bg-slate-800/90 transition-colors duration-200"
                   aria-expanded="false"
-                  data-state={openFaq === index ? 'expanded' : 'collapsed'}
+                  data-state={openFaq === index ? "expanded" : "collapsed"}
                   aria-controls={`faq-answer-${index}`}
                 >
-                  <span className="font-medium text-slate-900 dark:text-white">{faq.question}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">
+                    {faq.question}
+                  </span>
                   {openFaq === index ? (
                     <ChevronUp className="w-5 h-5 text-secondary dark:text-white" />
                   ) : (
                     <ChevronDown className="w-5 h-5 text-secondary dark:text-white" />
                   )}
                 </button>
-                
+
                 <div
                   id={`faq-answer-${index}`}
                   className={`p-4 bg-white/90 dark:bg-slate-800 transition-all duration-200 ${
-                    openFaq === index ? 'block' : 'hidden'
+                    openFaq === index ? "block" : "hidden"
                   }`}
                   role="region"
                   aria-labelledby={`faq-question-${index}`}
                 >
-                  <p className="text-gray-600 dark:text-gray-200">{faq.answer}</p>
+                  <p className="text-gray-600 dark:text-gray-200">
+                    {faq.answer}
+                  </p>
                 </div>
               </div>
             ))}
@@ -390,10 +456,15 @@ const About = () => {
               Experience the Color-tech Difference
             </h2>
             <p className="text-lg mb-8 max-w-2xl mx-auto">
-              Let us show you why we're the preferred choice for vehicle repair and refinishing.
-              Contact us today to discuss your needs.
+              Let us show you why we're the preferred choice for vehicle repair
+              and refinishing. Contact us today to discuss your needs.
             </p>
-            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full sm:w-auto shadow-xl"
+              asChild
+            >
               <Link href="/contact" className="flex items-center gap-2">
                 <PhoneCall className="h-5 w-5 text-white" />
                 Contact Us

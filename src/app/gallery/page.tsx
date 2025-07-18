@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from 'react'; // useEffect for client-side data fetching
-import { PhoneCall } from 'lucide-react';
-import { Image as ImageIcon, ZoomIn } from 'lucide-react';
-import BeforeAfterSlider from '@/components/BeforeAfterSlider';
+import React, { useState, useEffect } from "react"; // useEffect for client-side data fetching
+import { PhoneCall } from "lucide-react";
+import { Image as ImageIcon, ZoomIn } from "lucide-react";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image"; // Import Image for optimized images
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 // Define interface for fetched data
 interface GalleryItem {
@@ -36,16 +43,23 @@ const GalleryPage = () => {
 
     async function fetchGalleryItems() {
       try {
-        const res = await fetch("/api/content?content_type=gallery&is_published=true", { signal: controller.signal });
+        const res = await fetch(
+          "/api/content?content_type=gallery&is_published=true",
+          { signal: controller.signal }
+        );
         if (!res.ok) {
-          console.error('Failed to fetch gallery items:', res.status, res.statusText);
+          console.error(
+            "Failed to fetch gallery items:",
+            res.status,
+            res.statusText
+          );
           if (isMounted) setAllGalleryItems([]);
           return;
         }
         const data = await res.json();
         if (isMounted) setAllGalleryItems(data.content || []);
       } catch (e) {
-        console.error('Error fetching gallery items:', e);
+        console.error("Error fetching gallery items:", e);
         if (isMounted) setAllGalleryItems([]);
       } finally {
         if (isMounted) setIsLoading(false);
@@ -94,7 +108,7 @@ const GalleryPage = () => {
 
   // Merge fetched images and demo images for display
   const galleryImages = [
-    ...allGalleryItems.map(item => {
+    ...allGalleryItems.map((item) => {
       let bodyContent = { original_name: item.title };
       try {
         bodyContent = JSON.parse(item.body);
@@ -102,29 +116,35 @@ const GalleryPage = () => {
       return {
         src: item.image_url || "https://via.placeholder.com/600x450?text=Image",
         alt: item.title,
-        category: item.tags ? item.tags.split(',')[0].trim() : 'Uncategorized',
-        fallback: "https://via.placeholder.com/600x450?text=Error"
+        category: item.tags ? item.tags.split(",")[0].trim() : "Uncategorized",
+        fallback: "https://via.placeholder.com/600x450?text=Error",
       };
     }),
-    ...demoImages.map(img => ({...img, fallback: "https://via.placeholder.com/600x450?text=Error"}))
+    ...demoImages.map((img) => ({
+      ...img,
+      fallback: "https://via.placeholder.com/600x450?text=Error",
+    })),
   ];
 
   // Update BeforeAfterSlider images (these are still hardcoded for now, can be fetched from API if needed)
   const transformations = [
     {
-      beforeImage: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
+      beforeImage:
+        "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
       afterImage: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85",
       title: "Complete Body Restoration",
       description: "Major collision damage repair and full body restoration",
-      duration: "2 weeks"
+      duration: "2 weeks",
     },
     {
-      beforeImage: "https://images.unsplash.com/photo-1589758438368-0ad531db3366",
-      afterImage: "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
+      beforeImage:
+        "https://images.unsplash.com/photo-1589758438368-0ad531db3366",
+      afterImage:
+        "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
       title: "Paint Correction",
       description: "Professional paint correction and ceramic coating",
-      duration: "3 days"
-    }
+      duration: "3 days",
+    },
   ];
 
   // Render loading spinner or skeleton UI
@@ -138,15 +158,15 @@ const GalleryPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen pt-32 md:pt-36 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
           Our Work Gallery
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto mb-8">
-          Browse through our portfolio of completed projects showcasing our expertise
-          in panel beating, spray painting, and vehicle restoration.
+          Browse through our portfolio of completed projects showcasing our
+          expertise in panel beating, spray painting, and vehicle restoration.
         </p>
       </div>
 
@@ -156,9 +176,10 @@ const GalleryPage = () => {
           Before & After Transformations
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-200 text-center max-w-2xl mx-auto mb-8">
-          See the dramatic transformations we achieve through our expert repair and restoration work.
+          See the dramatic transformations we achieve through our expert repair
+          and restoration work.
         </p>
-        
+
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {transformations.map((transform, index) => (
             <BeforeAfterSlider
@@ -198,18 +219,31 @@ const GalleryPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-t-2xl">
                     <div className="text-white text-center p-4">
                       <ZoomIn className="w-8 h-8 mx-auto mb-2 text-white" />
-                      <p className="text-sm font-semibold group-hover:text-sky-300">{image.category}</p>
-                      <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">{image.alt}</p>
+                      <p className="text-sm font-semibold group-hover:text-sky-300">
+                        {image.category}
+                      </p>
+                      <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">
+                        {image.alt}
+                      </p>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 flex-grow">
-                <CardTitle className="text-lg font-semibold leading-tight mb-1 text-white">{image.alt}</CardTitle>
-                <CardDescription className="text-sm text-gray-300">{image.category}</CardDescription>
+                <CardTitle className="text-lg font-semibold leading-tight mb-1 text-white">
+                  {image.alt}
+                </CardTitle>
+                <CardDescription className="text-sm text-gray-300">
+                  {image.category}
+                </CardDescription>
               </CardContent>
               <CardFooter className="px-4 pb-4 pt-0 flex justify-end">
-                <Button size="sm" className="mt-2 sm:mt-0 bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">View</Button>
+                <Button
+                  size="sm"
+                  className="mt-2 sm:mt-0 bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                >
+                  View
+                </Button>
               </CardFooter>
             </Card>
           ))}
@@ -218,7 +252,7 @@ const GalleryPage = () => {
 
       {/* Image Modal */}
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
@@ -236,8 +270,18 @@ const GalleryPage = () => {
               }}
             >
               <span className="sr-only">Close</span>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -253,10 +297,15 @@ const GalleryPage = () => {
               Want Similar Results for Your Vehicle?
             </h2>
             <p className="text-lg mb-8 max-w-2xl mx-auto">
-              Let us help you transform your vehicle. Contact us today for a consultation
-              and see how we can bring your vision to life.
+              Let us help you transform your vehicle. Contact us today for a
+              consultation and see how we can bring your vision to life.
             </p>
-            <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl" asChild>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full sm:w-auto shadow-xl"
+              asChild
+            >
               <Link href="/contact" className="flex items-center gap-2">
                 <PhoneCall className="h-5 w-5 text-white" />
                 Get Started

@@ -114,7 +114,7 @@ const ServicesPage = async () => {
   }));
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+    <div className="min-h-screen pt-32 md:pt-36 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">
