@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Import usePathname
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Wrench,
@@ -12,32 +12,17 @@ import {
   Image,
   MessageSquare,
   HelpCircle,
-  Package,
-  Star,
   Settings,
   Menu,
   X,
-  ChevronDown,
   UserCircle,
-  Bell,
-  LogOut,
   ShieldCheck,
-  AlertCircle,
-  Home, // New icon
-  Mail, // New icon
-  Info, // New icon
+  Home,
+  Mail,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Logo from "./Logo";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface NavLink {
   title: string;
@@ -49,7 +34,7 @@ interface NavLink {
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const pathname = usePathname(); // Initialize pathname
+  const pathname = usePathname();
 
   const publicLinks: NavLink[] = [
     {
@@ -141,11 +126,6 @@ const Navigation = () => {
       ],
     },
     {
-      title: "Reviews",
-      path: "/admin/reviews",
-      icon: <Star className="h-4 w-4" />,
-    },
-    {
       title: "Settings",
       path: "/admin/settings",
       icon: <Settings className="h-4 w-4" />,
@@ -163,10 +143,6 @@ const Navigation = () => {
     }
   };
 
-  const userIcon = <UserCircle className="h-5 w-5 text-primary" />;
-  const shieldIcon = <ShieldCheck className="h-4 w-4 text-primary" />;
-
-  // Enhanced glassmorphism nav bar styles
   return (
     <nav
       className="fixed top-4 left-1/2 z-50 -translate-x-1/2 w-[97vw] max-w-6xl rounded-3xl shadow-2xl border border-white/30 dark:bg-slate-900/60 backdrop-blur-2xl backdrop-saturate-200 transition-all duration-300 flex items-center px-4 py-4 gap-4 ring-1 ring-white/40 ring-inset hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] sm:px-6 md:px-10 md:gap-8"
@@ -220,6 +196,7 @@ const Navigation = () => {
 
       {/* Mobile menu button (hamburger) */}
       <button
+        type="button"
         className="ml-auto flex md:hidden items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/40 dark:bg-slate-800/40 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 shadow-md border border-white/30"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle menu"
@@ -251,7 +228,7 @@ const Navigation = () => {
               {link.title}
             </Link>
           ))}
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
               {getNavLinks().map((link) => (
@@ -270,6 +247,7 @@ const Navigation = () => {
                 </Link>
               ))}
               <button
+                type="button"
                 onClick={() => {
                   logout();
                   setIsOpen(false);
