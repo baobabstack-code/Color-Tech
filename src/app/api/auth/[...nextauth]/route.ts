@@ -1,36 +1,37 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+
+// Define admin emails - only these Gmail accounts can access admin features
+// TODO: Replace with your actual Gmail addresses
+const ADMIN_EMAILS = [
+  "your-admin-email@gmail.com", // Replace with your actual Gmail
+  "admin@colortech.co.zw", // Add more admin emails as needed
+  // Add more admin emails here as needed
+];
 
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET || "your-secret-key-here",
   providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials, req) {
-        // Add your own logic here to validate credentials
-        // Replace with your actual user authentication logic
-        // This is a placeholder for demonstration purposes
-        if (credentials?.email === "test@example.com" && credentials?.password === "password") {
-          return { id: "1", name: "Test User", email: "test@example.com", role: "client" };
-        } else if (credentials?.email === "admin@example.com" && credentials?.password === "password") {
-          return { id: "2", name: "Admin User", email: "admin@example.com", role: "admin" };
-        }
-        return null;
-      },
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   pages: {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      // Allow sign in for any Google account, but we'll assign roles in the JWT callback
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role; // Cast user to any to access role
+        // Check if the user's email is in the admin list
+        token.role = ADMIN_EMAILS.includes(user.email || "")
+          ? "admin"
+          : "client";
       }
       return token;
     },
