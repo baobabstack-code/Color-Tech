@@ -20,7 +20,7 @@ const ADMIN_EMAILS = [
 
 // Create transporter
 const createTransporter = () => {
-  return nodemailer.createTransporter(EMAIL_CONFIG);
+  return nodemailer.createTransport(EMAIL_CONFIG);
 };
 
 // Send email notification to admins about new form submission
