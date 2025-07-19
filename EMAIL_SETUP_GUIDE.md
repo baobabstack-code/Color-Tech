@@ -4,6 +4,8 @@
 
 Your ColorTech Panel Beaters website now automatically sends email notifications when customers submit contact forms.
 
+> **Status**: Email notifications are fully implemented and ready to use once SMTP settings are configured.
+
 ## Features
 
 - ✅ **Admin Notifications**: Admins receive beautifully formatted emails for each form submission
