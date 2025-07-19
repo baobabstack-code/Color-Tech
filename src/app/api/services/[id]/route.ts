@@ -1,23 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { DatabaseService } from "@/lib/database";
 
-const servicesFilePath = path.join(process.cwd(), "src/data/services.json");
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+// Database-powered service operations
 
 // GET: Fetch a specific service
 export async function GET(
@@ -26,10 +10,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const services = readJsonFile(servicesFilePath);
-    const service = services.find(
-      (s: any) => s.id === parseInt(id) || s.id === id
-    );
+    const service = await DatabaseService.getServiceById(parseInt(id));
 
     if (!service) {
       return NextResponse.json(
@@ -56,32 +37,17 @@ export async function PUT(
   try {
     const { id } = await params;
     const data = await request.json();
-    const services = readJsonFile(servicesFilePath);
 
-    const serviceIndex = services.findIndex(
-      (s: any) => s.id === parseInt(id) || s.id === id
-    );
-    if (serviceIndex === -1) {
-      return NextResponse.json(
-        { message: "Service not found" },
-        { status: 404 }
-      );
-    }
-
-    // Update service
-    services[serviceIndex] = {
-      ...services[serviceIndex],
+    const updatedService = await DatabaseService.updateService(parseInt(id), {
       name: data.name,
       description: data.description,
       basePrice: data.basePrice,
-      durationMinutes: data.durationMinutes,
+      duration: data.durationMinutes,
       category: data.category,
       status: data.status,
-      updatedAt: new Date().toISOString(),
-    };
+    });
 
-    writeJsonFile(servicesFilePath, services);
-    return NextResponse.json(services[serviceIndex]);
+    return NextResponse.json(updatedService);
   } catch (error) {
     console.error("Failed to update service:", error);
     return NextResponse.json(
@@ -98,21 +64,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const services = readJsonFile(servicesFilePath);
-
-    const serviceIndex = services.findIndex(
-      (s: any) => s.id === parseInt(id) || s.id === id
-    );
-    if (serviceIndex === -1) {
-      return NextResponse.json(
-        { message: "Service not found" },
-        { status: 404 }
-      );
-    }
-
-    // Remove service
-    services.splice(serviceIndex, 1);
-    writeJsonFile(servicesFilePath, services);
+    await DatabaseService.deleteService(parseInt(id));
 
     return NextResponse.json({ message: "Service deleted successfully" });
   } catch (error) {

@@ -1,12 +1,20 @@
-import prisma from './prisma';
-import { Prisma } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-// Database service class for centralized database operations
+// Global Prisma instance to prevent multiple connections in development
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// Database service class with common operations
 export class DatabaseService {
-  // User operations
+  // Users
   static async getUsers() {
     return await prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -24,18 +32,17 @@ export class DatabaseService {
             service: true,
           },
         },
-        vehicles: true,
       },
     });
   }
 
-  static async createUser(data: Prisma.UserCreateInput) {
+  static async createUser(data: any) {
     return await prisma.user.create({
       data,
     });
   }
 
-  static async updateUser(id: number, data: Prisma.UserUpdateInput) {
+  static async updateUser(id: number, data: any) {
     return await prisma.user.update({
       where: { id },
       data,
@@ -48,18 +55,34 @@ export class DatabaseService {
     });
   }
 
-  // Service operations
+  // Services
   static async getServices() {
     return await prisma.service.findMany({
-      orderBy: { name: 'asc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
-  static async getActiveServices() {
-    return await prisma.service.findMany({
-      where: { status: 'active' },
-      orderBy: { name: 'asc' },
+  static async getServicesWithStats() {
+    const services = await prisma.service.findMany({
+      include: {
+        bookings: true,
+        reviews: true,
+      },
+      orderBy: { createdAt: "desc" },
     });
+
+    return services.map((service) => ({
+      ...service,
+      price: service.basePrice,
+      duration: service.duration,
+      isActive: service.status === "active",
+      bookingCount: service.bookings.length,
+      averageRating:
+        service.reviews.length > 0
+          ? service.reviews.reduce((sum, review) => sum + review.rating, 0) /
+            service.reviews.length
+          : 0,
+    }));
   }
 
   static async getServiceById(id: number) {
@@ -80,13 +103,13 @@ export class DatabaseService {
     });
   }
 
-  static async createService(data: Prisma.ServiceCreateInput) {
+  static async createService(data: any) {
     return await prisma.service.create({
       data,
     });
   }
 
-  static async updateService(id: number, data: Prisma.ServiceUpdateInput) {
+  static async updateService(id: number, data: any) {
     return await prisma.service.update({
       where: { id },
       data,
@@ -99,14 +122,14 @@ export class DatabaseService {
     });
   }
 
-  // Booking operations
+  // Bookings
   static async getBookings() {
     return await prisma.booking.findMany({
       include: {
         customer: true,
         service: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -121,7 +144,7 @@ export class DatabaseService {
     });
   }
 
-  static async createBooking(data: Prisma.BookingCreateInput) {
+  static async createBooking(data: any) {
     return await prisma.booking.create({
       data,
       include: {
@@ -131,7 +154,7 @@ export class DatabaseService {
     });
   }
 
-  static async updateBooking(id: number, data: Prisma.BookingUpdateInput) {
+  static async updateBooking(id: number, data: any) {
     return await prisma.booking.update({
       where: { id },
       data,
@@ -148,7 +171,7 @@ export class DatabaseService {
     });
   }
 
-  // Review operations
+  // Reviews
   static async getReviews() {
     return await prisma.review.findMany({
       include: {
@@ -156,18 +179,7 @@ export class DatabaseService {
         service: true,
         booking: true,
       },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getPublishedReviews() {
-    return await prisma.review.findMany({
-      where: { status: 'published' },
-      include: {
-        user: true,
-        service: true,
-      },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -182,7 +194,7 @@ export class DatabaseService {
     });
   }
 
-  static async createReview(data: Prisma.ReviewCreateInput) {
+  static async createReview(data: any) {
     return await prisma.review.create({
       data,
       include: {
@@ -192,7 +204,7 @@ export class DatabaseService {
     });
   }
 
-  static async updateReview(id: number, data: Prisma.ReviewUpdateInput) {
+  static async updateReview(id: number, data: any) {
     return await prisma.review.update({
       where: { id },
       data,
@@ -209,149 +221,26 @@ export class DatabaseService {
     });
   }
 
-  // Blog post operations
-  static async getPosts() {
-    return await prisma.post.findMany({
-      include: {
-        creator: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getPublishedPosts() {
-    return await prisma.post.findMany({
-      where: { isPublished: true },
-      include: {
-        creator: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getPostById(id: number) {
-    return await prisma.post.findUnique({
-      where: { id },
-      include: {
-        creator: true,
-      },
-    });
-  }
-
-  static async getPostBySlug(slug: string) {
-    return await prisma.post.findUnique({
-      where: { slug },
-      include: {
-        creator: true,
-      },
-    });
-  }
-
-  static async createPost(data: Prisma.PostCreateInput) {
-    return await prisma.post.create({
-      data,
-      include: {
-        creator: true,
-      },
-    });
-  }
-
-  static async updatePost(id: number, data: Prisma.PostUpdateInput) {
-    return await prisma.post.update({
-      where: { id },
-      data,
-      include: {
-        creator: true,
-      },
-    });
-  }
-
-  static async deletePost(id: number) {
-    return await prisma.post.delete({
-      where: { id },
-    });
-  }
-
-  // Testimonial operations
-  static async getTestimonials() {
-    return await prisma.testimonial.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getApprovedTestimonials() {
-    return await prisma.testimonial.findMany({
-      where: { status: 'approved' },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async createTestimonial(data: Prisma.TestimonialCreateInput) {
-    return await prisma.testimonial.create({
-      data,
-    });
-  }
-
-  static async updateTestimonial(id: number, data: Prisma.TestimonialUpdateInput) {
-    return await prisma.testimonial.update({
-      where: { id },
-      data,
-    });
-  }
-
-  static async deleteTestimonial(id: number) {
-    return await prisma.testimonial.delete({
-      where: { id },
-    });
-  }
-
-  // FAQ operations
-  static async getFAQs() {
-    return await prisma.fAQ.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getPublishedFAQs() {
-    return await prisma.fAQ.findMany({
-      where: { status: 'published' },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async createFAQ(data: Prisma.FAQCreateInput) {
-    return await prisma.fAQ.create({
-      data,
-    });
-  }
-
-  static async updateFAQ(id: number, data: Prisma.FAQUpdateInput) {
-    return await prisma.fAQ.update({
-      where: { id },
-      data,
-    });
-  }
-
-  static async deleteFAQ(id: number) {
-    return await prisma.fAQ.delete({
-      where: { id },
-    });
-  }
-
-  // Form submission operations
+  // Form Submissions
   static async getFormSubmissions() {
     return await prisma.formSubmission.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
-  static async createFormSubmission(data: Prisma.FormSubmissionCreateInput) {
+  static async getFormSubmissionById(id: number) {
+    return await prisma.formSubmission.findUnique({
+      where: { id },
+    });
+  }
+
+  static async createFormSubmission(data: any) {
     return await prisma.formSubmission.create({
       data,
     });
   }
 
-  static async updateFormSubmission(id: number, data: Prisma.FormSubmissionUpdateInput) {
+  static async updateFormSubmission(id: number, data: any) {
     return await prisma.formSubmission.update({
       where: { id },
       data,
@@ -364,81 +253,93 @@ export class DatabaseService {
     });
   }
 
-  // Gallery operations
-  static async getGalleryItems() {
-    return await prisma.galleryItem.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async getPublishedGalleryItems() {
-    return await prisma.galleryItem.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  static async createGalleryItem(data: Prisma.GalleryItemCreateInput) {
-    return await prisma.galleryItem.create({
-      data,
-    });
-  }
-
-  static async updateGalleryItem(id: number, data: Prisma.GalleryItemUpdateInput) {
-    return await prisma.galleryItem.update({
-      where: { id },
-      data,
-    });
-  }
-
-  static async deleteGalleryItem(id: number) {
-    return await prisma.galleryItem.delete({
-      where: { id },
-    });
-  }
-
-  // Dashboard statistics
+  // Dashboard Stats
   static async getDashboardStats() {
     const [
       totalUsers,
       totalServices,
       totalBookings,
       totalReviews,
-      pendingBookings,
       completedBookings,
-      averageRating,
       recentBookings,
     ] = await Promise.all([
-      prisma.user.count({ where: { role: 'customer' } }),
-      prisma.service.count({ where: { status: 'active' } }),
+      prisma.user.count({ where: { role: "customer" } }),
+      prisma.service.count(),
       prisma.booking.count(),
       prisma.review.count(),
-      prisma.booking.count({ where: { status: 'pending' } }),
-      prisma.booking.count({ where: { status: 'completed' } }),
-      prisma.review.aggregate({
-        _avg: { rating: true },
+      prisma.booking.findMany({
+        where: { status: "completed" },
+        include: { service: true },
       }),
       prisma.booking.findMany({
-        take: 10,
+        take: 5,
         include: {
           customer: true,
           service: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
     ]);
 
+    const totalRevenue = completedBookings.reduce(
+      (sum, booking) => sum + booking.service.basePrice,
+      0
+    );
+
     return {
-      totalUsers,
-      totalServices,
-      totalBookings,
-      totalReviews,
-      pendingBookings,
-      completedBookings,
-      averageRating: averageRating._avg.rating || 0,
-      recentBookings,
+      stats: {
+        totalRevenue,
+        totalBookings,
+        totalCustomers: totalUsers,
+      },
+      recentBookings: recentBookings.map((booking) => ({
+        ...booking,
+        startTime: booking.scheduledAt,
+        customer: {
+          id: booking.customer.id,
+          name: booking.customer.name,
+          email: booking.customer.email,
+        },
+        service: {
+          id: booking.service.id,
+          name: booking.service.name,
+          basePrice: booking.service.basePrice,
+        },
+      })),
     };
+  }
+
+  // Customers with stats
+  static async getCustomersWithStats() {
+    const customers = await prisma.user.findMany({
+      where: { role: "customer" },
+      include: {
+        bookings: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return customers.map((customer) => ({
+      id: customer.id.toString(),
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      createdAt: customer.createdAt.toISOString(),
+      updatedAt: customer.updatedAt.toISOString(),
+      bookingCount: customer._count.bookings,
+      lastActivity:
+        customer.bookings[0]?.createdAt.toISOString() ||
+        customer.createdAt.toISOString(),
+    }));
   }
 }
 
-export default DatabaseService;
+export default prisma;

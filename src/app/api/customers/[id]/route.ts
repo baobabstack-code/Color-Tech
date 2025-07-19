@@ -1,23 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const customersFilePath = path.join(process.cwd(), "src/data/customers.json");
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+import { DatabaseService } from "@/lib/database";
 
 // GET: Fetch a specific customer
 export async function GET(
@@ -26,8 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const customers = readJsonFile(customersFilePath);
-    const customer = customers.find((c: any) => c.id === id);
+    const customer = await DatabaseService.getUserById(parseInt(id));
 
     if (!customer) {
       return NextResponse.json(
@@ -54,25 +35,15 @@ export async function PUT(
   try {
     const { id } = await params;
     const data = await request.json();
-    const customers = readJsonFile(customersFilePath);
 
-    const customerIndex = customers.findIndex((c: any) => c.id === id);
-    if (customerIndex === -1) {
-      return NextResponse.json(
-        { message: "Customer not found" },
-        { status: 404 }
-      );
-    }
+    const updatedCustomer = await DatabaseService.updateUser(parseInt(id), {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+    });
 
-    // Update customer
-    customers[customerIndex] = {
-      ...customers[customerIndex],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-
-    writeJsonFile(customersFilePath, customers);
-    return NextResponse.json(customers[customerIndex]);
+    return NextResponse.json(updatedCustomer);
   } catch (error) {
     console.error("Failed to update customer:", error);
     return NextResponse.json(
@@ -89,19 +60,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const customers = readJsonFile(customersFilePath);
-
-    const customerIndex = customers.findIndex((c: any) => c.id === id);
-    if (customerIndex === -1) {
-      return NextResponse.json(
-        { message: "Customer not found" },
-        { status: 404 }
-      );
-    }
-
-    // Remove customer
-    customers.splice(customerIndex, 1);
-    writeJsonFile(customersFilePath, customers);
+    await DatabaseService.deleteUser(parseInt(id));
 
     return NextResponse.json({ message: "Customer deleted successfully" });
   } catch (error) {
