@@ -1,23 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DatabaseService } from "@/lib/database";
+import fs from "fs";
+import path from "path";
 
-// GET: Fetch single service
+const servicesFilePath = path.join(process.cwd(), "src/data/services.json");
+
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
+
+// GET: Fetch a specific service
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: idStr } = await params;
-    const id = parseInt(idStr);
+    const { id } = await params;
+    const services = readJsonFile(servicesFilePath);
+    const service = services.find(
+      (s: any) => s.id === parseInt(id) || s.id === id
+    );
 
-    if (isNaN(id)) {
-      return NextResponse.json(
-        { message: "Invalid service ID" },
-        { status: 400 }
-      );
-    }
-
-    const service = await DatabaseService.getServiceById(id);
     if (!service) {
       return NextResponse.json(
         { message: "Service not found" },
@@ -35,34 +48,40 @@ export async function GET(
   }
 }
 
-// PUT: Update service
+// PUT: Update a service
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: idStr } = await params;
-    const id = parseInt(idStr);
+    const { id } = await params;
+    const data = await request.json();
+    const services = readJsonFile(servicesFilePath);
 
-    if (isNaN(id)) {
+    const serviceIndex = services.findIndex(
+      (s: any) => s.id === parseInt(id) || s.id === id
+    );
+    if (serviceIndex === -1) {
       return NextResponse.json(
-        { message: "Invalid service ID" },
-        { status: 400 }
+        { message: "Service not found" },
+        { status: 404 }
       );
     }
 
-    const data = await request.json();
+    // Update service
+    services[serviceIndex] = {
+      ...services[serviceIndex],
+      name: data.name,
+      description: data.description,
+      basePrice: data.basePrice,
+      durationMinutes: data.durationMinutes,
+      category: data.category,
+      status: data.status,
+      updatedAt: new Date().toISOString(),
+    };
 
-    const updatedService = await DatabaseService.updateService(id, {
-      ...(data.name && { name: data.name }),
-      ...(data.description && { description: data.description }),
-      ...(data.basePrice !== undefined && { basePrice: data.basePrice }),
-      ...(data.duration !== undefined && { duration: data.duration }),
-      ...(data.category && { category: data.category }),
-      ...(data.status && { status: data.status }),
-    });
-
-    return NextResponse.json(updatedService);
+    writeJsonFile(servicesFilePath, services);
+    return NextResponse.json(services[serviceIndex]);
   } catch (error) {
     console.error("Failed to update service:", error);
     return NextResponse.json(
@@ -72,23 +91,29 @@ export async function PUT(
   }
 }
 
-// DELETE: Delete service
+// DELETE: Delete a service
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: idStr } = await params;
-    const id = parseInt(idStr);
+    const { id } = await params;
+    const services = readJsonFile(servicesFilePath);
 
-    if (isNaN(id)) {
+    const serviceIndex = services.findIndex(
+      (s: any) => s.id === parseInt(id) || s.id === id
+    );
+    if (serviceIndex === -1) {
       return NextResponse.json(
-        { message: "Invalid service ID" },
-        { status: 400 }
+        { message: "Service not found" },
+        { status: 404 }
       );
     }
 
-    await DatabaseService.deleteService(id);
+    // Remove service
+    services.splice(serviceIndex, 1);
+    writeJsonFile(servicesFilePath, services);
+
     return NextResponse.json({ message: "Service deleted successfully" });
   } catch (error) {
     console.error("Failed to delete service:", error);

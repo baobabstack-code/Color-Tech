@@ -1,26 +1,44 @@
-"use client"
-
-import { FC } from 'react';
-import { useState } from 'react';
+import React from "react";
 
 interface LogoProps {
   className?: string;
 }
 
-const Logo: FC<LogoProps> = ({ className = "h-8 w-auto" }) => {
-  const [imageError, setImageError] = useState(false);
-
+const Logo: React.FC<LogoProps> = ({ className = "h-8 w-8" }) => {
   return (
-    <img
-      src={imageError ? 'https://placehold.co/64x64/F97316/ffffff?text=CT' : '/images/logo/color-tech-logo.png'}
-      alt="Color Tech Panel Beaters"
-      className={className}
-      onError={() => {
-        setImageError(true);
-        console.error('Failed to load logo image');
-      }}
-    />
+    <div className={`${className} flex items-center justify-center`}>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
+      >
+        <path
+          d="M12 2L2 7L12 12L22 7L12 2Z"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="currentColor"
+          fillOpacity="0.1"
+        />
+        <path
+          d="M2 17L12 22L22 17"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M2 12L12 17L22 12"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
   );
 };
 
-export default Logo; 
+export default Logo;

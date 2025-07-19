@@ -1,23 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+
+const servicesFilePath = path.join(process.cwd(), "src/data/services.json");
+
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
 
 // GET: Fetch all services with optional status filter
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
+    const status = searchParams.get("status");
 
-    let services;
-    if (status === 'active') {
-      services = await DatabaseService.getActiveServices();
-    } else {
-      services = await DatabaseService.getServices();
+    let services = readJsonFile(servicesFilePath);
+
+    if (status === "active") {
+      services = services.filter((service: any) => service.status === "active");
     }
 
     return NextResponse.json(services);
   } catch (error) {
-    console.error('Failed to fetch services:', error);
-    return NextResponse.json({ message: 'Failed to fetch services' }, { status: 500 });
+    console.error("Failed to fetch services:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch services" },
+      { status: 500 }
+    );
   }
 }
 
@@ -27,22 +47,44 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.name || data.basePrice === undefined || !data.duration) {
-      return NextResponse.json({ message: 'Missing required fields: name, basePrice, duration' }, { status: 400 });
+    if (!data.name || data.basePrice === undefined || !data.durationMinutes) {
+      return NextResponse.json(
+        {
+          message: "Missing required fields: name, basePrice, durationMinutes",
+        },
+        { status: 400 }
+      );
     }
 
-    const newService = await DatabaseService.createService({
+    const services = readJsonFile(servicesFilePath);
+
+    // Generate new ID
+    const newId =
+      services.length > 0 ? Math.max(...services.map((s: any) => s.id)) + 1 : 1;
+
+    // Create new service
+    const newService = {
+      id: newId,
       name: data.name,
-      description: data.description || '',
+      description: data.description || "",
       basePrice: data.basePrice,
-      duration: data.duration,
-      category: data.category || 'General',
-      status: data.status || 'active',
-    });
+      durationMinutes: data.durationMinutes,
+      category: data.category || "General",
+      status: data.status || "active",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Add to services array
+    services.push(newService);
+    writeJsonFile(servicesFilePath, services);
 
     return NextResponse.json(newService, { status: 201 });
   } catch (error) {
-    console.error('Failed to create service:', error);
-    return NextResponse.json({ message: 'Failed to create service' }, { status: 500 });
+    console.error("Failed to create service:", error);
+    return NextResponse.json(
+      { message: "Failed to create service" },
+      { status: 500 }
+    );
   }
 }

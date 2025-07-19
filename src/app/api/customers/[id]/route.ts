@@ -1,77 +1,114 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseService } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-// GET: Fetch single customer
+const customersFilePath = path.join(process.cwd(), "src/data/customers.json");
+
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
+
+// GET: Fetch a specific customer
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const customerId = parseInt(id);
-    
-    if (isNaN(customerId)) {
-      return NextResponse.json({ message: 'Invalid customer ID' }, { status: 400 });
+    const customers = readJsonFile(customersFilePath);
+    const customer = customers.find((c: any) => c.id === id);
+
+    if (!customer) {
+      return NextResponse.json(
+        { message: "Customer not found" },
+        { status: 404 }
+      );
     }
 
-    const customer = await DatabaseService.getUserById(customerId);
-    if (!customer || customer.role !== 'customer') {
-      return NextResponse.json({ message: 'Customer not found' }, { status: 404 });
-    }
-    
     return NextResponse.json(customer);
   } catch (error) {
-    console.error('Failed to fetch customer:', error);
-    return NextResponse.json({ message: 'Failed to fetch customer' }, { status: 500 });
+    console.error("Failed to fetch customer:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch customer" },
+      { status: 500 }
+    );
   }
 }
 
-// PUT: Update customer
+// PUT: Update a customer
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const customerId = parseInt(id);
-    
-    if (isNaN(customerId)) {
-      return NextResponse.json({ message: 'Invalid customer ID' }, { status: 400 });
+    const data = await request.json();
+    const customers = readJsonFile(customersFilePath);
+
+    const customerIndex = customers.findIndex((c: any) => c.id === id);
+    if (customerIndex === -1) {
+      return NextResponse.json(
+        { message: "Customer not found" },
+        { status: 404 }
+      );
     }
 
-    const data = await request.json();
+    // Update customer
+    customers[customerIndex] = {
+      ...customers[customerIndex],
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
 
-    const updatedCustomer = await DatabaseService.updateUser(customerId, {
-      ...(data.name && { name: data.name }),
-      ...(data.email && { email: data.email }),
-      ...(data.phone !== undefined && { phone: data.phone }),
-      ...(data.address !== undefined && { address: data.address }),
-    });
-
-    return NextResponse.json(updatedCustomer);
+    writeJsonFile(customersFilePath, customers);
+    return NextResponse.json(customers[customerIndex]);
   } catch (error) {
-    console.error('Failed to update customer:', error);
-    return NextResponse.json({ message: 'Failed to update customer' }, { status: 500 });
+    console.error("Failed to update customer:", error);
+    return NextResponse.json(
+      { message: "Failed to update customer" },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE: Delete customer
+// DELETE: Delete a customer
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const customerId = parseInt(id);
-    
-    if (isNaN(customerId)) {
-      return NextResponse.json({ message: 'Invalid customer ID' }, { status: 400 });
+    const customers = readJsonFile(customersFilePath);
+
+    const customerIndex = customers.findIndex((c: any) => c.id === id);
+    if (customerIndex === -1) {
+      return NextResponse.json(
+        { message: "Customer not found" },
+        { status: 404 }
+      );
     }
 
-    await DatabaseService.deleteUser(customerId);
-    return NextResponse.json({ message: 'Customer deleted successfully' });
+    // Remove customer
+    customers.splice(customerIndex, 1);
+    writeJsonFile(customersFilePath, customers);
+
+    return NextResponse.json({ message: "Customer deleted successfully" });
   } catch (error) {
-    console.error('Failed to delete customer:', error);
-    return NextResponse.json({ message: 'Failed to delete customer' }, { status: 500 });
+    console.error("Failed to delete customer:", error);
+    return NextResponse.json(
+      { message: "Failed to delete customer" },
+      { status: 500 }
+    );
   }
 }

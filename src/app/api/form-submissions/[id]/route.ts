@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-const submissionsFilePath = path.join(process.cwd(), 'src/data/form-submissions.json');
+const submissionsFilePath = path.join(
+  process.cwd(),
+  "src/data/form-submissions.json"
+);
 
 interface FormSubmission {
   id: number;
@@ -12,94 +15,121 @@ interface FormSubmission {
   phone?: string;
   service?: string;
   message: string;
-  status: 'new' | 'responded' | 'closed';
+  status: "new" | "responded" | "closed";
   createdAt: string;
   updatedAt: string;
 }
 
-// PUT: Update form submission status
-export async function PUT(
+// Helper function to read JSON file
+const readJsonFile = (filePath: string) => {
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    return [];
+  }
+};
+
+// Helper function to write JSON file
+const writeJsonFile = (filePath: string, data: any) => {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+};
+
+// GET: Fetch a specific form submission
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: idStr } = await params;
-    const id = parseInt(idStr);
-    const body = await request.json();
-    const { status } = body;
+    const { id } = await params;
+    const submissions = readJsonFile(submissionsFilePath);
+    const submission = submissions.find((s: any) => s.id === parseInt(id));
 
-    if (!['new', 'responded', 'closed'].includes(status)) {
+    if (!submission) {
       return NextResponse.json(
-        { error: 'Invalid status. Must be new, responded, or closed' },
-        { status: 400 }
-      );
-    }
-
-    // Read existing submissions
-    const fileContent = fs.readFileSync(submissionsFilePath, 'utf8');
-    const submissions: FormSubmission[] = JSON.parse(fileContent);
-
-    // Find and update submission
-    const submissionIndex = submissions.findIndex(s => s.id === id);
-    if (submissionIndex === -1) {
-      return NextResponse.json(
-        { error: 'Form submission not found' },
+        { message: "Form submission not found" },
         { status: 404 }
       );
     }
 
-    submissions[submissionIndex] = {
-      ...submissions[submissionIndex],
-      status,
-      updatedAt: new Date().toISOString()
-    };
-
-    // Write back to file
-    fs.writeFileSync(submissionsFilePath, JSON.stringify(submissions, null, 2));
-
-    return NextResponse.json(submissions[submissionIndex]);
+    return NextResponse.json(submission);
   } catch (error) {
-    console.error('Error updating form submission:', error);
+    console.error("Failed to fetch form submission:", error);
     return NextResponse.json(
-      { error: 'Failed to update form submission' },
+      { message: "Failed to fetch form submission" },
       { status: 500 }
     );
   }
 }
 
-// DELETE: Delete form submission
+// PUT: Update a form submission
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const data = await request.json();
+    const submissions = readJsonFile(submissionsFilePath);
+
+    const submissionIndex = submissions.findIndex(
+      (s: any) => s.id === parseInt(id)
+    );
+    if (submissionIndex === -1) {
+      return NextResponse.json(
+        { message: "Form submission not found" },
+        { status: 404 }
+      );
+    }
+
+    // Update submission
+    submissions[submissionIndex] = {
+      ...submissions[submissionIndex],
+      ...data,
+      updatedAt: new Date().toISOString(),
+    };
+
+    writeJsonFile(submissionsFilePath, submissions);
+    return NextResponse.json(submissions[submissionIndex]);
+  } catch (error) {
+    console.error("Failed to update form submission:", error);
+    return NextResponse.json(
+      { message: "Failed to update form submission" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE: Delete a form submission
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: idStr } = await params;
-    const id = parseInt(idStr);
+    const { id } = await params;
+    const submissions = readJsonFile(submissionsFilePath);
 
-    // Read existing submissions
-    const fileContent = fs.readFileSync(submissionsFilePath, 'utf8');
-    const submissions: FormSubmission[] = JSON.parse(fileContent);
-
-    // Find submission
-    const submissionIndex = submissions.findIndex(s => s.id === id);
+    const submissionIndex = submissions.findIndex(
+      (s: any) => s.id === parseInt(id)
+    );
     if (submissionIndex === -1) {
       return NextResponse.json(
-        { error: 'Form submission not found' },
+        { message: "Form submission not found" },
         { status: 404 }
       );
     }
 
     // Remove submission
     submissions.splice(submissionIndex, 1);
+    writeJsonFile(submissionsFilePath, submissions);
 
-    // Write back to file
-    fs.writeFileSync(submissionsFilePath, JSON.stringify(submissions, null, 2));
-
-    return NextResponse.json({ message: 'Form submission deleted successfully' });
+    return NextResponse.json({
+      message: "Form submission deleted successfully",
+    });
   } catch (error) {
-    console.error('Error deleting form submission:', error);
+    console.error("Failed to delete form submission:", error);
     return NextResponse.json(
-      { error: 'Failed to delete form submission' },
+      { message: "Failed to delete form submission" },
       { status: 500 }
     );
   }
