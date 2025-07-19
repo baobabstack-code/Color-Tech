@@ -1,8 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import {
+  sendFormSubmissionNotification,
+  sendCustomerConfirmation,
+} from "@/services/emailService";
 
-const submissionsFilePath = path.join(process.cwd(), 'src/data/form-submissions.json');
+const submissionsFilePath = path.join(
+  process.cwd(),
+  "src/data/form-submissions.json"
+);
 
 interface FormSubmission {
   id: number;
@@ -12,7 +19,7 @@ interface FormSubmission {
   phone?: string;
   service?: string;
   message: string;
-  status: 'new' | 'responded' | 'closed';
+  status: "new" | "responded" | "closed";
   createdAt: string;
   updatedAt: string;
 }
@@ -20,11 +27,11 @@ interface FormSubmission {
 // GET: Fetch all form submissions
 export async function GET() {
   try {
-    const fileContent = fs.readFileSync(submissionsFilePath, 'utf8');
+    const fileContent = fs.readFileSync(submissionsFilePath, "utf8");
     const submissions: FormSubmission[] = JSON.parse(fileContent);
     return NextResponse.json(submissions);
   } catch (error) {
-    console.error('Error reading form submissions:', error);
+    console.error("Error reading form submissions:", error);
     return NextResponse.json([], { status: 200 });
   }
 }
@@ -33,12 +40,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, service, message, type = 'contact' } = body;
+    const { name, email, phone, service, message, type = "contact" } = body;
 
     // Validate required fields
     if (!name || !email || !message) {
       return NextResponse.json(
-        { error: 'Name, email, and message are required' },
+        { error: "Name, email, and message are required" },
         { status: 400 }
       );
     }
@@ -46,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Read existing submissions
     let submissions: FormSubmission[] = [];
     try {
-      const fileContent = fs.readFileSync(submissionsFilePath, 'utf8');
+      const fileContent = fs.readFileSync(submissionsFilePath, "utf8");
       submissions = JSON.parse(fileContent);
     } catch (error) {
       // File doesn't exist or is empty, start with empty array
@@ -55,16 +62,19 @@ export async function POST(request: NextRequest) {
 
     // Create new submission
     const newSubmission: FormSubmission = {
-      id: submissions.length > 0 ? Math.max(...submissions.map(s => s.id)) + 1 : 1,
+      id:
+        submissions.length > 0
+          ? Math.max(...submissions.map((s) => s.id)) + 1
+          : 1,
       type,
       name,
       email,
       phone,
       service,
       message,
-      status: 'new',
+      status: "new",
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     // Add to submissions array
@@ -73,11 +83,30 @@ export async function POST(request: NextRequest) {
     // Write back to file
     fs.writeFileSync(submissionsFilePath, JSON.stringify(submissions, null, 2));
 
+    // Send email notifications (don't wait for them to complete)
+    const emailData = {
+      name,
+      email,
+      phone,
+      service,
+      message,
+      type,
+    };
+
+    // Send notifications asynchronously
+    Promise.all([
+      sendFormSubmissionNotification(emailData),
+      sendCustomerConfirmation({ name, email, service }),
+    ]).catch((error) => {
+      console.error("Error sending email notifications:", error);
+      // Don't fail the API call if emails fail
+    });
+
     return NextResponse.json(newSubmission, { status: 201 });
   } catch (error) {
-    console.error('Error creating form submission:', error);
+    console.error("Error creating form submission:", error);
     return NextResponse.json(
-      { error: 'Failed to create form submission' },
+      { error: "Failed to create form submission" },
       { status: 500 }
     );
   }
