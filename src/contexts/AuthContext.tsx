@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { useToast } from '@/hooks/use-toast';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -29,8 +29,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const toast = useToast();
 
   useEffect(() => {
-    setIsLoading(status === 'loading');
-    if (status === 'authenticated' && session?.user) {
+    setIsLoading(status === "loading");
+    if (status === "authenticated" && session?.user) {
       setError(null);
     }
   }, [status, session]);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
@@ -48,23 +48,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (result?.error) {
         setError(result.error);
         toast.toast({
-          title: 'Login Failed',
+          title: "Login Failed",
           description: result.error,
-          variant: 'destructive',
+          variant: "destructive",
         });
         throw new Error(result.error);
       }
 
       if (result?.ok) {
         toast.toast({
-          title: 'Login Successful',
+          title: "Login Successful",
           description: `Welcome back!`,
         });
       }
       return result;
     } catch (err: any) {
-      console.error('Login failed:', err);
-      setError(err.message || 'An unexpected error occurred during login.');
+      console.error("Login failed:", err);
+      setError(err.message || "An unexpected error occurred during login.");
       throw err;
     } finally {
       setIsLoading(false);
@@ -74,35 +74,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await signOut({ redirect: false });
+      await signOut({
+        redirect: true,
+        callbackUrl: "/",
+      });
       toast.toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
       });
     } catch (err) {
-      console.error('Logout error:', err);
-      setError('An unexpected error occurred during logout.');
+      console.error("Logout error:", err);
+      setError("An unexpected error occurred during logout.");
+      // Fallback redirect if signOut fails
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const user: User | null = session?.user ? {
-    id: session.user.id,
-    email: session.user.email || '',
-    name: session.user.name,
-    role: (session.user as any).role, // Cast session.user to any to access role
-  } : null;
+  const user: User | null = session?.user
+    ? {
+        id: session.user.id,
+        email: session.user.email || "",
+        name: session.user.name,
+        role: (session.user as any).role, // Cast session.user to any to access role
+      }
+    : null;
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated: !!user,
-      login,
-      logout,
-      isLoading,
-      error,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        login,
+        logout,
+        isLoading,
+        error,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -111,7 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

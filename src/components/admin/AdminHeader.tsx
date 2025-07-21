@@ -121,7 +121,15 @@ const AdminHeader = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-slate-700" />
               <DropdownMenuItem
-                onClick={logout}
+                onClick={async () => {
+                  console.log("Logout button clicked");
+                  try {
+                    await logout();
+                    console.log("Logout completed");
+                  } catch (error) {
+                    console.error("Logout failed:", error);
+                  }
+                }}
                 className="text-red-400 hover:bg-red-500/10"
               >
                 <LogOut className="mr-2 h-4 w-4" />

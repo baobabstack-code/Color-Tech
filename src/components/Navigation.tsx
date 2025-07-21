@@ -247,9 +247,14 @@ const Navigation = () => {
               ))}
               <button
                 type="button"
-                onClick={() => {
-                  logout();
-                  setIsOpen(false);
+                onClick={async () => {
+                  try {
+                    await logout();
+                    setIsOpen(false);
+                  } catch (error) {
+                    console.error("Logout failed:", error);
+                    setIsOpen(false);
+                  }
                 }}
                 className="block w-full text-left px-4 py-3 rounded-full text-red-600 hover:bg-red-50 transition-colors"
               >
