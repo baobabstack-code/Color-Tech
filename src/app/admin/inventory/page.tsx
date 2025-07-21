@@ -5,10 +5,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Package, AlertCircle, Search,
-  Plus, Filter, ArrowUpDown,
-  Edit, History, ShoppingCart
+import {
+  Package,
+  AlertCircle,
+  Search,
+  Plus,
+  Filter,
+  ArrowUpDown,
+  Edit,
+  History,
+  ShoppingCart,
 } from "lucide-react";
 
 interface InventoryItem {
@@ -18,14 +24,14 @@ interface InventoryItem {
   quantity: number;
   threshold: number;
   supplier: string;
-  status: 'in-stock' | 'low-stock' | 'out-of-stock';
+  status: "in-stock" | "low-stock" | "out-of-stock";
   lastOrdered: string;
   price: number;
 }
 
 export default function InventoryManagement() {
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const inventory: InventoryItem[] = [
     {
       id: "INV001",
@@ -34,9 +40,9 @@ export default function InventoryManagement() {
       quantity: 50,
       threshold: 20,
       supplier: "AutoPaint Pro",
-      status: 'in-stock',
+      status: "in-stock",
       lastOrdered: "2024-03-01",
-      price: 89.99
+      price: 89.99,
     },
     {
       id: "INV002",
@@ -45,9 +51,9 @@ export default function InventoryManagement() {
       quantity: 15,
       threshold: 25,
       supplier: "Auto Body Supply Co",
-      status: 'low-stock',
+      status: "low-stock",
       lastOrdered: "2024-02-15",
-      price: 45.50
+      price: 45.5,
     },
     {
       id: "INV003",
@@ -56,29 +62,29 @@ export default function InventoryManagement() {
       quantity: 0,
       threshold: 10,
       supplier: "AutoPaint Pro",
-      status: 'out-of-stock',
+      status: "out-of-stock",
       lastOrdered: "2024-01-30",
-      price: 129.99
-    }
+      price: 129.99,
+    },
   ];
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'in-stock':
-        return 'default';
-      case 'low-stock':
-        return 'secondary';
-      case 'out-of-stock':
-        return 'destructive';
+      case "in-stock":
+        return "default";
+      case "low-stock":
+        return "secondary";
+      case "out-of-stock":
+        return "destructive";
       default:
-        return 'default';
+        return "default";
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Inventory Management</h1>
+        <h1 className="text-3xl font-bold text-white">Inventory Management</h1>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
           Add Item
@@ -87,29 +93,29 @@ export default function InventoryManagement() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="p-6">
+        <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Total Items</p>
-              <h3 className="text-2xl font-bold">65</h3>
+              <p className="text-sm text-gray-300">Total Items</p>
+              <h3 className="text-2xl font-bold text-white">65</h3>
             </div>
             <Package className="h-8 w-8 text-primary" />
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Low Stock Items</p>
-              <h3 className="text-2xl font-bold">8</h3>
+              <p className="text-sm text-gray-300">Low Stock Items</p>
+              <h3 className="text-2xl font-bold text-white">8</h3>
             </div>
             <AlertCircle className="h-8 w-8 text-orange-500" />
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Out of Stock</p>
-              <h3 className="text-2xl font-bold">3</h3>
+              <p className="text-sm text-gray-300">Out of Stock</p>
+              <h3 className="text-2xl font-bold text-white">3</h3>
             </div>
             <AlertCircle className="h-8 w-8 text-red-500" />
           </div>
@@ -139,35 +145,46 @@ export default function InventoryManagement() {
       {/* Inventory Grid */}
       <div className="grid gap-6">
         {inventory.map((item) => (
-          <Card key={item.id} className="p-6">
+          <Card
+            key={item.id}
+            className="p-6 bg-white/10 backdrop-blur-sm border-white/20"
+          >
             <div className="flex justify-between items-start">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-xl font-semibold">{item.name}</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    {item.name}
+                  </h3>
                   <Badge variant={getStatusBadgeVariant(item.status)}>
                     {item.status}
                   </Badge>
                 </div>
-                <p className="text-gray-600 mt-1">Category: {item.category}</p>
+                <p className="text-gray-300 mt-1">Category: {item.category}</p>
               </div>
               <div className="text-right">
-                <p className="font-semibold">Quantity: {item.quantity}</p>
-                <p className="text-sm text-gray-500">Threshold: {item.threshold}</p>
+                <p className="font-semibold text-white">
+                  Quantity: {item.quantity}
+                </p>
+                <p className="text-sm text-gray-300">
+                  Threshold: {item.threshold}
+                </p>
               </div>
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-4">
               <div>
-                <p className="text-sm text-gray-500">Supplier</p>
-                <p>{item.supplier}</p>
+                <p className="text-sm text-gray-300">Supplier</p>
+                <p className="text-white">{item.supplier}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Last Ordered</p>
-                <p>{new Date(item.lastOrdered).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-300">Last Ordered</p>
+                <p className="text-white">
+                  {new Date(item.lastOrdered).toLocaleDateString()}
+                </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Price</p>
-                <p>${item.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-300">Price</p>
+                <p className="text-white">${item.price.toFixed(2)}</p>
               </div>
             </div>
 
