@@ -2,11 +2,13 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 // Define admin emails - only these Gmail accounts can access admin features
-// TODO: Replace with your actual Gmail addresses
+// IMPORTANT: Add your actual Gmail addresses here to grant admin access
 const ADMIN_EMAILS = [
-  "your-admin-email@gmail.com", // Replace with your actual Gmail
-  "admin@colortech.co.zw", // Add more admin emails as needed
+  "admin@colortech.co.zw", // Your main admin email
+  "mrshepard18@gmail.com", // Additional admin access
   // Add more admin emails here as needed
+  // "your-email@gmail.com",
+  // "another-admin@gmail.com",
 ];
 
 const handler = NextAuth({
