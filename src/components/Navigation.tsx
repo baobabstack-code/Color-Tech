@@ -70,7 +70,6 @@ const Navigation = () => {
   ];
 
   const clientLinks: NavLink[] = [
-    { title: "Dashboard", path: "/client/dashboard" },
     { title: "My Bookings", path: "/client/bookings" },
     { title: "Service History", path: "/client/history" },
     { title: "Reviews", path: "/client/reviews" },
@@ -84,7 +83,7 @@ const Navigation = () => {
       icon: <LayoutDashboard className="h-4 w-4" />,
     },
     {
-      title: "Services",
+      title: "Manage Services",
       path: "/admin/services",
       icon: <Wrench className="h-4 w-4" />,
     },
