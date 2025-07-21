@@ -37,7 +37,7 @@ const Blog = () => {
             <div className="relative">
               <img
                 src={
-                  post.image_url ||
+                  post.imageUrl ||
                   "https://source.unsplash.com/800x400/?car-repair"
                 }
                 alt={post.title}
@@ -73,7 +73,7 @@ const Blog = () => {
                 <div className="mx-3">•</div>
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
-                  {new Date(post.created_at).toLocaleDateString("en-US", {
+                  {new Date(post.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

@@ -1,78 +1,79 @@
-import api from './api';
+import api from "./api";
+import { DatabaseService } from "@/lib/database";
 
 export interface BlogPost {
   id: number;
   title: string;
-  content_type: string;
   body: string;
-  image_url: string | null;
-  is_published: boolean;
+  imageUrl: string | null;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  slug: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface FAQ {
-  id: string;
+  id: number;
   question: string;
   answer: string;
   category: string;
-  status: 'published' | 'draft';
-  lastUpdated: string;
+  status: "published" | "draft";
   views: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Testimonial {
   id: number;
-  user_id: number;
-  service_id: number;
-  booking_id: number;
+  name: string;
+  role: string | null;
+  image: string | null;
+  quote: string;
   rating: number;
-  comment: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  user_first_name: string;
-  user_last_name: string;
-  user_email: string;
-  service_name: string;
+  status: "pending" | "approved" | "rejected";
+  source: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface GalleryItem {
   id: number;
   title: string;
-  content_type: string;
-  body: string; // JSON string
-  image_url: string;
-  is_published: boolean;
+  body: string | null; // JSON string
+  imageUrl: string;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const contentService = {
   // Blog Management
   async getBlogPosts() {
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'src/data/blog-posts.json');
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      const blogPosts: BlogPost[] = JSON.parse(fileContent);
-      return blogPosts;
+    if (typeof window === "undefined") {
+      // Server-side: use database service directly
+      try {
+        return await DatabaseService.getBlogPosts();
+      } catch (error) {
+        console.error("Error fetching blog posts:", error);
+        return [];
+      }
     } else {
-      return [];
+      // Client-side: use api service
+      const response = await api.get<BlogPost[]>("/content/blog");
+      return response.data;
     }
   },
 
-  async createBlogPost(post: Omit<BlogPost, 'id'>) {
-    const response = await api.post<BlogPost>('/blog-posts', post);
+  async createBlogPost(post: Omit<BlogPost, "id">) {
+    const response = await api.post<BlogPost>("/blog-posts", post);
     return response.data;
   },
 
@@ -87,22 +88,25 @@ export const contentService = {
 
   // Gallery Management
   async getGalleryItems() {
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'src/data/gallery.json');
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      const galleryItems: GalleryItem[] = JSON.parse(fileContent);
-      return galleryItems;
+    if (typeof window === "undefined") {
+      // Server-side: use database service directly
+      try {
+        return await DatabaseService.getGalleryItems();
+      } catch (error) {
+        console.error("Error fetching gallery items:", error);
+        return [];
+      }
     } else {
-      return [];
+      // Client-side: use api service
+      const response = await api.get<GalleryItem[]>("/content/gallery");
+      return response.data;
     }
   },
 
   async uploadGalleryItem(formData: FormData) {
-    const response = await api.post<GalleryItem>('/gallery', formData, {
+    const response = await api.post<GalleryItem>("/gallery", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
@@ -111,18 +115,21 @@ export const contentService = {
   async deleteGalleryItem(id: string) {
     await api.delete(`/gallery/${id}`);
   },
-  
+
   // FAQ Management
   async getFAQs() {
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'src/data/faqs.json');
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      const faqs: FAQ[] = JSON.parse(fileContent);
-      return faqs;
+    if (typeof window === "undefined") {
+      // Server-side: use database service directly
+      try {
+        return await DatabaseService.getFAQs();
+      } catch (error) {
+        console.error("Error fetching FAQs:", error);
+        return [];
+      }
     } else {
-      return [];
+      // Client-side: use api service
+      const response = await api.get<FAQ[]>("/content/faqs");
+      return response.data;
     }
   },
 
@@ -131,8 +138,8 @@ export const contentService = {
     return response.data;
   },
 
-  async createFAQ(faq: Omit<FAQ, 'id'>) {
-    const response = await api.post<FAQ>('/faqs', faq);
+  async createFAQ(faq: Omit<FAQ, "id">) {
+    const response = await api.post<FAQ>("/faqs", faq);
     return response.data;
   },
 
@@ -149,18 +156,21 @@ export const contentService = {
     const faq = await this.getFAQById(id);
     return this.updateFAQ(id, { views: faq.views + 1 });
   },
-  
+
   // Testimonial Management
   async getTestimonials() {
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'src/data/testimonials.json');
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      const testimonials: Testimonial[] = JSON.parse(fileContent);
-      return testimonials;
+    if (typeof window === "undefined") {
+      // Server-side: use database service directly
+      try {
+        return await DatabaseService.getTestimonials();
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+        return [];
+      }
     } else {
-      return [];
+      // Client-side: use api service
+      const response = await api.get<Testimonial[]>("/content/testimonials");
+      return response.data;
     }
   },
 
@@ -169,25 +179,28 @@ export const contentService = {
     return response.data;
   },
 
-  async createTestimonial(testimonial: Omit<Testimonial, 'id'>) {
-    const response = await api.post<Testimonial>('/testimonials', testimonial);
+  async createTestimonial(testimonial: Omit<Testimonial, "id">) {
+    const response = await api.post<Testimonial>("/testimonials", testimonial);
     return response.data;
   },
 
   async updateTestimonial(id: string, testimonial: Partial<Testimonial>) {
-    const response = await api.put<Testimonial>(`/testimonials/${id}`, testimonial);
+    const response = await api.put<Testimonial>(
+      `/testimonials/${id}`,
+      testimonial
+    );
     return response.data;
   },
 
   async deleteTestimonial(id: string) {
     await api.delete(`/testimonials/${id}`);
   },
-  
+
   async approveTestimonial(id: string) {
-    return this.updateTestimonial(id, { status: 'approved' });
+    return this.updateTestimonial(id, { status: "approved" });
   },
-  
+
   async rejectTestimonial(id: string) {
-    return this.updateTestimonial(id, { status: 'rejected' });
-  }
+    return this.updateTestimonial(id, { status: "rejected" });
+  },
 };

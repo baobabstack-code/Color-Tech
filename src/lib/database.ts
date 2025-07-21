@@ -340,6 +340,35 @@ export class DatabaseService {
         customer.createdAt.toISOString(),
     }));
   }
+
+  // Content Management Methods
+  static async getBlogPosts() {
+    return await prisma.post.findMany({
+      where: { isPublished: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getGalleryItems() {
+    return await prisma.galleryItem.findMany({
+      where: { isPublished: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getFAQs() {
+    return await prisma.fAQ.findMany({
+      where: { status: "published" },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getTestimonials() {
+    return await prisma.testimonial.findMany({
+      where: { status: "approved" },
+      orderBy: { createdAt: "desc" },
+    });
+  }
 }
 
 export default prisma;

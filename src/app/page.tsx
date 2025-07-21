@@ -1,8 +1,13 @@
-import { headers } from 'next/headers';
-import HomePageClient from '@/components/HomePageClient';
-import { getAllServices as getServicesFromApi } from '@/services/serviceService';
-import { Service } from '@/services/serviceService';
-import { contentService, Testimonial, GalleryItem, BlogPost } from '@/services/contentService';
+import { headers } from "next/headers";
+import HomePageClient from "@/components/HomePageClient";
+import { getAllServices as getServicesFromApi } from "@/services/serviceService";
+import { Service } from "@/services/serviceService";
+import {
+  contentService,
+  Testimonial,
+  GalleryItem,
+  BlogPost,
+} from "@/services/contentService";
 
 // Define interfaces for fetched data
 interface HomePageService {
@@ -18,7 +23,6 @@ interface HomePageService {
   category_name: string;
 }
 
-
 async function getFeaturedPosts() {
   const blogPosts = await contentService.getBlogPosts();
   return blogPosts.slice(0, 3);
@@ -31,10 +35,21 @@ async function getTestimonials() {
 
 async function getGalleryPreviews() {
   const galleryItems = await contentService.getGalleryItems();
-  return galleryItems.map((item: GalleryItem) => ({
-    ...item,
-    body: typeof item.body === 'string' ? JSON.parse(item.body) : item.body || { original_name: item.title }
-  })).slice(0, 2);
+  return galleryItems
+    .map((item: GalleryItem) => {
+      let parsedBody;
+      try {
+        parsedBody =
+          typeof item.body === "string" ? JSON.parse(item.body) : item.body;
+      } catch (error) {
+        parsedBody = { original_name: item.title };
+      }
+      return {
+        ...item,
+        body: parsedBody || { original_name: item.title },
+      };
+    })
+    .slice(0, 2);
 }
 
 async function getServices() {
@@ -44,18 +59,19 @@ async function getServices() {
     // Return only the first 3 services
     return allServices.slice(0, 3);
   } catch (error) {
-    console.error('Failed to fetch services:', error);
+    console.error("Failed to fetch services:", error);
     return [];
   }
 }
 
 export default async function HomePage() {
-  const [featuredPosts, testimonials, galleryPreviews, services] = await Promise.all([
-    getFeaturedPosts(),
-    getTestimonials(),
-    getGalleryPreviews(),
-    getServices()
-  ]);
+  const [featuredPosts, testimonials, galleryPreviews, services] =
+    await Promise.all([
+      getFeaturedPosts(),
+      getTestimonials(),
+      getGalleryPreviews(),
+      getServices(),
+    ]);
 
   return (
     <div className="min-h-screen flex flex-col">
