@@ -85,7 +85,7 @@ export default function InventoryManagement() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-white">Inventory Management</h1>
-        <Button>
+        <Button className="bg-primary hover:bg-primary/90 text-white">
           <Plus className="h-4 w-4 mr-2" />
           Add Item
         </Button>
@@ -129,14 +129,20 @@ export default function InventoryManagement() {
             placeholder="Search inventory..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
+            className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400"
           />
         </div>
-        <Button variant="outline">
+        <Button
+          variant="outline"
+          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+        >
           <Filter className="h-4 w-4 mr-2" />
           Filter
         </Button>
-        <Button variant="outline">
+        <Button
+          variant="outline"
+          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+        >
           <ArrowUpDown className="h-4 w-4 mr-2" />
           Sort
         </Button>
@@ -189,15 +195,27 @@ export default function InventoryManagement() {
             </div>
 
             <div className="mt-4 flex space-x-2">
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Order
               </Button>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="outline" size="sm">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <History className="h-4 w-4 mr-2" />
                 History
               </Button>
