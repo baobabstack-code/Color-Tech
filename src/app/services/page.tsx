@@ -21,6 +21,9 @@ import Link from "next/link";
 import { getAllServices as getServices } from "@/services/serviceService";
 import { headers } from "next/headers";
 
+// Make this page dynamic instead of static
+export const dynamic = "force-dynamic";
+
 // Define interfaces for fetched data
 interface ServiceCategory {
   id: number;
