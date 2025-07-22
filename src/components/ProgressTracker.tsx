@@ -1,18 +1,30 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  ClipboardCheck, Camera, Clock, Wrench, CheckCircle, 
-  AlertCircle, Loader, Car, ImageIcon, Phone, Truck, 
-  ShieldAlert, ArrowRight, MessageSquare
-} from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  ClipboardCheck,
+  Camera,
+  Clock,
+  Wrench,
+  CheckCircle,
+  AlertCircle,
+  Loader,
+  Car,
+  ImageIcon,
+  Phone,
+  Truck,
+  ShieldAlert,
+  ArrowRight,
+  MessageSquare,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface RepairStage {
   id: number;
   title: string;
   description: string;
-  status: 'completed' | 'in-progress' | 'pending';
+  status: "completed" | "in-progress" | "pending";
   date?: string;
   photos?: string[];
   notes?: string;
@@ -49,7 +61,7 @@ export interface Stage {
   id: number;
   title: string;
   description: string;
-  status: 'completed' | 'in-progress' | 'pending';
+  status: "completed" | "in-progress" | "pending";
   date?: string;
   details?: string;
   photos?: string[];
@@ -65,60 +77,65 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
   const [activeStage, setActiveStage] = useState<number>(0);
   const [showEmergencyInfo, setShowEmergencyInfo] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const pathname = usePathname();
+
+  // Hide chat support on admin pages
+  const isAdminPage = pathname?.startsWith("/admin");
+  const shouldShowChat = !isAdminPage;
 
   const repairProgress: RepairProgress = {
-    jobId: 'REP-2024-001',
+    jobId: "REP-2024-001",
     vehicleInfo: {
-      make: 'Toyota',
-      model: 'Corolla',
-      year: '2022',
-      color: 'Silver'
+      make: "Toyota",
+      model: "Corolla",
+      year: "2022",
+      color: "Silver",
     },
-    estimatedCompletion: '2024-02-20',
+    estimatedCompletion: "2024-02-20",
     currentStage: 2,
     stages: [
       {
         id: 1,
-        title: 'Initial Assessment',
-        description: 'Detailed inspection and damage assessment',
-        status: 'completed',
-        date: '2024-02-15',
-        notes: 'Multiple panels require repair and repainting',
+        title: "Initial Assessment",
+        description: "Detailed inspection and damage assessment",
+        status: "completed",
+        date: "2024-02-15",
+        notes: "Multiple panels require repair and repainting",
         photos: [
-          'https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400',
-          'https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400'
-        ]
+          "https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400",
+          "https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400",
+        ],
       },
       {
         id: 2,
-        title: 'Panel Beating',
-        description: 'Repair and restoration of damaged panels',
-        status: 'in-progress',
-        date: '2024-02-16',
-        notes: 'Working on rear quarter panel',
+        title: "Panel Beating",
+        description: "Repair and restoration of damaged panels",
+        status: "in-progress",
+        date: "2024-02-16",
+        notes: "Working on rear quarter panel",
         photos: [
-          'https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400'
-        ]
+          "https://images.unsplash.com/photo-1589758438368-0ad531db3366?w=400",
+        ],
       },
       {
         id: 3,
-        title: 'Surface Preparation',
-        description: 'Sanding and primer application',
-        status: 'pending'
+        title: "Surface Preparation",
+        description: "Sanding and primer application",
+        status: "pending",
       },
       {
         id: 4,
-        title: 'Paint Application',
-        description: 'Color matching and painting',
-        status: 'pending'
+        title: "Paint Application",
+        description: "Color matching and painting",
+        status: "pending",
       },
       {
         id: 5,
-        title: 'Quality Check',
-        description: 'Final inspection and detailing',
-        status: 'pending'
-      }
-    ]
+        title: "Quality Check",
+        description: "Final inspection and detailing",
+        status: "pending",
+      },
+    ],
   };
 
   // Emergency contacts data
@@ -127,14 +144,14 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       title: "24/7 Emergency Hotline",
       number: "+263 77 911 1234",
       hours: "24/7",
-      description: "Immediate assistance for urgent repairs and accidents"
+      description: "Immediate assistance for urgent repairs and accidents",
     },
     {
       title: "Roadside Assistance",
       number: "+263 77 911 5678",
       hours: "24/7",
-      description: "On-site emergency repairs and towing coordination"
-    }
+      description: "On-site emergency repairs and towing coordination",
+    },
   ];
 
   // Towing services data
@@ -143,21 +160,21 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       name: "Rapid Response Towing",
       contact: "+263 77 922 1234",
       coverage: "Harare Metropolitan Area",
-      eta: "15-30 minutes"
+      eta: "15-30 minutes",
     },
     {
       name: "Highway Rescue Services",
       contact: "+263 77 922 5678",
       coverage: "Nationwide",
-      eta: "30-60 minutes"
-    }
+      eta: "30-60 minutes",
+    },
   ];
 
-  const getStatusIcon = (status: Stage['status']) => {
+  const getStatusIcon = (status: Stage["status"]) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="w-6 h-6 text-green-500" />;
-      case 'in-progress':
+      case "in-progress":
         return <Clock className="w-6 h-6 text-secondary" />;
       default:
         return <AlertCircle className="w-6 h-6 text-gray-300" />;
@@ -180,16 +197,23 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
       {/* Emergency Services Information */}
       {showEmergencyInfo && (
         <div className="glassmorphic p-6 mb-8 border-l-4 border-red-600 animate-fade-in">
-          <h2 className="text-2xl font-bold text-white mb-6">Emergency Services</h2>
-          
+          <h2 className="text-2xl font-bold text-white mb-6">
+            Emergency Services
+          </h2>
+
           {/* Emergency Contacts */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {emergencyContacts.map((contact) => (
               <div key={contact.number} className="rounded-lg p-4">
-                <h3 className="font-semibold text-red-300 mb-2">{contact.title}</h3>
+                <h3 className="font-semibold text-red-300 mb-2">
+                  {contact.title}
+                </h3>
                 <div className="flex items-center mb-2">
                   <Phone className="w-5 h-5 text-red-400 mr-2" />
-                  <a href={`tel:${contact.number}`} className="text-red-400 font-medium hover:text-red-500">
+                  <a
+                    href={`tel:${contact.number}`}
+                    className="text-red-400 font-medium hover:text-red-500"
+                  >
                     {contact.number}
                   </a>
                 </div>
@@ -200,7 +224,9 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
           </div>
 
           {/* Towing Services */}
-          <h3 className="text-xl font-semibold text-white mb-4">Towing Services</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">
+            Towing Services
+          </h3>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             {towingServices.map((service) => (
               <div key={service.contact} className="rounded-lg p-4">
@@ -208,7 +234,9 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                   <Truck className="w-5 h-5 text-slate-300 mt-1 mr-3" />
                   <div>
                     <h4 className="font-medium text-white">{service.name}</h4>
-                    <p className="text-sm text-slate-300 mb-2">Coverage: {service.coverage}</p>
+                    <p className="text-sm text-slate-300 mb-2">
+                      Coverage: {service.coverage}
+                    </p>
                     <p className="text-sm text-slate-300">ETA: {service.eta}</p>
                     <a
                       href={`tel:${service.contact}`}
@@ -224,13 +252,19 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
 
           {/* Emergency Guidelines */}
           <div className="rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Emergency Procedures</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">
+              Emergency Procedures
+            </h3>
             <ol className="list-decimal list-inside space-y-3 text-slate-300">
               <li>Ensure personal safety and move to a secure location</li>
               <li>Call our 24/7 emergency hotline for immediate assistance</li>
               <li>Share your location and vehicle details with our team</li>
-              <li>Follow the operator's instructions for towing or on-site repairs</li>
-              <li>Document the damage with photos if possible and safe to do so</li>
+              <li>
+                Follow the operator's instructions for towing or on-site repairs
+              </li>
+              <li>
+                Document the damage with photos if possible and safe to do so
+              </li>
             </ol>
           </div>
         </div>
@@ -246,30 +280,42 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
           <div className="text-right">
             <p className="text-sm text-slate-300">Estimated Completion</p>
             <p className="text-lg font-semibold text-white">
-              {new Date(repairProgress.estimatedCompletion).toLocaleDateString()}
+              {new Date(
+                repairProgress.estimatedCompletion
+              ).toLocaleDateString()}
             </p>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="rounded-lg p-4">
-            <h3 className="font-semibold text-white mb-3">Vehicle Information</h3>
+            <h3 className="font-semibold text-white mb-3">
+              Vehicle Information
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-slate-300">Make</p>
-                <p className="font-medium text-white">{repairProgress.vehicleInfo.make}</p>
+                <p className="font-medium text-white">
+                  {repairProgress.vehicleInfo.make}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-300">Model</p>
-                <p className="font-medium text-white">{repairProgress.vehicleInfo.model}</p>
+                <p className="font-medium text-white">
+                  {repairProgress.vehicleInfo.model}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-300">Year</p>
-                <p className="font-medium text-white">{repairProgress.vehicleInfo.year}</p>
+                <p className="font-medium text-white">
+                  {repairProgress.vehicleInfo.year}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-300">Color</p>
-                <p className="font-medium text-white">{repairProgress.vehicleInfo.color}</p>
+                <p className="font-medium text-white">
+                  {repairProgress.vehicleInfo.color}
+                </p>
               </div>
             </div>
           </div>
@@ -284,13 +330,21 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                 <div className="ml-3">
                   <p className="font-medium text-white">Current Stage</p>
                   <p className="text-sm text-slate-300">
-                    {repairProgress.stages[repairProgress.currentStage - 1].title}
+                    {
+                      repairProgress.stages[repairProgress.currentStage - 1]
+                        .title
+                    }
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-secondary">
-                  {Math.round((repairProgress.currentStage / repairProgress.stages.length) * 100)}%
+                  {Math.round(
+                    (repairProgress.currentStage /
+                      repairProgress.stages.length) *
+                      100
+                  )}
+                  %
                 </p>
                 <p className="text-sm text-slate-300">Complete</p>
               </div>
@@ -306,14 +360,16 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
             <div
               key={stage.id}
               className={`relative flex items-start ${
-                index <= currentStage ? 'opacity-100' : 'opacity-60'
+                index <= currentStage ? "opacity-100" : "opacity-60"
               }`}
             >
               {/* Connector Line */}
               {index !== stages.length - 1 && (
                 <div
                   className={`h-full w-0.5 absolute ml-3 top-6 bottom-0 ${
-                    stage.status === 'completed' ? 'bg-green-500' : 'bg-gray-200'
+                    stage.status === "completed"
+                      ? "bg-green-500"
+                      : "bg-gray-200"
                   }`}
                 />
               )}
@@ -327,7 +383,7 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
               <div className="flex-1">
                 <button
                   className={`w-full text-left ${
-                    activeStage === index ? '' : ''
+                    activeStage === index ? "" : ""
                   } rounded-lg p-4 hover:bg-gray-50/10 transition-colors duration-200`}
                   onClick={() => setActiveStage(index)}
                 >
@@ -348,12 +404,16 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                     <div className="mt-4">
                       {stage.notes && (
                         <p className="text-sm text-slate-300 mb-3">
-                          <span className="font-medium text-white">Notes:</span> {stage.notes}
+                          <span className="font-medium text-white">Notes:</span>{" "}
+                          {stage.notes}
                         </p>
                       )}
                       <div className="grid grid-cols-2 gap-4">
                         {stage.photos?.map((photo, photoIndex) => (
-                          <div key={photo} className="relative aspect-w-4 aspect-h-3">
+                          <div
+                            key={photo}
+                            className="relative aspect-w-4 aspect-h-3"
+                          >
                             <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                               <ImageIcon className="w-8 h-8 text-gray-300" />
                             </div>
@@ -364,7 +424,8 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
                               loading="lazy"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = 'https://source.unsplash.com/400x300/?car-repair';
+                                target.src =
+                                  "https://source.unsplash.com/400x300/?car-repair";
                               }}
                             />
                           </div>
@@ -379,17 +440,19 @@ const ProgressTracker = ({ stages, currentStage }: ProgressTrackerProps) => {
         </div>
       </div>
 
-      {/* Chat Support Button */}
-      <button
-        onClick={() => setShowChat(!showChat)}
-        className="fixed bottom-6 right-6 bg-secondary hover:bg-secondary/90 text-white p-4 rounded-full shadow-lg transition-colors duration-200"
-        aria-label="Chat Support"
-      >
-        <MessageSquare className="w-6 h-6" />
-      </button>
+      {/* Chat Support Button - Only show on frontend pages */}
+      {shouldShowChat && (
+        <button
+          onClick={() => setShowChat(!showChat)}
+          className="fixed bottom-6 right-6 bg-secondary hover:bg-secondary/90 text-white p-4 rounded-full shadow-lg transition-colors duration-200"
+          aria-label="Chat Support"
+        >
+          <MessageSquare className="w-6 h-6" />
+        </button>
+      )}
 
-      {/* Chat Support Modal */}
-      {showChat && (
+      {/* Chat Support Modal - Only show on frontend pages */}
+      {shouldShowChat && showChat && (
         <div className="fixed bottom-20 right-6 w-96 bg-white rounded-lg shadow-xl">
           <div className="p-4 border-b">
             <h3 className="font-semibold text-primary">Live Support</h3>
