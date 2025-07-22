@@ -6,7 +6,7 @@ export interface Service {
   basePrice: number;
   durationMinutes: number;
   category: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
 }
@@ -14,47 +14,29 @@ export interface Service {
 // Get all services from the API
 export const getAllServices = async (): Promise<Service[]> => {
   try {
-    // Check if we're on the server side (for static generation)
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const servicesFilePath = path.join(process.cwd(), 'src/data/services.json');
-      const fileContent = fs.readFileSync(servicesFilePath, 'utf8');
-      const services: Service[] = JSON.parse(fileContent);
-      return services;
-    } else {
-      // Client side - use API
-      const response = await fetch('/api/services');
-      if (!response.ok) {
-        throw new Error('Failed to fetch services');
-      }
-      return response.json();
+    const response = await fetch("/api/services");
+    if (!response.ok) {
+      throw new Error("Failed to fetch services");
     }
+    return response.json();
   } catch (error) {
-    console.error('Error reading or parsing services:', error);
+    console.error("Error fetching services:", error);
     return []; // Return an empty array or re-throw a custom error
   }
 };
 
 // Get a single service by its ID
-export const getServiceById = async (id: string | number): Promise<Service | undefined> => {
+export const getServiceById = async (
+  id: string | number
+): Promise<Service | undefined> => {
   try {
-    // Check if we're on the server side (for static generation)
-    if (typeof window === 'undefined') {
-      const services = await getAllServices();
-      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-      if (isNaN(numericId)) return undefined;
-      return services.find((s) => s.id === numericId);
-    } else {
-      // Client side - use API
-      const response = await fetch(`/api/services/${id}`);
-      if (!response.ok) {
-        return undefined;
-      }
-      return response.json();
+    const response = await fetch(`/api/services/${id}`);
+    if (!response.ok) {
+      return undefined;
     }
+    return response.json();
   } catch (error) {
-    console.error('Error fetching service:', error);
+    console.error("Error fetching service:", error);
     return undefined;
   }
 };
@@ -62,14 +44,14 @@ export const getServiceById = async (id: string | number): Promise<Service | und
 // Get all unique service categories
 export const getServiceCategories = async (): Promise<string[]> => {
   const services = await getAllServices();
-  const categories = services.map(s => s.category);
+  const categories = services.map((s) => s.category);
   return [...new Set(categories)];
 };
 
 // Function to generate static paths for service pages
 export const getServiceStaticPaths = async () => {
   const services = await getAllServices();
-  return services.map(service => ({
+  return services.map((service) => ({
     id: service.id.toString(),
   }));
-}; 
+};

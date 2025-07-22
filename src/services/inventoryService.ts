@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface InventoryItem {
   id: string;
@@ -7,27 +7,24 @@ export interface InventoryItem {
   quantity: number;
   threshold: number;
   supplier: string;
-  status: 'in-stock' | 'low-stock' | 'out-of-stock';
+  status: "in-stock" | "low-stock" | "out-of-stock";
   lastOrdered: string;
   price: number;
 }
 
 export const inventoryService = {
   async getInventory() {
-    if (typeof window === 'undefined') {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(process.cwd(), 'src/data/inventory.json');
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      const inventory: InventoryItem[] = JSON.parse(fileContent);
-      return inventory;
-    } else {
+    try {
+      const response = await api.get("/inventory");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
       return [];
     }
   },
 
-  async addItem(item: Omit<InventoryItem, 'id'>) {
-    const response = await api.post<InventoryItem>('/inventory', item);
+  async addItem(item: Omit<InventoryItem, "id">) {
+    const response = await api.post<InventoryItem>("/inventory", item);
     return response.data;
   },
 
@@ -42,8 +39,8 @@ export const inventoryService = {
 
   async orderItems(id: string, quantity: number) {
     const response = await api.post<InventoryItem>(`/inventory/${id}/order`, {
-      quantity
+      quantity,
     });
     return response.data;
-  }
-}; 
+  },
+};

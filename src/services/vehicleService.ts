@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface Vehicle {
   id: string;
@@ -36,45 +36,58 @@ export interface UpdateVehicleData {
 
 // Get all vehicles (admin only)
 export const getAllVehicles = async (): Promise<Vehicle[]> => {
-  if (typeof window === 'undefined') {
-    const fs = require('fs');
-    const path = require('path');
-    const filePath = path.join(process.cwd(), 'src/data/vehicles.json');
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const vehicles: Vehicle[] = JSON.parse(fileContent);
-    return vehicles;
-  } else {
+  try {
+    const response = await api.get("/vehicles");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching vehicles:", error);
     return [];
   }
 };
 
 // Get current user's vehicles
 export const getMyVehicles = async (): Promise<Vehicle[]> => {
-  // For now, just return all vehicles
-  return getAllVehicles();
+  try {
+    const response = await api.get("/vehicles/my");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user vehicles:", error);
+    return [];
+  }
 };
 
 // Get vehicle by ID
 export const getVehicleById = async (id: string): Promise<Vehicle> => {
-  const vehicles = await getAllVehicles();
-  const vehicle = vehicles.find((v) => v.id === id);
-  return vehicle as Vehicle;
+  try {
+    const response = await api.get(`/vehicles/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching vehicle:", error);
+    throw error;
+  }
 };
 
 // Create new vehicle
-export const createVehicle = async (data: CreateVehicleData): Promise<Vehicle> => {
-  const response = await api.post('/vehicles', data);
+export const createVehicle = async (
+  data: CreateVehicleData
+): Promise<Vehicle> => {
+  const response = await api.post("/vehicles", data);
   return response.data;
 };
 
 // Update vehicle
-export const updateVehicle = async (id: string, data: UpdateVehicleData): Promise<Vehicle> => {
+export const updateVehicle = async (
+  id: string,
+  data: UpdateVehicleData
+): Promise<Vehicle> => {
   const response = await api.put(`/vehicles/${id}`, data);
   return response.data;
 };
 
 // Delete vehicle
-export const deleteVehicle = async (id: string): Promise<{ message: string }> => {
+export const deleteVehicle = async (
+  id: string
+): Promise<{ message: string }> => {
   const response = await api.delete(`/vehicles/${id}`);
   return response.data;
 };

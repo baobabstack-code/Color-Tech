@@ -9,10 +9,8 @@ import { Clock, Tag, DollarSign, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-// Generate static paths for all service pages
-export async function generateStaticParams() {
-  return [{ id: "1" }]; // Re-applying hardcode for testing
-}
+// Make this page dynamic instead of static
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
