@@ -1,38 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { PrismaClient } from "@prisma/client";
 import {
   sendFormSubmissionNotification,
   sendCustomerConfirmation,
 } from "@/services/emailService";
 
-const submissionsFilePath = path.join(
-  process.cwd(),
-  "src/data/form-submissions.json"
-);
-
-interface FormSubmission {
-  id: number;
-  type: string;
-  name: string;
-  email: string;
-  phone?: string;
-  service?: string;
-  message: string;
-  status: "new" | "responded" | "closed";
-  createdAt: string;
-  updatedAt: string;
-}
+const prisma = new PrismaClient();
 
 // GET: Fetch all form submissions
 export async function GET() {
   try {
-    const fileContent = fs.readFileSync(submissionsFilePath, "utf8");
-    const submissions: FormSubmission[] = JSON.parse(fileContent);
+    const submissions = await prisma.formSubmission.findMany({
+      orderBy: { createdAt: "desc" },
+    });
     return NextResponse.json(submissions);
   } catch (error) {
-    console.error("Error reading form submissions:", error);
-    return NextResponse.json([], { status: 200 });
+    console.error("Error fetching form submissions:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch form submissions" },
+      { status: 500 }
+    );
   }
 }
 
@@ -50,38 +37,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Read existing submissions
-    let submissions: FormSubmission[] = [];
-    try {
-      const fileContent = fs.readFileSync(submissionsFilePath, "utf8");
-      submissions = JSON.parse(fileContent);
-    } catch (error) {
-      // File doesn't exist or is empty, start with empty array
-      submissions = [];
-    }
-
-    // Create new submission
-    const newSubmission: FormSubmission = {
-      id:
-        submissions.length > 0
-          ? Math.max(...submissions.map((s) => s.id)) + 1
-          : 1,
-      type,
-      name,
-      email,
-      phone,
-      service,
-      message,
-      status: "new",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Add to submissions array
-    submissions.push(newSubmission);
-
-    // Write back to file
-    fs.writeFileSync(submissionsFilePath, JSON.stringify(submissions, null, 2));
+    // Create new submission in database
+    const newSubmission = await prisma.formSubmission.create({
+      data: {
+        type,
+        name,
+        email,
+        phone: phone || null,
+        service: service || null,
+        message,
+        status: "new",
+      },
+    });
 
     // Send email notifications (don't wait for them to complete)
     const emailData = {
@@ -102,7 +69,21 @@ export async function POST(request: NextRequest) {
       // Don't fail the API call if emails fail
     });
 
-    return NextResponse.json(newSubmission, { status: 201 });
+    return NextResponse.json(
+      {
+        id: newSubmission.id,
+        type: newSubmission.type,
+        name: newSubmission.name,
+        email: newSubmission.email,
+        phone: newSubmission.phone,
+        service: newSubmission.service,
+        message: newSubmission.message,
+        status: newSubmission.status,
+        createdAt: newSubmission.createdAt.toISOString(),
+        updatedAt: newSubmission.updatedAt.toISOString(),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating form submission:", error);
     return NextResponse.json(

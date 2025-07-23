@@ -1,39 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { PrismaClient } from "@prisma/client";
 
-const submissionsFilePath = path.join(
-  process.cwd(),
-  "src/data/form-submissions.json"
-);
-
-interface FormSubmission {
-  id: number;
-  type: string;
-  name: string;
-  email: string;
-  phone?: string;
-  service?: string;
-  message: string;
-  status: "new" | "responded" | "closed";
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+const prisma = new PrismaClient();
 
 // GET: Fetch a specific form submission
 export async function GET(
@@ -42,8 +10,9 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const submissions = readJsonFile(submissionsFilePath);
-    const submission = submissions.find((s: any) => s.id === parseInt(id));
+    const submission = await prisma.formSubmission.findUnique({
+      where: { id: parseInt(id) },
+    });
 
     if (!submission) {
       return NextResponse.json(
@@ -70,27 +39,16 @@ export async function PUT(
   try {
     const { id } = await params;
     const data = await request.json();
-    const submissions = readJsonFile(submissionsFilePath);
 
-    const submissionIndex = submissions.findIndex(
-      (s: any) => s.id === parseInt(id)
-    );
-    if (submissionIndex === -1) {
-      return NextResponse.json(
-        { message: "Form submission not found" },
-        { status: 404 }
-      );
-    }
+    const updatedSubmission = await prisma.formSubmission.update({
+      where: { id: parseInt(id) },
+      data: {
+        status: data.status,
+        // Add other updatable fields as needed
+      },
+    });
 
-    // Update submission
-    submissions[submissionIndex] = {
-      ...submissions[submissionIndex],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-
-    writeJsonFile(submissionsFilePath, submissions);
-    return NextResponse.json(submissions[submissionIndex]);
+    return NextResponse.json(updatedSubmission);
   } catch (error) {
     console.error("Failed to update form submission:", error);
     return NextResponse.json(
@@ -107,21 +65,10 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const submissions = readJsonFile(submissionsFilePath);
 
-    const submissionIndex = submissions.findIndex(
-      (s: any) => s.id === parseInt(id)
-    );
-    if (submissionIndex === -1) {
-      return NextResponse.json(
-        { message: "Form submission not found" },
-        { status: 404 }
-      );
-    }
-
-    // Remove submission
-    submissions.splice(submissionIndex, 1);
-    writeJsonFile(submissionsFilePath, submissions);
+    await prisma.formSubmission.delete({
+      where: { id: parseInt(id) },
+    });
 
     return NextResponse.json({
       message: "Form submission deleted successfully",

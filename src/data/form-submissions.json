@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": 1,
+    "type": "contact",
+    "name": "Nyasha Ushewokunze",
+    "email": "mrshepard18@gmail.com",
+    "phone": "0712672820",
+    "service": "panel-beating",
+    "message": "hey",
+    "status": "new",
+    "createdAt": "2025-07-22T23:17:13.021Z",
+    "updatedAt": "2025-07-22T23:17:13.021Z"
+  }
+]
