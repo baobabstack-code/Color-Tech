@@ -1,42 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const faqsFilePath = path.join(process.cwd(), 'src/data/faqs.json');
-
-interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-  status: 'published' | 'draft';
-  lastUpdated: string;
-  views: number;
-}
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+import { NextRequest, NextResponse } from "next/server";
+import { DatabaseService } from "@/lib/database";
 
 // GET: Fetch all FAQs
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const faqs = readJsonFile(faqsFilePath);
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
+
+    let faqs;
+    if (status === "published") {
+      faqs = await DatabaseService.getFAQs(); // Only published
+    } else {
+      faqs = await DatabaseService.getAllFAQs(); // All FAQs
+    }
+
     return NextResponse.json(faqs);
   } catch (error) {
-    console.error('Failed to fetch FAQs:', error);
-    return NextResponse.json({ message: 'Failed to fetch FAQs' }, { status: 500 });
+    console.error("Failed to fetch FAQs:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch FAQs" },
+      { status: 500 }
+    );
   }
 }
 
@@ -47,27 +31,26 @@ export async function POST(request: NextRequest) {
 
     // Basic validation
     if (!data.question || !data.answer) {
-      return NextResponse.json({ message: 'Question and answer are required' }, { status: 400 });
+      return NextResponse.json(
+        { message: "Missing required fields: question, answer" },
+        { status: 400 }
+      );
     }
 
-    const faqs = readJsonFile(faqsFilePath);
-    
-    const newFAQ: FAQ = {
-      id: (faqs.length + 1).toString(),
+    const newFAQ = await DatabaseService.createFAQ({
       question: data.question,
       answer: data.answer,
-      category: data.category || 'General',
-      status: data.status || 'draft',
-      lastUpdated: new Date().toISOString(),
-      views: 0
-    };
-
-    faqs.push(newFAQ);
-    writeJsonFile(faqsFilePath, faqs);
+      category: data.category || "General",
+      status: data.status || "published",
+      views: 0,
+    });
 
     return NextResponse.json(newFAQ, { status: 201 });
   } catch (error) {
-    console.error('Failed to create FAQ:', error);
-    return NextResponse.json({ message: 'Failed to create FAQ' }, { status: 500 });
+    console.error("Failed to create FAQ:", error);
+    return NextResponse.json(
+      { message: "Failed to create FAQ" },
+      { status: 500 }
+    );
   }
 }

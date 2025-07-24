@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { DatabaseService } from "@/lib/database";
 
 export async function GET(
   request: Request,
@@ -9,11 +8,7 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const filePath = path.join(process.cwd(), "src", "data", "blog-posts.json");
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const data = JSON.parse(fileContents);
-
-    const blogPost = data.find((item: any) => item.id === parseInt(id));
+    const blogPost = await DatabaseService.getPostById(parseInt(id));
 
     if (!blogPost) {
       return NextResponse.json(
@@ -24,7 +19,7 @@ export async function GET(
 
     return NextResponse.json({ content: blogPost });
   } catch (error) {
-    console.error("Error reading blog post:", error);
+    console.error("Error fetching blog post:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog post" },
       { status: 500 }

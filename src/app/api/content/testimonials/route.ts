@@ -1,44 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const testimonialsFilePath = path.join(process.cwd(), 'src/data/testimonials.json');
-
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  image: string;
-  quote: string;
-  rating: number;
-  status: 'approved' | 'pending' | 'rejected';
-  date: string;
-  source: string;
-}
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+import { NextRequest, NextResponse } from "next/server";
+import { DatabaseService } from "@/lib/database";
 
 // GET: Fetch all testimonials
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const testimonials = readJsonFile(testimonialsFilePath);
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
+
+    let testimonials;
+    if (status === "approved") {
+      testimonials = await DatabaseService.getTestimonials(); // Only approved
+    } else {
+      testimonials = await DatabaseService.getAllTestimonials(); // All testimonials
+    }
+
     return NextResponse.json(testimonials);
   } catch (error) {
-    console.error('Failed to fetch testimonials:', error);
-    return NextResponse.json({ message: 'Failed to fetch testimonials' }, { status: 500 });
+    console.error("Failed to fetch testimonials:", error);
+    return NextResponse.json(
+      { message: "Failed to fetch testimonials" },
+      { status: 500 }
+    );
   }
 }
 
@@ -48,30 +30,29 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.name || !data.quote) {
-      return NextResponse.json({ message: 'Name and quote are required' }, { status: 400 });
+    if (!data.name || !data.quote || !data.rating) {
+      return NextResponse.json(
+        { message: "Missing required fields: name, quote, rating" },
+        { status: 400 }
+      );
     }
 
-    const testimonials = readJsonFile(testimonialsFilePath);
-    
-    const newTestimonial: Testimonial = {
-      id: (testimonials.length + 1).toString(),
+    const newTestimonial = await DatabaseService.createTestimonial({
       name: data.name,
-      role: data.role || 'Customer',
-      image: data.image || '/images/testimonials/default.jpg',
+      role: data.role || null,
+      image: data.image || null,
       quote: data.quote,
-      rating: data.rating || 5,
-      status: data.status || 'pending',
-      date: data.date || new Date().toISOString().split('T')[0],
-      source: data.source || 'website'
-    };
-
-    testimonials.push(newTestimonial);
-    writeJsonFile(testimonialsFilePath, testimonials);
+      rating: parseInt(data.rating),
+      status: data.status || "pending",
+      source: data.source || "website",
+    });
 
     return NextResponse.json(newTestimonial, { status: 201 });
   } catch (error) {
-    console.error('Failed to create testimonial:', error);
-    return NextResponse.json({ message: 'Failed to create testimonial' }, { status: 500 });
+    console.error("Failed to create testimonial:", error);
+    return NextResponse.json(
+      { message: "Failed to create testimonial" },
+      { status: 500 }
+    );
   }
 }

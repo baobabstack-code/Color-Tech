@@ -1,80 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { DatabaseService } from "@/lib/database";
 
-const reviewsFilePath = path.join(process.cwd(), "src/data/reviews.json");
-const customersFilePath = path.join(process.cwd(), "src/data/customers.json");
-const servicesFilePath = path.join(process.cwd(), "src/data/services.json");
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
-
-// GET: Fetch single review
+// GET: Fetch a specific review
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const reviews = readJsonFile(reviewsFilePath);
-    const customers = readJsonFile(customersFilePath);
-    const services = readJsonFile(servicesFilePath);
-
-    const review = reviews.find((r: any) => r.id === parseInt(id));
+    const review = await DatabaseService.getReviewById(parseInt(id));
 
     if (!review) {
-      return NextResponse.json({ error: "Review not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 }
+      );
     }
 
-    // Enrich with user and service details
-    const user = customers.find(
-      (c: any) => c.id === review.userId || c.id === review.userId.toString()
-    );
-    const service = services.find(
-      (s: any) =>
-        s.id === parseInt(review.serviceId) || s.id === review.serviceId
-    );
-
-    const enrichedReview = {
-      ...review,
-      user: user
-        ? {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-          }
-        : null,
-      service: service
-        ? {
-            id: service.id,
-            name: service.name,
-          }
-        : null,
-    };
-
-    return NextResponse.json(enrichedReview);
+    return NextResponse.json(review);
   } catch (error) {
-    console.error("Error fetching review:", error);
+    console.error("Failed to fetch review:", error);
     return NextResponse.json(
-      { error: "Failed to fetch review" },
+      { message: "Failed to fetch review" },
       { status: 500 }
     );
   }
 }
 
-// PUT: Update review
+// PUT: Update a review
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -83,65 +36,30 @@ export async function PUT(
     const { id } = await params;
     const data = await request.json();
 
-    const reviews = readJsonFile(reviewsFilePath);
-    const customers = readJsonFile(customersFilePath);
-    const services = readJsonFile(servicesFilePath);
+    const updatedReview = await DatabaseService.updateReview(parseInt(id), {
+      rating: data.rating ? parseInt(data.rating) : undefined,
+      comment: data.comment,
+      status: data.status,
+    });
 
-    const reviewIndex = reviews.findIndex((r: any) => r.id === parseInt(id));
-
-    if (reviewIndex === -1) {
-      return NextResponse.json({ error: "Review not found" }, { status: 404 });
+    if (!updatedReview) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 }
+      );
     }
 
-    // Update review
-    reviews[reviewIndex] = {
-      ...reviews[reviewIndex],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-
-    writeJsonFile(reviewsFilePath, reviews);
-
-    // Enrich with user and service details for response
-    const user = customers.find(
-      (c: any) =>
-        c.id === reviews[reviewIndex].userId ||
-        c.id === reviews[reviewIndex].userId.toString()
-    );
-    const service = services.find(
-      (s: any) =>
-        s.id === parseInt(reviews[reviewIndex].serviceId) ||
-        s.id === reviews[reviewIndex].serviceId
-    );
-
-    const enrichedReview = {
-      ...reviews[reviewIndex],
-      user: user
-        ? {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-          }
-        : null,
-      service: service
-        ? {
-            id: service.id,
-            name: service.name,
-          }
-        : null,
-    };
-
-    return NextResponse.json(enrichedReview);
+    return NextResponse.json(updatedReview);
   } catch (error) {
-    console.error("Error updating review:", error);
+    console.error("Failed to update review:", error);
     return NextResponse.json(
-      { error: "Failed to update review" },
+      { message: "Failed to update review" },
       { status: 500 }
     );
   }
 }
 
-// DELETE: Delete review
+// DELETE: Delete a review
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -149,22 +67,20 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const reviews = readJsonFile(reviewsFilePath);
-    const reviewIndex = reviews.findIndex((r: any) => r.id === parseInt(id));
+    const deletedReview = await DatabaseService.deleteReview(parseInt(id));
 
-    if (reviewIndex === -1) {
-      return NextResponse.json({ error: "Review not found" }, { status: 404 });
+    if (!deletedReview) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 }
+      );
     }
-
-    // Remove review
-    reviews.splice(reviewIndex, 1);
-    writeJsonFile(reviewsFilePath, reviews);
 
     return NextResponse.json({ message: "Review deleted successfully" });
   } catch (error) {
-    console.error("Error deleting review:", error);
+    console.error("Failed to delete review:", error);
     return NextResponse.json(
-      { error: "Failed to delete review" },
+      { message: "Failed to delete review" },
       { status: 500 }
     );
   }

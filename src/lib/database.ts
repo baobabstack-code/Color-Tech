@@ -342,6 +342,14 @@ export class DatabaseService {
   }
 
   // Content Management Methods
+
+  // Posts/Blog
+  static async getPosts() {
+    return await prisma.post.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
   static async getBlogPosts() {
     return await prisma.post.findMany({
       where: { isPublished: true },
@@ -349,6 +357,32 @@ export class DatabaseService {
     });
   }
 
+  static async getPostById(id: number) {
+    return await prisma.post.findUnique({
+      where: { id },
+    });
+  }
+
+  static async createPost(data: any) {
+    return await prisma.post.create({
+      data,
+    });
+  }
+
+  static async updatePost(id: number, data: any) {
+    return await prisma.post.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static async deletePost(id: number) {
+    return await prisma.post.delete({
+      where: { id },
+    });
+  }
+
+  // Gallery
   static async getGalleryItems() {
     return await prisma.galleryItem.findMany({
       where: { isPublished: true },
@@ -356,6 +390,38 @@ export class DatabaseService {
     });
   }
 
+  static async getAllGalleryItems() {
+    return await prisma.galleryItem.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getGalleryItemById(id: number) {
+    return await prisma.galleryItem.findUnique({
+      where: { id },
+    });
+  }
+
+  static async createGalleryItem(data: any) {
+    return await prisma.galleryItem.create({
+      data,
+    });
+  }
+
+  static async updateGalleryItem(id: number, data: any) {
+    return await prisma.galleryItem.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static async deleteGalleryItem(id: number) {
+    return await prisma.galleryItem.delete({
+      where: { id },
+    });
+  }
+
+  // FAQs
   static async getFAQs() {
     return await prisma.fAQ.findMany({
       where: { status: "published" },
@@ -363,10 +429,73 @@ export class DatabaseService {
     });
   }
 
+  static async getAllFAQs() {
+    return await prisma.fAQ.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getFAQById(id: number) {
+    return await prisma.fAQ.findUnique({
+      where: { id },
+    });
+  }
+
+  static async createFAQ(data: any) {
+    return await prisma.fAQ.create({
+      data,
+    });
+  }
+
+  static async updateFAQ(id: number, data: any) {
+    return await prisma.fAQ.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static async deleteFAQ(id: number) {
+    return await prisma.fAQ.delete({
+      where: { id },
+    });
+  }
+
+  // Testimonials
   static async getTestimonials() {
     return await prisma.testimonial.findMany({
       where: { status: "approved" },
       orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getAllTestimonials() {
+    return await prisma.testimonial.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getTestimonialById(id: number) {
+    return await prisma.testimonial.findUnique({
+      where: { id },
+    });
+  }
+
+  static async createTestimonial(data: any) {
+    return await prisma.testimonial.create({
+      data,
+    });
+  }
+
+  static async updateTestimonial(id: number, data: any) {
+    return await prisma.testimonial.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static async deleteTestimonial(id: number) {
+    return await prisma.testimonial.delete({
+      where: { id },
     });
   }
 }

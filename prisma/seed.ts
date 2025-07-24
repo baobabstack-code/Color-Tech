@@ -5,14 +5,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Clear existing data first
-  console.log("🧹 Clearing existing data...");
-  await prisma.booking.deleteMany({});
-  await prisma.post.deleteMany({});
-  await prisma.inventory.deleteMany({});
-  await prisma.service.deleteMany({});
-  console.log("✅ Existing data cleared");
-
   // Create sample services
   const services = [
     {
@@ -71,12 +63,10 @@ async function main() {
     },
   ];
 
-  const createdServices = [];
   for (const service of services) {
-    const createdService = await prisma.service.create({
+    await prisma.service.create({
       data: service,
     });
-    createdServices.push(createdService);
   }
 
   console.log("✅ Services created");
@@ -241,25 +231,25 @@ async function main() {
 
   console.log("✅ Admin user created");
 
-  // Create sample bookings using actual service IDs
+  // Create sample bookings
   const sampleBookings = [
     {
       customerId: 1, // Admin user
-      serviceId: createdServices[0].id, // Panel Beating service
+      serviceId: 1, // Panel Beating service
       scheduledAt: new Date("2024-03-15T10:00:00Z"),
       status: "confirmed" as const,
       notes: "Rust spots on rear quarter panel",
     },
     {
       customerId: 1,
-      serviceId: createdServices[1].id, // Spray Painting service
+      serviceId: 2, // Spray Painting service
       scheduledAt: new Date("2024-03-18T14:30:00Z"),
       status: "pending" as const,
       notes: "Color matching required for front bumper",
     },
     {
       customerId: 1,
-      serviceId: createdServices[2].id, // Rust Treatment service
+      serviceId: 3, // Rust Treatment service
       scheduledAt: new Date("2024-03-12T09:00:00Z"),
       status: "completed" as const,
       notes: "Comprehensive rust treatment completed successfully",
@@ -273,6 +263,66 @@ async function main() {
   }
 
   console.log("✅ Sample bookings created");
+
+  // Create sample FAQs
+  const sampleFAQs = [
+    {
+      question: "How long does a typical panel beating job take?",
+      answer:
+        "The duration depends on the extent of damage. Minor dents can be fixed in a few hours, while major collision repairs may take several days to a week.",
+      category: "Panel Beating",
+      status: "published" as const,
+      views: 0,
+    },
+    {
+      question: "Do you provide color matching for paint jobs?",
+      answer:
+        "Yes, we use advanced color matching technology to ensure perfect color reproduction that matches your vehicle's original paint.",
+      category: "Paint Services",
+      status: "published" as const,
+      views: 0,
+    },
+  ];
+
+  for (const faq of sampleFAQs) {
+    await prisma.fAQ.create({
+      data: faq,
+    });
+  }
+
+  console.log("✅ Sample FAQs created");
+
+  // Create sample testimonials
+  const sampleTestimonials = [
+    {
+      name: "John Smith",
+      role: "Customer",
+      image: null,
+      quote:
+        "Excellent service! My car looks brand new after the panel beating work. Highly recommended!",
+      rating: 5,
+      status: "approved" as const,
+      source: "website",
+    },
+    {
+      name: "Sarah Johnson",
+      role: "Customer",
+      image: null,
+      quote:
+        "Professional team and great attention to detail. The paint job exceeded my expectations.",
+      rating: 5,
+      status: "approved" as const,
+      source: "google",
+    },
+  ];
+
+  for (const testimonial of sampleTestimonials) {
+    await prisma.testimonial.create({
+      data: testimonial,
+    });
+  }
+
+  console.log("✅ Sample testimonials created");
 
   console.log("🎉 Database seeding completed!");
 }
