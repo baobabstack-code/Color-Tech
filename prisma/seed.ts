@@ -5,6 +5,14 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database...");
 
+  // Clear existing data first
+  console.log("🧹 Clearing existing data...");
+  await prisma.booking.deleteMany({});
+  await prisma.post.deleteMany({});
+  await prisma.inventory.deleteMany({});
+  await prisma.service.deleteMany({});
+  console.log("✅ Existing data cleared");
+
   // Create sample services
   const services = [
     {
@@ -63,10 +71,12 @@ async function main() {
     },
   ];
 
+  const createdServices = [];
   for (const service of services) {
-    await prisma.service.create({
+    const createdService = await prisma.service.create({
       data: service,
     });
+    createdServices.push(createdService);
   }
 
   console.log("✅ Services created");
@@ -230,6 +240,39 @@ async function main() {
   });
 
   console.log("✅ Admin user created");
+
+  // Create sample bookings using actual service IDs
+  const sampleBookings = [
+    {
+      customerId: 1, // Admin user
+      serviceId: createdServices[0].id, // Panel Beating service
+      scheduledAt: new Date("2024-03-15T10:00:00Z"),
+      status: "confirmed" as const,
+      notes: "Rust spots on rear quarter panel",
+    },
+    {
+      customerId: 1,
+      serviceId: createdServices[1].id, // Spray Painting service
+      scheduledAt: new Date("2024-03-18T14:30:00Z"),
+      status: "pending" as const,
+      notes: "Color matching required for front bumper",
+    },
+    {
+      customerId: 1,
+      serviceId: createdServices[2].id, // Rust Treatment service
+      scheduledAt: new Date("2024-03-12T09:00:00Z"),
+      status: "completed" as const,
+      notes: "Comprehensive rust treatment completed successfully",
+    },
+  ];
+
+  for (const booking of sampleBookings) {
+    await prisma.booking.create({
+      data: booking,
+    });
+  }
+
+  console.log("✅ Sample bookings created");
 
   console.log("🎉 Database seeding completed!");
 }

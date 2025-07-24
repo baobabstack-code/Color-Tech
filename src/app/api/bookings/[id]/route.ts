@@ -1,25 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const bookingsFilePath = path.join(process.cwd(), "src/data/bookings.json");
-const customersFilePath = path.join(process.cwd(), "src/data/customers.json");
-const servicesFilePath = path.join(process.cwd(), "src/data/services.json");
-
-// Helper function to read JSON file
-const readJsonFile = (filePath: string) => {
-  try {
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(fileContent);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write JSON file
-const writeJsonFile = (filePath: string, data: any) => {
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-};
+import { DatabaseService } from "@/lib/database";
 
 // GET: Fetch a specific booking
 export async function GET(
@@ -28,11 +8,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const bookings = readJsonFile(bookingsFilePath);
-    const customers = readJsonFile(customersFilePath);
-    const services = readJsonFile(servicesFilePath);
+    const booking = await DatabaseService.getBookingById(parseInt(id));
 
-    const booking = bookings.find((b: any) => b.id === id);
     if (!booking) {
       return NextResponse.json(
         { message: "Booking not found" },
@@ -40,33 +17,7 @@ export async function GET(
       );
     }
 
-    // Enrich with customer and service details
-    const customer = customers.find((c: any) => c.id === booking.customerId);
-    const service = services.find(
-      (s: any) =>
-        s.id === parseInt(booking.serviceId) || s.id === booking.serviceId
-    );
-
-    const enrichedBooking = {
-      ...booking,
-      customer: customer
-        ? {
-            id: customer.id,
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone,
-          }
-        : null,
-      service: service
-        ? {
-            id: service.id,
-            name: service.name,
-            price: service.basePrice,
-          }
-        : null,
-    };
-
-    return NextResponse.json(enrichedBooking);
+    return NextResponse.json(booking);
   } catch (error) {
     console.error("Failed to fetch booking:", error);
     return NextResponse.json(
@@ -84,25 +35,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const data = await request.json();
-    const bookings = readJsonFile(bookingsFilePath);
 
-    const bookingIndex = bookings.findIndex((b: any) => b.id === id);
-    if (bookingIndex === -1) {
+    const updatedBooking = await DatabaseService.updateBooking(parseInt(id), {
+      customerId: data.customerId ? parseInt(data.customerId) : undefined,
+      serviceId: data.serviceId ? parseInt(data.serviceId) : undefined,
+      scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : undefined,
+      status: data.status,
+      notes: data.notes,
+    });
+
+    if (!updatedBooking) {
       return NextResponse.json(
         { message: "Booking not found" },
         { status: 404 }
       );
     }
 
-    // Update booking
-    bookings[bookingIndex] = {
-      ...bookings[bookingIndex],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-
-    writeJsonFile(bookingsFilePath, bookings);
-    return NextResponse.json(bookings[bookingIndex]);
+    return NextResponse.json(updatedBooking);
   } catch (error) {
     console.error("Failed to update booking:", error);
     return NextResponse.json(
@@ -119,19 +68,15 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const bookings = readJsonFile(bookingsFilePath);
 
-    const bookingIndex = bookings.findIndex((b: any) => b.id === id);
-    if (bookingIndex === -1) {
+    const deletedBooking = await DatabaseService.deleteBooking(parseInt(id));
+
+    if (!deletedBooking) {
       return NextResponse.json(
         { message: "Booking not found" },
         { status: 404 }
       );
     }
-
-    // Remove booking
-    bookings.splice(bookingIndex, 1);
-    writeJsonFile(bookingsFilePath, bookings);
 
     return NextResponse.json({ message: "Booking deleted successfully" });
   } catch (error) {
