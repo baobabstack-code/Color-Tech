@@ -20,16 +20,15 @@ import {
 interface GalleryItem {
   id: number;
   title: string;
-  content_type: string;
-  body: string; // JSON string
-  image_url: string;
-  is_published: boolean;
+  body: string | null;
+  imageUrl: string;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const GalleryPage = () => {
@@ -43,10 +42,9 @@ const GalleryPage = () => {
 
     async function fetchGalleryItems() {
       try {
-        const res = await fetch(
-          "/api/content?content_type=gallery&is_published=true",
-          { signal: controller.signal }
-        );
+        const res = await fetch("/api/content/gallery?published=true", {
+          signal: controller.signal,
+        });
         if (!res.ok) {
           console.error(
             "Failed to fetch gallery items:",
@@ -57,7 +55,7 @@ const GalleryPage = () => {
           return;
         }
         const data = await res.json();
-        if (isMounted) setAllGalleryItems(data.content || []);
+        if (isMounted) setAllGalleryItems(data || []);
       } catch (e) {
         console.error("Error fetching gallery items:", e);
         if (isMounted) setAllGalleryItems([]);
@@ -72,78 +70,32 @@ const GalleryPage = () => {
     };
   }, []);
 
-  // Add more demo images for a richer gallery
-  const demoImages = [
-    {
-      src: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d",
-      alt: "Classic Car Restoration",
-      category: "Restoration",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca",
-      alt: "Paint Detailing",
-      category: "Paint Work",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1511918984145-48de785d4c4e",
-      alt: "Interior Cleaning",
-      category: "Detailing",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1517841905240-472988babdf9",
-      alt: "Wheel Refurbishment",
-      category: "Wheels",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023",
-      alt: "Engine Bay Cleaning",
-      category: "Engine",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308",
-      alt: "Ceramic Coating",
-      category: "Coating",
-    },
-  ];
+  // Transform gallery items for display
+  const galleryImages = allGalleryItems.map((item) => ({
+    src: item.imageUrl,
+    alt: item.title,
+    category: item.tags ? item.tags.split(",")[0].trim() : "Our Work",
+    description: item.body || "",
+    fallback: "https://via.placeholder.com/600x450?text=ColorTech",
+  }));
 
-  // Merge fetched images and demo images for display
-  const galleryImages = [
-    ...allGalleryItems.map((item) => {
-      let bodyContent = { original_name: item.title };
-      try {
-        bodyContent = JSON.parse(item.body);
-      } catch (e) {}
-      return {
-        src: item.image_url || "https://via.placeholder.com/600x450?text=Image",
-        alt: item.title,
-        category: item.tags ? item.tags.split(",")[0].trim() : "Uncategorized",
-        fallback: "https://via.placeholder.com/600x450?text=Error",
-      };
-    }),
-    ...demoImages.map((img) => ({
-      ...img,
-      fallback: "https://via.placeholder.com/600x450?text=Error",
-    })),
-  ];
-
-  // Update BeforeAfterSlider images (these are still hardcoded for now, can be fetched from API if needed)
+  // Before/After transformations using ColorTech images
   const transformations = [
     {
-      beforeImage:
-        "https://images.unsplash.com/photo-1578844251758-2f71da64c96f",
-      afterImage: "https://images.unsplash.com/photo-1562141961-b5d30fcb1f85",
-      title: "Complete Body Restoration",
-      description: "Major collision damage repair and full body restoration",
+      beforeImage: "/colortech/16.jpg",
+      afterImage: "/colortech/21.jpg",
+      title: "Complete Vehicle Restoration",
+      description:
+        "Major collision damage repair and full vehicle restoration showcasing our expertise",
       duration: "2 weeks",
     },
     {
-      beforeImage:
-        "https://images.unsplash.com/photo-1589758438368-0ad531db3366",
-      afterImage:
-        "https://images.unsplash.com/photo-1603386329225-868f9b1ee6c9",
-      title: "Paint Correction",
-      description: "Professional paint correction and ceramic coating",
-      duration: "3 days",
+      beforeImage: "/colortech/17.jpg",
+      afterImage: "/colortech/25.jpg",
+      title: "Professional Paint & Finish",
+      description:
+        "Surface preparation to final quality finish with attention to detail",
+      duration: "1 week",
     },
   ];
 
@@ -223,19 +175,24 @@ const GalleryPage = () => {
                         {image.category}
                       </p>
                       <p className="text-xs mt-1 opacity-80 group-hover:text-gray-50">
-                        {image.alt}
+                        Click to view larger
                       </p>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 flex-grow">
-                <CardTitle className="text-lg font-semibold leading-tight mb-1 text-white">
+                <CardTitle className="text-lg font-semibold leading-tight mb-2 text-white">
                   {image.alt}
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-300">
+                <CardDescription className="text-sm text-gray-300 mb-2">
                   {image.category}
                 </CardDescription>
+                {(image as any).description && (
+                  <p className="text-xs text-gray-400 line-clamp-2">
+                    {(image as any).description}
+                  </p>
+                )}
               </CardContent>
               <CardFooter className="px-4 pb-4 pt-0 flex justify-end">
                 <Button

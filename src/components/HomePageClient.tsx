@@ -23,6 +23,7 @@ import {
 import { motion } from "framer-motion";
 import { Toaster } from "@/components/ui/sonner";
 import CTA from "@/components/CTA";
+import VideoShowcase from "@/components/VideoShowcase";
 
 // Define interfaces for fetched data
 interface Service {
@@ -57,16 +58,15 @@ interface Testimonial {
 interface GalleryItem {
   id: number;
   title: string;
-  content_type: string;
-  body: string; // JSON string
-  image_url: string;
-  is_published: boolean;
+  body: string | null;
+  imageUrl: string;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface BlogPost {
@@ -187,17 +187,12 @@ export default function HomePageClient({
   const displayedGalleryPreviews = galleryPreviews
     .slice(0, 2)
     .map((g: GalleryItem, index: number) => {
-      let bodyContent = { original_name: g.title };
-      try {
-        bodyContent = typeof g.body === "string" ? JSON.parse(g.body) : g.body;
-      } catch (e) {
-        console.error("Failed to parse gallery item body:", e);
-      }
       return {
-        before: g.image_url || "/images/hero/colorful-car.png",
-        after: g.image_url || "/images/hero/colorful-car.png",
+        before: g.imageUrl || "/images/hero/colorful-car.png",
+        after: g.imageUrl || "/images/hero/colorful-car.png",
         title: g.title,
-        description: (bodyContent as any).original_name || g.title,
+        description:
+          g.body || "Professional automotive repair and restoration work",
       };
     });
 
@@ -537,6 +532,35 @@ export default function HomePageClient({
             </div>
           </div>
         </div>
+
+        {/* Video Showcase Section */}
+        <VideoShowcase
+          videos={[
+            {
+              id: "1",
+              title: "Panel Beating Process",
+              description:
+                "Watch our expert technicians restore damaged panels to perfection",
+              thumbnail: "/colortech/4.jpg",
+              videoUrl: "/colortech/1 .mp4",
+            },
+            {
+              id: "2",
+              title: "Spray Painting Technique",
+              description:
+                "Professional spray painting process for flawless finish",
+              thumbnail: "/colortech/7.jpg",
+              videoUrl: "/colortech/2.mp4",
+            },
+            {
+              id: "3",
+              title: "Complete Restoration",
+              description: "Full vehicle restoration from start to finish",
+              thumbnail: "/colortech/21.jpg",
+              videoUrl: "/colortech/3.mp4",
+            },
+          ]}
+        />
 
         {/* Blog Section */}
         <div className="py-16">

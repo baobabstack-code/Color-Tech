@@ -14,7 +14,10 @@ export interface Service {
 // Get all services from the API
 export const getAllServices = async (): Promise<Service[]> => {
   try {
-    const response = await fetch("/api/services");
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/services`, {
+      cache: "no-store",
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch services");
     }
@@ -30,7 +33,10 @@ export const getServiceById = async (
   id: string | number
 ): Promise<Service | undefined> => {
   try {
-    const response = await fetch(`/api/services/${id}`);
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/services/${id}`, {
+      cache: "no-store",
+    });
     if (!response.ok) {
       return undefined;
     }

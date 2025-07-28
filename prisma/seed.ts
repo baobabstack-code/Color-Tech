@@ -89,7 +89,7 @@ async function main() {
       </ul>
 
       <p>At ColorTech Panel Beaters, we combine traditional craftsmanship with modern techniques to deliver exceptional results for every vehicle we service.</p>`,
-      imageUrl: "/images/blog/panel-beating-guide.jpg",
+      imageUrl: "/colortech/4.jpg",
       isPublished: true,
       tags: "panel beating, auto repair, collision repair",
       author: "ColorTech Team",
@@ -115,7 +115,7 @@ async function main() {
       <p>Our advanced color matching system ensures perfect color reproduction by analyzing your vehicle's existing paint and accounting for factors like age, fading, and environmental exposure.</p>
 
       <p>Trust ColorTech Panel Beaters for all your automotive painting needs. We use only premium paints and proven techniques to deliver showroom-quality results.</p>`,
-      imageUrl: "/images/blog/automotive-paint-guide.jpg",
+      imageUrl: "/colortech/7.jpg",
       isPublished: true,
       tags: "automotive paint, spray painting, color matching",
       author: "ColorTech Team",
@@ -148,7 +148,7 @@ async function main() {
 
       <h2>Professional Rust Treatment</h2>
       <p>When rust does appear, professional treatment is essential. Our rust removal process includes complete elimination of affected areas, proper surface preparation, and application of protective coatings to prevent recurrence.</p>`,
-      imageUrl: "/images/blog/rust-prevention-treatment.jpg",
+      imageUrl: "/colortech/20.jpg",
       isPublished: true,
       tags: "rust prevention, rust treatment, vehicle maintenance",
       author: "ColorTech Team",
@@ -159,8 +159,10 @@ async function main() {
   ];
 
   for (const post of blogPosts) {
-    await prisma.post.create({
-      data: post,
+    await prisma.post.upsert({
+      where: { slug: post.slug },
+      update: post,
+      create: post,
     });
   }
 
@@ -231,35 +233,49 @@ async function main() {
 
   console.log("✅ Admin user created");
 
-  // Create sample bookings
-  const sampleBookings = [
-    {
-      customerId: 1, // Admin user
-      serviceId: 1, // Panel Beating service
-      scheduledAt: new Date("2024-03-15T10:00:00Z"),
-      status: "confirmed" as const,
-      notes: "Rust spots on rear quarter panel",
-    },
-    {
-      customerId: 1,
-      serviceId: 2, // Spray Painting service
-      scheduledAt: new Date("2024-03-18T14:30:00Z"),
-      status: "pending" as const,
-      notes: "Color matching required for front bumper",
-    },
-    {
-      customerId: 1,
-      serviceId: 3, // Rust Treatment service
-      scheduledAt: new Date("2024-03-12T09:00:00Z"),
-      status: "completed" as const,
-      notes: "Comprehensive rust treatment completed successfully",
-    },
-  ];
+  // Get existing services for bookings
+  const existingServices = await prisma.service.findMany();
+  const panelBeatingService = existingServices.find((s) =>
+    s.name.includes("Panel Beating")
+  );
+  const sprayPaintingService = existingServices.find((s) =>
+    s.name.includes("Spray Painting")
+  );
+  const rustTreatmentService = existingServices.find((s) =>
+    s.name.includes("Rust Treatment")
+  );
 
-  for (const booking of sampleBookings) {
-    await prisma.booking.create({
-      data: booking,
-    });
+  // Create sample bookings only if services exist
+  if (panelBeatingService && sprayPaintingService && rustTreatmentService) {
+    const sampleBookings = [
+      {
+        customerId: 1, // Admin user
+        serviceId: panelBeatingService.id,
+        scheduledAt: new Date("2024-03-15T10:00:00Z"),
+        status: "confirmed" as const,
+        notes: "Rust spots on rear quarter panel",
+      },
+      {
+        customerId: 1,
+        serviceId: sprayPaintingService.id,
+        scheduledAt: new Date("2024-03-18T14:30:00Z"),
+        status: "pending" as const,
+        notes: "Color matching required for front bumper",
+      },
+      {
+        customerId: 1,
+        serviceId: rustTreatmentService.id,
+        scheduledAt: new Date("2024-03-12T09:00:00Z"),
+        status: "completed" as const,
+        notes: "Comprehensive rust treatment completed successfully",
+      },
+    ];
+
+    for (const booking of sampleBookings) {
+      await prisma.booking.create({
+        data: booking,
+      });
+    }
   }
 
   console.log("✅ Sample bookings created");
@@ -323,6 +339,198 @@ async function main() {
   }
 
   console.log("✅ Sample testimonials created");
+
+  // Create gallery items with actual ColorTech images
+  const galleryItems = [
+    {
+      title: "Professional Panel Beating Work",
+      body: "Expert panel beating and dent repair showcasing our precision craftsmanship and attention to detail.",
+      imageUrl: "/colortech/4.jpg",
+      isPublished: true,
+      tags: "panel beating, dent repair, craftsmanship",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Quality Paint Finish",
+      body: "Premium automotive paint application with perfect color matching and smooth finish.",
+      imageUrl: "/colortech/7.jpg",
+      isPublished: true,
+      tags: "paint job, automotive painting, quality finish",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Before and After Restoration",
+      body: "Complete vehicle restoration showcasing our comprehensive repair capabilities.",
+      imageUrl: "/colortech/9.jpg",
+      isPublished: true,
+      tags: "restoration, before after, vehicle repair",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Precision Bodywork",
+      body: "Detailed bodywork and panel alignment demonstrating our technical expertise.",
+      imageUrl: "/colortech/10.jpg",
+      isPublished: true,
+      tags: "bodywork, panel alignment, precision work",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Custom Paint Solutions",
+      body: "Custom automotive paint solutions with advanced color matching technology.",
+      imageUrl: "/colortech/13.jpg",
+      isPublished: true,
+      tags: "custom paint, color matching, automotive solutions",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Professional Workshop",
+      body: "State-of-the-art workshop facilities equipped with modern tools and equipment.",
+      imageUrl: "/colortech/14.jpg",
+      isPublished: true,
+      tags: "workshop, facilities, professional equipment",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Collision Repair Excellence",
+      body: "Expert collision repair services restoring vehicles to factory specifications.",
+      imageUrl: "/colortech/16.jpg",
+      isPublished: true,
+      tags: "collision repair, restoration, factory specs",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Detailed Surface Preparation",
+      body: "Meticulous surface preparation ensuring optimal paint adhesion and finish quality.",
+      imageUrl: "/colortech/17.jpg",
+      isPublished: true,
+      tags: "surface preparation, paint adhesion, quality control",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Advanced Repair Techniques",
+      body: "Modern repair techniques combined with traditional craftsmanship for superior results.",
+      imageUrl: "/colortech/18.jpg",
+      isPublished: true,
+      tags: "advanced techniques, modern repair, craftsmanship",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Quality Assurance Process",
+      body: "Comprehensive quality assurance ensuring every vehicle meets our high standards.",
+      imageUrl: "/colortech/19.jpg",
+      isPublished: true,
+      tags: "quality assurance, high standards, inspection",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Rust Treatment Specialist",
+      body: "Specialized rust treatment and prevention services to protect your vehicle investment.",
+      imageUrl: "/colortech/20.jpg",
+      isPublished: true,
+      tags: "rust treatment, prevention, vehicle protection",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Complete Vehicle Makeover",
+      body: "Full vehicle transformation showcasing our comprehensive restoration capabilities.",
+      imageUrl: "/colortech/21.jpg",
+      isPublished: true,
+      tags: "vehicle makeover, transformation, restoration",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Expert Color Matching",
+      body: "Precision color matching technology ensuring seamless paint repairs and touch-ups.",
+      imageUrl: "/colortech/22.jpg",
+      isPublished: true,
+      tags: "color matching, precision, paint repair",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Professional Spray Booth",
+      body: "Climate-controlled spray booth environment for perfect paint application every time.",
+      imageUrl: "/colortech/24.jpg",
+      isPublished: true,
+      tags: "spray booth, climate control, paint application",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Attention to Detail",
+      body: "Every project receives meticulous attention to detail ensuring exceptional results.",
+      imageUrl: "/colortech/25.jpg",
+      isPublished: true,
+      tags: "attention to detail, meticulous work, exceptional results",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Modern Equipment Usage",
+      body: "Latest automotive repair equipment ensuring efficient and precise work completion.",
+      imageUrl: "/colortech/26.jpg",
+      isPublished: true,
+      tags: "modern equipment, efficient work, precision",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Team Collaboration",
+      body: "Skilled technicians working together to deliver outstanding automotive repair services.",
+      imageUrl: "/colortech/27.jpg",
+      isPublished: true,
+      tags: "team collaboration, skilled technicians, outstanding service",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+    {
+      title: "Final Quality Check",
+      body: "Thorough final inspection ensuring every vehicle meets our stringent quality standards.",
+      imageUrl: "/colortech/28.jpg",
+      isPublished: true,
+      tags: "quality check, final inspection, quality standards",
+      author: "ColorTech Team",
+      createdBy: 1,
+      updatedBy: 1,
+    },
+  ];
+
+  for (const item of galleryItems) {
+    await prisma.galleryItem.create({
+      data: item,
+    });
+  }
+
+  console.log("✅ Gallery items created with ColorTech images");
 
   console.log("🎉 Database seeding completed!");
 }

@@ -37,16 +37,9 @@ async function getGalleryPreviews() {
   const galleryItems = await contentService.getGalleryItems();
   return galleryItems
     .map((item: GalleryItem) => {
-      let parsedBody;
-      try {
-        parsedBody =
-          typeof item.body === "string" ? JSON.parse(item.body) : item.body;
-      } catch (error) {
-        parsedBody = { original_name: item.title };
-      }
       return {
         ...item,
-        body: parsedBody || { original_name: item.title },
+        body: typeof item.body === "string" ? item.body : item.title,
       };
     })
     .slice(0, 2);
