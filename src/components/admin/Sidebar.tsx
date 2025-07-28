@@ -8,7 +8,6 @@ import {
   FileText,
   Calendar,
   FileEdit,
-  Users,
   Star,
   Wrench,
   Settings,
@@ -68,11 +67,6 @@ const navItems: NavItem[] = [
         icon: <FileText className="h-4 w-4" />,
       },
     ],
-  },
-  {
-    name: "Customers",
-    href: "/admin/customers",
-    icon: <Users className="h-5 w-5" />,
   },
   {
     name: "Services",

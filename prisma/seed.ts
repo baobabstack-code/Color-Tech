@@ -71,6 +71,19 @@ async function main() {
 
   console.log("✅ Services created");
 
+  // Create a sample admin user (if not exists)
+  const adminUser = await prisma.user.upsert({
+    where: { email: "admin@colortech.co.zw" },
+    update: {},
+    create: {
+      name: "Admin User",
+      email: "admin@colortech.co.zw",
+      role: "admin",
+    },
+  });
+
+  console.log("✅ Admin user created");
+
   // Create sample blog posts
   const blogPosts = [
     {
@@ -94,8 +107,8 @@ async function main() {
       tags: "panel beating, auto repair, collision repair",
       author: "ColorTech Team",
       slug: "complete-guide-to-panel-beating",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Choosing the Right Paint for Your Vehicle",
@@ -120,8 +133,8 @@ async function main() {
       tags: "automotive paint, spray painting, color matching",
       author: "ColorTech Team",
       slug: "choosing-right-paint-for-vehicle",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Preventing and Treating Vehicle Rust",
@@ -153,8 +166,8 @@ async function main() {
       tags: "rust prevention, rust treatment, vehicle maintenance",
       author: "ColorTech Team",
       slug: "preventing-treating-vehicle-rust",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
   ];
 
@@ -167,19 +180,6 @@ async function main() {
   }
 
   console.log("✅ Blog posts created");
-
-  // Create a sample admin user (if not exists)
-  await prisma.user.upsert({
-    where: { email: "admin@colortech.co.zw" },
-    update: {},
-    create: {
-      name: "Admin User",
-      email: "admin@colortech.co.zw",
-      role: "admin",
-    },
-  });
-
-  console.log("✅ Admin user created");
 
   // Get existing services for bookings
   const existingServices = await prisma.service.findMany();
@@ -197,21 +197,21 @@ async function main() {
   if (panelBeatingService && sprayPaintingService && rustTreatmentService) {
     const sampleBookings = [
       {
-        customerId: 1, // Admin user
+        customerId: adminUser.id,
         serviceId: panelBeatingService.id,
         scheduledAt: new Date("2024-03-15T10:00:00Z"),
         status: "confirmed" as const,
         notes: "Rust spots on rear quarter panel",
       },
       {
-        customerId: 1,
+        customerId: adminUser.id,
         serviceId: sprayPaintingService.id,
         scheduledAt: new Date("2024-03-18T14:30:00Z"),
         status: "pending" as const,
         notes: "Color matching required for front bumper",
       },
       {
-        customerId: 1,
+        customerId: adminUser.id,
         serviceId: rustTreatmentService.id,
         scheduledAt: new Date("2024-03-12T09:00:00Z"),
         status: "completed" as const,
@@ -297,8 +297,8 @@ async function main() {
       isPublished: true,
       tags: "panel beating, bodywork, craftsmanship",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Premium Paint & Color Matching",
@@ -307,8 +307,8 @@ async function main() {
       isPublished: true,
       tags: "paint job, color matching, quality finish",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Complete Vehicle Restoration",
@@ -317,8 +317,8 @@ async function main() {
       isPublished: true,
       tags: "restoration, transformation, vehicle repair",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Professional Workshop Facilities",
@@ -327,8 +327,8 @@ async function main() {
       isPublished: true,
       tags: "workshop, facilities, modern equipment",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Collision Repair Excellence",
@@ -337,8 +337,8 @@ async function main() {
       isPublished: true,
       tags: "collision repair, factory specs, restoration",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Surface Preparation & Quality Control",
@@ -347,8 +347,8 @@ async function main() {
       isPublished: true,
       tags: "surface preparation, quality control, precision",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Advanced Repair Techniques",
@@ -357,8 +357,8 @@ async function main() {
       isPublished: true,
       tags: "advanced techniques, modern repair, craftsmanship",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Rust Treatment & Prevention",
@@ -367,8 +367,8 @@ async function main() {
       isPublished: true,
       tags: "rust treatment, prevention, vehicle protection",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Professional Spray Booth",
@@ -377,8 +377,8 @@ async function main() {
       isPublished: true,
       tags: "spray booth, climate control, paint application",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
     {
       title: "Skilled Team Collaboration",
@@ -387,8 +387,8 @@ async function main() {
       isPublished: true,
       tags: "team collaboration, skilled technicians, outstanding service",
       author: "ColorTech Team",
-      createdBy: 1,
-      updatedBy: 1,
+      createdBy: adminUser.id,
+      updatedBy: adminUser.id,
     },
   ];
 

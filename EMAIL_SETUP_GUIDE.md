@@ -2,14 +2,14 @@
 
 ## Overview
 
-Your ColorTech Panel Beaters website now automatically sends email notifications when customers submit contact forms.
+Your ColorTech Panel Beaters website now automatically sends email notifications when visitors submit contact forms.
 
 > **Status**: Email notifications are fully implemented and ready to use once SMTP settings are configured.
 
 ## Features
 
 - ✅ **Admin Notifications**: Admins receive beautifully formatted emails for each form submission
-- ✅ **Customer Confirmations**: Customers get automatic confirmation emails
+- ✅ **Visitor Confirmations**: Form submitters get automatic confirmation emails
 - ✅ **Professional Design**: HTML emails with your branding
 - ✅ **Contact Details**: Easy reply buttons and contact information
 
@@ -49,17 +49,17 @@ const ADMIN_EMAILS = [
 
 ### 1. Admin Notification Email
 
-- **Subject**: "New Contact Form Submission - [Customer Name]"
-- **Content**: Customer details, service requested, full message, reply button
+- **Subject**: "New Contact Form Submission - [Visitor Name]"
+- **Content**: Visitor details, service requested, full message, reply button
 
-### 2. Customer Confirmation Email
+### 2. Visitor Confirmation Email
 
 - **Subject**: "Thank you for contacting ColorTech Panel Beaters"
 - **Content**: Personalized thank you, next steps, contact information
 
 ## Testing
 
-Submit a test form on your contact page and check both admin and customer emails.
+Submit a test form on your contact page and check both admin and visitor confirmation emails.
 
 ## Troubleshooting
 

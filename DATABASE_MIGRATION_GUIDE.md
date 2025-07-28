@@ -99,17 +99,17 @@ The migration will transfer all your data from JSON files to database tables:
 
 ### Data Migration Mapping
 
-| JSON File               | Database Table     | Notes                                       |
-| ----------------------- | ------------------ | ------------------------------------------- |
-| `customers.json`        | `users`            | Customers become users with role='customer' |
-| `services.json`         | `services`         | Direct mapping with enhanced fields         |
-| `bookings.json`         | `bookings`         | With proper foreign key relationships       |
-| `reviews.json`          | `reviews`          | Linked to users and services                |
-| `blog-posts.json`       | `posts`            | Blog content with author relationships      |
-| `testimonials.json`     | `testimonials`     | Customer testimonials                       |
-| `faqs.json`             | `faqs`             | FAQ content                                 |
-| `form-submissions.json` | `form_submissions` | Contact form data                           |
-| `gallery.json`          | `gallery_items`    | Gallery images and content                  |
+| JSON File | Database Table | Notes |
+| --------- | -------------- | ----- |
+
+| `services.json` | `services` | Direct mapping with enhanced fields |
+| `bookings.json` | `bookings` | With proper foreign key relationships |
+| `reviews.json` | `reviews` | Linked to users and services |
+| `blog-posts.json` | `posts` | Blog content with author relationships |
+| `testimonials.json` | `testimonials` | Customer testimonials |
+| `faqs.json` | `faqs` | FAQ content |
+| `form-submissions.json` | `form_submissions` | Contact form data |
+| `gallery.json` | `gallery_items` | Gallery images and content |
 
 ### New Database Features
 
@@ -126,8 +126,7 @@ All your existing API endpoints now use the database instead of JSON files:
 
 - `/api/reviews` - Now queries the database with proper joins
 - `/api/services` - Enhanced with relationship data
-- `/api/bookings` - Includes customer and service details
-- `/api/customers` - Now part of the users table
+- `/api/bookings` - Includes service details
 - `/api/dashboard` - Real-time statistics from database
 
 ## 🛠️ Database Management Commands
@@ -198,7 +197,7 @@ After migration, you'll experience:
 
 - **Faster Queries**: Database indexes speed up searches
 - **Better Reliability**: ACID transactions ensure data consistency
-- **Scalability**: Handle thousands of customers and bookings
+- **Scalability**: Handle thousands of bookings
 - **Real-time Stats**: Dashboard updates reflect live data
 - **Concurrent Users**: Multiple admins can work simultaneously
 

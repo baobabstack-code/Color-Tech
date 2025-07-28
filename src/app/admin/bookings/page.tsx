@@ -41,15 +41,12 @@ import {
   CreateBookingData,
   UpdateBookingData,
 } from "@/services/bookingService";
-import { getAllUsers } from "@/services/userService";
 import { getAllServices } from "@/services/serviceService";
-import type { User } from "@/services/userService";
 import type { Service } from "@/services/serviceService";
 
 export default function BookingManagement() {
   const { toast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,13 +58,11 @@ export default function BookingManagement() {
     setIsLoading(true);
     setError(null);
     try {
-      const [bookingsData, usersData, servicesData] = await Promise.all([
+      const [bookingsData, servicesData] = await Promise.all([
         getAllBookings(),
-        getAllUsers(),
         getAllServices(),
       ]);
       setBookings(bookingsData);
-      setUsers(usersData);
       setServices(servicesData);
     } catch (err) {
       setError("Failed to load data. Please try again.");
@@ -276,7 +271,6 @@ export default function BookingManagement() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         booking={editingBooking}
-        users={users}
         services={services}
       />
     </div>
@@ -288,7 +282,6 @@ interface BookingFormProps {
   onClose: () => void;
   onSave: (data: CreateBookingData | UpdateBookingData) => void;
   booking: Booking | null;
-  users: User[];
   services: Service[];
 }
 
@@ -297,7 +290,6 @@ function BookingForm({
   onClose,
   onSave,
   booking,
-  users,
   services,
 }: BookingFormProps) {
   const [formData, setFormData] = useState<any>({});
@@ -305,7 +297,7 @@ function BookingForm({
   useEffect(() => {
     if (booking) {
       setFormData({
-        customerId: booking.customerId,
+        customerName: booking.customer?.name || "",
         serviceId: booking.serviceId,
         scheduledAt: new Date(booking.scheduledAt)
           .toISOString()
@@ -315,7 +307,7 @@ function BookingForm({
       });
     } else {
       setFormData({
-        customerId: "",
+        customerName: "",
         serviceId: "",
         scheduledAt: new Date().toISOString().substring(0, 16),
         status: "pending",
@@ -351,30 +343,18 @@ function BookingForm({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="customerId" className="text-slate-200">
-              Customer
+            <Label htmlFor="customerName" className="text-slate-200">
+              Customer Name
             </Label>
-            <Select
-              name="customerId"
-              value={formData.customerId}
-              onValueChange={(value) => handleSelectChange("customerId", value)}
+            <Input
+              id="customerName"
+              name="customerName"
+              value={formData.customerName}
+              onChange={handleChange}
               required
-            >
-              <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
-                <SelectValue placeholder="Select a customer" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-600">
-                {users.map((user) => (
-                  <SelectItem
-                    key={user.id}
-                    value={user.id}
-                    className="text-white hover:bg-slate-700"
-                  >
-                    {user.fullName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+              placeholder="Enter customer name"
+            />
           </div>
           <div>
             <Label htmlFor="serviceId" className="text-slate-200">

@@ -1,20 +1,24 @@
 # Color-Tech Auto Detailing
 
 ## Overview
+
 This is a web application for Color-Tech Auto Detailing, featuring a Next.js frontend and a Strapi backend for content management.
 
 ## Admin Dashboard
+
 This application uses Strapi as the exclusive admin dashboard for content management. The custom Next.js admin routes have been disabled.
 
 ### Accessing the Admin Dashboard
 
 1. Start the Strapi backend:
+
    ```
    cd strapi-backend
    npm run develop
    ```
 
 2. Access the Strapi admin panel at:
+
    ```
    http://localhost:1337/admin
    ```
@@ -25,7 +29,7 @@ This application uses Strapi as the exclusive admin dashboard for content manage
 
 Strapi provides a comprehensive admin interface for managing all aspects of your application:
 
-- **Content Types**: Manage services, bookings, customers, blog posts, gallery items, testimonials, FAQs, etc.
+- **Content Types**: Manage services, bookings, blog posts, gallery items, testimonials, FAQs, etc.
 - **Media Library**: Upload and manage images and other media files
 - **User Management**: Create and manage user accounts and permissions
 - **API Configuration**: Configure API endpoints and permissions
@@ -39,6 +43,7 @@ npm run setup
 ```
 
 This will:
+
 1. Create .env files from examples if they don't exist
 2. Provide instructions for next steps
 
@@ -51,12 +56,14 @@ npm run setup:install
 ## Starting the Application
 
 1. Start the Strapi backend:
+
    ```
    cd strapi-backend
    npm run develop
    ```
 
 2. Start the Next.js frontend:
+
    ```
    npm run dev
    ```
@@ -85,6 +92,7 @@ npm run update
 ```
 
 This script will:
+
 1. Back up your current package.json
 2. Run the Strapi upgrade command
 3. Ensure all Strapi dependencies are updated to the same version
@@ -104,12 +112,14 @@ This script will automatically update all Strapi dependencies to the specified v
 ### Option 3: Manual Update
 
 1. Run the upgrade command:
+
    ```
    cd strapi-backend
    npm run upgrade
    ```
 
 2. Or run a dry-run first to see what changes will be made:
+
    ```
    cd strapi-backend
    npm run upgrade:dry
@@ -136,16 +146,21 @@ This project includes Docker configuration for containerized deployment:
 ### Building and Running with Docker
 
 1. Set up the Docker environment:
+
    ```bash
    npm run docker:setup
    ```
+
    This script creates a `.env` file with secure random values for all required environment variables.
 
 2. Build and start the containers:
+
    ```bash
    npm run docker:up
    ```
+
    or manually with:
+
    ```bash
    docker-compose up -d --build
    ```

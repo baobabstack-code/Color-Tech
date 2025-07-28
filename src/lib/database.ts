@@ -263,7 +263,7 @@ export class DatabaseService {
       completedBookings,
       recentBookings,
     ] = await Promise.all([
-      prisma.user.count({ where: { role: "customer" } }),
+      0, // No longer tracking customers
       prisma.service.count(),
       prisma.booking.count(),
       prisma.review.count(),
@@ -290,7 +290,7 @@ export class DatabaseService {
       stats: {
         totalRevenue,
         totalBookings,
-        totalCustomers: totalUsers,
+        totalUsers,
       },
       recentBookings: recentBookings.map((booking) => ({
         ...booking,
@@ -307,38 +307,6 @@ export class DatabaseService {
         },
       })),
     };
-  }
-
-  // Customers with stats
-  static async getCustomersWithStats() {
-    const customers = await prisma.user.findMany({
-      where: { role: "customer" },
-      include: {
-        bookings: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-        _count: {
-          select: {
-            bookings: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return customers.map((customer) => ({
-      id: customer.id.toString(),
-      name: customer.name,
-      email: customer.email,
-      phone: customer.phone,
-      createdAt: customer.createdAt.toISOString(),
-      updatedAt: customer.updatedAt.toISOString(),
-      bookingCount: customer._count.bookings,
-      lastActivity:
-        customer.bookings[0]?.createdAt.toISOString() ||
-        customer.createdAt.toISOString(),
-    }));
   }
 
   // Content Management Methods

@@ -17,11 +17,10 @@ model User {
   phone     String?   @db.VarChar(20)
   password  String?   @db.VarChar(255)
   address   String?   @db.VarChar(500)
-  role      UserRole  @default(customer)
+  role      UserRole  @default(admin)
   bookings  Booking[]
   reviews   Review[]
   posts     Post[]
-  vehicles  Vehicle[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -158,25 +157,10 @@ model GalleryItem {
 
 
 
-model Vehicle {
-  id           Int      @id @default(autoincrement())
-  customerId   Int
-  make         String   @db.VarChar(50)
-  model        String   @db.VarChar(50)
-  year         Int
-  color        String?  @db.VarChar(50)
-  licensePlate String?  @db.VarChar(20)
-  vin          String?  @db.VarChar(50)
-  customer     User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
-  @@map("vehicles")
-}
 
 // Enums
 enum UserRole {
-  customer
   admin
   staff
 }
