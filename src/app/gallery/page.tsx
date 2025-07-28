@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react"; // useEffect for client-side data fetching
-import { PhoneCall } from "lucide-react";
-import { Image as ImageIcon, ZoomIn } from "lucide-react";
+import { PhoneCall, ZoomIn } from "lucide-react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -220,6 +219,7 @@ const GalleryPage = () => {
               className="w-full h-auto rounded-lg"
             />
             <button
+              type="button"
               className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors duration-200"
               onClick={(e) => {
                 e.stopPropagation();
