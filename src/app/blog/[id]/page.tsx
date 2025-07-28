@@ -8,16 +8,16 @@ import { Button } from "@/components/ui/button";
 interface BlogPost {
   id: number;
   title: string;
-  content_type: string;
   body: string;
-  image_url: string | null;
-  is_published: boolean;
+  imageUrl: string | null;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  slug: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PageProps {
@@ -39,14 +39,14 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
       if (!paramId) return;
 
       try {
-        const res = await fetch(`/api/content/${paramId}`);
+        const res = await fetch(`/api/content/blog/${paramId}`);
         if (!res.ok) {
           setError("Blog post not found");
           setBlogPost(null);
           return;
         }
         const data = await res.json();
-        setBlogPost(data.content);
+        setBlogPost(data);
       } catch (e) {
         setError("Failed to fetch blog post");
         setBlogPost(null);
@@ -90,8 +90,7 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
     ? blogPost.tags.split(",")[0].trim()
     : "Uncategorized";
   const imageUrl =
-    blogPost.image_url ||
-    "https://via.placeholder.com/1200x600?text=Blog+Image";
+    blogPost.imageUrl || "https://via.placeholder.com/1200x600?text=Blog+Image";
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
@@ -126,7 +125,7 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
               </span>
               <span className="flex items-center gap-2">
                 <Calendar size={16} />{" "}
-                {new Date(blogPost.created_at).toLocaleDateString()}
+                {new Date(blogPost.createdAt).toLocaleDateString()}
               </span>
               <span className="flex items-center gap-2">
                 <Clock size={16} /> {readTime} read

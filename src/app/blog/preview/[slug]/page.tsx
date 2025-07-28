@@ -16,11 +16,14 @@ export default function BlogPreview() {
       }
 
       try {
-        // Temporary preview endpoint - replace with actual preview API
-        const posts = await ContentService.getPosts();
-        const previewPost =
-          posts.find((p: any) => p.slug === params.slug) || posts[0];
-        setPost(previewPost);
+        // Fetch posts from the correct API endpoint
+        const response = await fetch("/api/content/blog");
+        if (response.ok) {
+          const posts = await response.json();
+          const previewPost =
+            posts.find((p: any) => p.slug === params.slug) || posts[0];
+          setPost(previewPost);
+        }
       } catch (error) {
         console.error("Preview error:", error);
       } finally {
@@ -62,7 +65,7 @@ export default function BlogPreview() {
           </div>
         )}
         <h1>{post.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div dangerouslySetInnerHTML={{ __html: post.body }} />
       </article>
 
       <div className="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400">

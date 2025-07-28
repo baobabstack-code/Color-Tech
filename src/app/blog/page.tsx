@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button";
 interface BlogPost {
   id: number;
   title: string;
-  content_type: string;
   body: string;
-  image_url: string | null;
-  is_published: boolean;
+  imageUrl: string | null;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
+  author: string;
+  slug: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const BlogPage = () => {
@@ -30,16 +30,20 @@ const BlogPage = () => {
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
-        const res = await fetch(
-          "/api/content?content_type=blog&is_published=true"
-        );
+        const res = await fetch("/api/content/blog?published=true");
         if (!res.ok) {
+          console.error(
+            "Failed to fetch blog posts:",
+            res.status,
+            res.statusText
+          );
           setAllBlogPosts([]);
           return;
         }
         const data = await res.json();
-        setAllBlogPosts(data.content || []);
+        setAllBlogPosts(data || []);
       } catch (e) {
+        console.error("Error fetching blog posts:", e);
         setAllBlogPosts([]);
       } finally {
         setIsLoading(false);
@@ -56,10 +60,10 @@ const BlogPage = () => {
       post.body.substring(0, 150) + (post.body.length > 150 ? "..." : ""),
     category: post.tags ? post.tags.split(",")[0].trim() : "Uncategorized",
     author: post.author || "Admin",
-    date: new Date(post.created_at).toISOString().split("T")[0],
+    date: new Date(post.createdAt).toISOString().split("T")[0],
     readTime: `${Math.ceil(post.body.length / 200)} min`,
     image:
-      post.image_url || "https://via.placeholder.com/800x400?text=Blog+Image",
+      post.imageUrl || "https://via.placeholder.com/800x400?text=Blog+Image",
     featured: post.tags?.includes("featured") || false,
   }));
 
@@ -173,61 +177,80 @@ const BlogPage = () => {
 
       {/* Blog Posts Grid */}
       <div className="container mx-auto">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPosts
-            .filter((post) => !post.featured)
-            .map((post) => (
-              <Link key={post.id} href={`/blog/${post.id}`} className="block">
-                <article className="bg-white/90 dark:bg-slate-900/90 rounded-2xl overflow-hidden shadow-xl border border-white/30 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group">
-                  <div className="relative h-48">
-                    <Image
-                      src={post.image}
-                      alt={post.title}
-                      width={800}
-                      height={400}
-                      className="w-full h-full object-cover rounded-t-2xl"
-                    />
-                    <span className="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm">
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-primary">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-200 mb-4 group-hover:text-primary/90">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-2">
-                          <User
-                            size={16}
-                            className="text-gray-500 dark:text-gray-400"
-                          />{" "}
-                          {post.author}
-                        </span>
-                        <span className="flex items-center gap-2">
-                          <Clock
-                            size={16}
-                            className="text-gray-500 dark:text-gray-400"
-                          />{" "}
-                          {post.readTime}
-                        </span>
-                      </div>
-                      <span className="text-primary font-medium flex items-center gap-1 hover:gap-2 transition-all duration-200 group-hover:text-primary">
-                        Read More{" "}
-                        <ChevronRight
-                          size={16}
-                          className="text-primary dark:text-white group-hover:text-primary"
-                        />
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary border-solid"></div>
+            <span className="sr-only">Loading blog posts...</span>
+          </div>
+        ) : filteredPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-2xl font-semibold text-gray-600 dark:text-gray-300 mb-2">
+              No blog posts found
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              {searchQuery || selectedCategory
+                ? "Try adjusting your search or filter criteria."
+                : "Check back soon for new articles and updates."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPosts
+              .filter((post) => !post.featured)
+              .map((post) => (
+                <Link key={post.id} href={`/blog/${post.id}`} className="block">
+                  <article className="bg-white/90 dark:bg-slate-900/90 rounded-2xl overflow-hidden shadow-xl border border-white/30 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group">
+                    <div className="relative h-48">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        width={800}
+                        height={400}
+                        className="w-full h-full object-cover rounded-t-2xl"
+                      />
+                      <span className="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm">
+                        {post.category}
                       </span>
                     </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-        </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-primary">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-200 mb-4 group-hover:text-primary/90">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-2">
+                            <User
+                              size={16}
+                              className="text-gray-500 dark:text-gray-400"
+                            />{" "}
+                            {post.author}
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <Clock
+                              size={16}
+                              className="text-gray-500 dark:text-gray-400"
+                            />{" "}
+                            {post.readTime}
+                          </span>
+                        </div>
+                        <span className="text-primary font-medium flex items-center gap-1 hover:gap-2 transition-all duration-200 group-hover:text-primary">
+                          Read More{" "}
+                          <ChevronRight
+                            size={16}
+                            className="text-primary dark:text-white group-hover:text-primary"
+                          />
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Newsletter Section */}
