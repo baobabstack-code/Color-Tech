@@ -9,7 +9,6 @@ import {
   Calendar,
   FileEdit,
   Users,
-  Package,
   Star,
   Wrench,
   Settings,
@@ -84,11 +83,6 @@ const navItems: NavItem[] = [
     name: "Reviews",
     href: "/admin/reviews",
     icon: <Star className="h-5 w-5" />,
-  },
-  {
-    name: "Inventory",
-    href: "/admin/inventory",
-    icon: <Package className="h-5 w-5" />,
   },
   {
     name: "Settings",

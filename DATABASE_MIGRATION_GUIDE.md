@@ -45,6 +45,7 @@ NODE_ENV="development"
 ## 🚀 Step 2: Run the Migration
 
 We've created an automated migration script that will:
+
 - Install dependencies
 - Generate Prisma client
 - Create database tables
@@ -77,6 +78,7 @@ npx prisma db seed
 After migration, verify everything works:
 
 1. **Start the development server:**
+
    ```bash
    npm run dev
    ```
@@ -97,18 +99,17 @@ The migration will transfer all your data from JSON files to database tables:
 
 ### Data Migration Mapping
 
-| JSON File | Database Table | Notes |
-|-----------|----------------|-------|
-| `customers.json` | `users` | Customers become users with role='customer' |
-| `services.json` | `services` | Direct mapping with enhanced fields |
-| `bookings.json` | `bookings` | With proper foreign key relationships |
-| `reviews.json` | `reviews` | Linked to users and services |
-| `blog-posts.json` | `posts` | Blog content with author relationships |
-| `testimonials.json` | `testimonials` | Customer testimonials |
-| `faqs.json` | `faqs` | FAQ content |
-| `form-submissions.json` | `form_submissions` | Contact form data |
-| `gallery.json` | `gallery_items` | Gallery images and content |
-| `inventory.json` | `inventory` | Inventory management |
+| JSON File               | Database Table     | Notes                                       |
+| ----------------------- | ------------------ | ------------------------------------------- |
+| `customers.json`        | `users`            | Customers become users with role='customer' |
+| `services.json`         | `services`         | Direct mapping with enhanced fields         |
+| `bookings.json`         | `bookings`         | With proper foreign key relationships       |
+| `reviews.json`          | `reviews`          | Linked to users and services                |
+| `blog-posts.json`       | `posts`            | Blog content with author relationships      |
+| `testimonials.json`     | `testimonials`     | Customer testimonials                       |
+| `faqs.json`             | `faqs`             | FAQ content                                 |
+| `form-submissions.json` | `form_submissions` | Contact form data                           |
+| `gallery.json`          | `gallery_items`    | Gallery images and content                  |
 
 ### New Database Features
 
@@ -150,27 +151,35 @@ npm run db:seed
 ### Common Issues
 
 **1. Connection Error**
+
 ```
 Error: Can't reach database server
 ```
+
 **Solution**: Ensure PostgreSQL is running and DATABASE_URL is correct.
 
 **2. Permission Denied**
+
 ```
 Error: permission denied for database
 ```
+
 **Solution**: Grant proper permissions to your database user.
 
 **3. Migration Fails**
+
 ```
 Error: Table already exists
 ```
+
 **Solution**: Reset the database: `npm run db:reset`
 
 **4. Seed Data Issues**
+
 ```
 Error: Foreign key constraint fails
 ```
+
 **Solution**: Check that your JSON data has valid relationships.
 
 ### Getting Help
@@ -221,6 +230,7 @@ npx prisma db seed
 After successful migration:
 
 1. **Remove JSON files** (optional, keep as backup initially):
+
    ```bash
    # Move to backup folder
    mkdir data_backup

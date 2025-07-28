@@ -168,58 +168,6 @@ async function main() {
 
   console.log("✅ Blog posts created");
 
-  // Create sample inventory items
-  const inventoryItems = [
-    {
-      name: "Premium Car Paint - Red",
-      description: "High-quality automotive paint in classic red",
-      category: "Paint",
-      quantity: 50,
-      minStock: 20,
-      price: 89.99,
-      supplier: "AutoPaint Pro",
-      status: "active" as const,
-    },
-    {
-      name: "Body Filler - Standard",
-      description: "Professional grade body filler for panel repairs",
-      category: "Body Materials",
-      quantity: 15,
-      minStock: 25,
-      price: 45.5,
-      supplier: "Auto Body Supply Co",
-      status: "active" as const,
-    },
-    {
-      name: "Clear Coat - Premium",
-      description: "High-gloss clear coat for professional finishes",
-      category: "Paint",
-      quantity: 0,
-      minStock: 10,
-      price: 129.99,
-      supplier: "AutoPaint Pro",
-      status: "active" as const,
-    },
-    {
-      name: "Sandpaper Assortment",
-      description: "Various grits for surface preparation",
-      category: "Tools & Supplies",
-      quantity: 100,
-      minStock: 30,
-      price: 25.0,
-      supplier: "Tool Supply Inc",
-      status: "active" as const,
-    },
-  ];
-
-  for (const item of inventoryItems) {
-    await prisma.inventory.create({
-      data: item,
-    });
-  }
-
-  console.log("✅ Inventory items created");
-
   // Create a sample admin user (if not exists)
   await prisma.user.upsert({
     where: { email: "admin@colortech.co.zw" },
