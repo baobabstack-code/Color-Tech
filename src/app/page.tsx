@@ -12,18 +12,6 @@ import {
 } from "@/services/contentService";
 
 // Define interfaces for fetched data
-interface HomePageService {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-  category_id: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  category_name: string;
-}
 
 async function getFeaturedPosts() {
   const blogPosts = await contentService.getBlogPosts();
@@ -49,8 +37,10 @@ async function getGalleryPreviews() {
 
 async function getServices() {
   try {
-    // Use the service file to fetch services
-    const allServices = await getServicesFromApi();
+    // Import database service directly for server-side rendering
+    const { DatabaseService } = await import("@/lib/database");
+    const allServices = await DatabaseService.getServices();
+    console.log("Fetched services:", allServices.length, "services"); // Debug log
     // Return only the first 3 services
     return allServices.slice(0, 3);
   } catch (error) {

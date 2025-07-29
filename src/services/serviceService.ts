@@ -1,10 +1,10 @@
-// Define the structure of a Service object based on services.json
+// Define the structure of a Service object based on the database schema
 export interface Service {
   id: number;
   name: string;
   description: string;
   basePrice: number;
-  durationMinutes: number;
+  duration: number; // Duration in minutes
   category: string;
   status: "active" | "inactive";
   createdAt: string;

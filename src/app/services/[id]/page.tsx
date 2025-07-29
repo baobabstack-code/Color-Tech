@@ -18,7 +18,16 @@ interface PageProps {
 
 const ServiceDetailPage = async ({ params }: PageProps) => {
   const { id } = await params;
-  const service = await getServiceById(id);
+
+  // Use database service directly for server-side rendering
+  let service;
+  try {
+    const { DatabaseService } = await import("@/lib/database");
+    service = await DatabaseService.getServiceById(parseInt(id));
+  } catch (error) {
+    console.error("Failed to fetch service:", error);
+    notFound();
+  }
 
   if (!service) {
     notFound();
@@ -62,7 +71,7 @@ const ServiceDetailPage = async ({ params }: PageProps) => {
                 Duration
               </h3>
               <p className="text-2xl font-bold text-primary dark:text-gray-200">
-                {service.durationMinutes} min
+                {service.duration} min
               </p>
             </div>
             <div className="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-lg">

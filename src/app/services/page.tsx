@@ -50,11 +50,11 @@ interface ServiceCategory {
   updated_at: string;
 }
 
-// Use the service file to fetch services
+// Use the database service directly for server-side rendering
 async function getAllServices() {
   try {
-    // Use the imported service function
-    return await getServices();
+    const { DatabaseService } = await import("@/lib/database");
+    return await DatabaseService.getServices();
   } catch (error) {
     console.error("Failed to fetch services:", error);
     return [];
