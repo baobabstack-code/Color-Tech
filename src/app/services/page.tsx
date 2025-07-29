@@ -20,9 +20,26 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getAllServices as getServices } from "@/services/serviceService";
 import { headers } from "next/headers";
+import { Metadata } from "next";
 
 // Make this page dynamic instead of static
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title:
+    "Auto Body Repair Services Harare | Panel Beating & Spray Painting | Color Tech",
+  description:
+    "Professional auto body repair services in Harare including panel beating, spray painting, dent removal, and rust protection. Expert technicians with 15+ years experience.",
+  keywords:
+    "auto body repair services Harare, panel beating Harare, spray painting services Harare, dent removal Harare, rust protection Harare, car repair services Zimbabwe",
+  openGraph: {
+    title:
+      "Auto Body Repair Services Harare | Panel Beating & Spray Painting | Color Tech",
+    description:
+      "Professional auto body repair services in Harare including panel beating, spray painting, dent removal, and rust protection. Expert technicians with 15+ years experience.",
+    url: "https://color-tech.vercel.app/services",
+  },
+};
 
 // Define interfaces for fetched data
 interface ServiceCategory {

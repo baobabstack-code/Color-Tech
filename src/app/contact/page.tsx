@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -65,8 +66,50 @@ const Contact = () => {
     }));
   };
 
+  // Structured data for local business
+  const localBusinessData = {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    name: "Color Tech",
+    description:
+      "Professional auto body repair, spray painting, and panel beating services in Harare, Zimbabwe",
+    url: "https://color-tech.vercel.app",
+    telephone: "+263 77 123 4567",
+    email: "info@color-tech.co.zw",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "123 Industrial Road",
+      addressLocality: "Harare",
+      addressRegion: "Harare Province",
+      postalCode: "00000",
+      addressCountry: "ZW",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -17.8292,
+      longitude: 31.0522,
+    },
+    openingHours: ["Mo-Fr 08:00-17:00", "Sa 08:00-13:00"],
+    priceRange: "$$",
+    areaServed: {
+      "@type": "City",
+      name: "Harare",
+    },
+    serviceType: [
+      "Auto Body Repair",
+      "Spray Painting",
+      "Panel Beating",
+      "Dent Removal",
+      "Rust Protection",
+    ],
+  };
+
   return (
     <div className="min-h-screen pt-32 md:pt-36 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessData) }}
+      />
       {/* Hero Section */}
       <div className="container mx-auto mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-white text-center mb-6">

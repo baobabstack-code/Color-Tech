@@ -6,9 +6,33 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Color Tech - Professional Auto Detailing",
+  title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
   description:
-    "Professional auto detailing services with premium care for your vehicle",
+    "Color Tech offers expert auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
+  keywords:
+    "auto body repair Harare, spray painting Harare, panel beating Harare, dent removal Harare, car paint Harare, rust protection Harare",
+  authors: [{ name: "Color Tech" }],
+  creator: "Color Tech",
+  publisher: "Color Tech",
+  robots: "index, follow",
+  openGraph: {
+    title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
+    description:
+      "Color Tech offers expert auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
+    url: "https://color-tech.vercel.app",
+    siteName: "Color Tech",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
+    description:
+      "Color Tech offers expert auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
+  },
+  verification: {
+    google: "your-google-verification-code", // Replace with actual verification code
+  },
 };
 
 export default function RootLayout({

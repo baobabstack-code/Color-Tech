@@ -66,8 +66,48 @@ export default async function HomePage() {
       getServices(),
     ]);
 
+  // Structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    name: "Color Tech",
+    description:
+      "Professional auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe",
+    url: "https://color-tech.vercel.app",
+    telephone: "+263-XXX-XXXX", // Replace with actual phone
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Your Street Address", // Replace with actual address
+      addressLocality: "Harare",
+      addressRegion: "Harare Province",
+      addressCountry: "ZW",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -17.8292, // Harare coordinates
+      longitude: 31.0522,
+    },
+    openingHours: ["Mo-Fr 08:00-17:00", "Sa 08:00-13:00"],
+    priceRange: "$$",
+    areaServed: {
+      "@type": "City",
+      name: "Harare",
+    },
+    serviceType: [
+      "Auto Body Repair",
+      "Spray Painting",
+      "Panel Beating",
+      "Dent Removal",
+      "Rust Protection",
+    ],
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <main className="flex-1">
         <HomePageClient
           featuredPosts={featuredPosts as any}

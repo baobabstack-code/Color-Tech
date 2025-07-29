@@ -40,28 +40,26 @@ import { useToast } from "@/hooks/use-toast";
 interface BlogPost {
   id: number;
   title: string;
-  content_type: string;
   body: string;
-  image_url: string | null;
-  is_published: boolean;
+  imageUrl: string | null;
+  isPublished: boolean;
   tags: string | null;
-  author: string | null;
-  created_by: number;
-  updated_by: number;
-  created_at: string;
-  updated_at: string;
-  excerpt?: string;
-  slug?: string;
+  author: string;
+  slug: string;
+  createdBy: number;
+  updatedBy: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface BlogFormData {
   title: string;
   body: string;
-  excerpt: string;
-  image_url: string;
-  is_published: boolean;
+  imageUrl: string;
+  isPublished: boolean;
   tags: string;
   author: string;
+  slug: string;
 }
 
 export default function BlogManagement() {
@@ -77,11 +75,11 @@ export default function BlogManagement() {
   const [formData, setFormData] = useState<BlogFormData>({
     title: "",
     body: "",
-    excerpt: "",
-    image_url: "",
-    is_published: false,
+    imageUrl: "",
+    isPublished: false,
     tags: "",
     author: "Admin User",
+    slug: "",
   });
 
   useEffect(() => {
@@ -169,17 +167,26 @@ export default function BlogManagement() {
     }
   };
 
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9 -]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .trim();
+  };
+
   const openModal = (post?: BlogPost) => {
     if (post) {
       setSelectedPost(post);
       setFormData({
         title: post.title,
         body: post.body,
-        excerpt: post.body.substring(0, 200) + "...",
-        image_url: post.image_url || "",
-        is_published: post.is_published,
+        imageUrl: post.imageUrl || "",
+        isPublished: post.isPublished,
         tags: post.tags || "",
         author: post.author || "Admin User",
+        slug: post.slug,
       });
     } else {
       resetForm();
@@ -192,11 +199,11 @@ export default function BlogManagement() {
     setFormData({
       title: "",
       body: "",
-      excerpt: "",
-      image_url: "",
-      is_published: false,
+      imageUrl: "",
+      isPublished: false,
       tags: "",
       author: "Admin User",
+      slug: "",
     });
   };
 
@@ -206,8 +213,8 @@ export default function BlogManagement() {
       post.body.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter =
       filterStatus === "all" ||
-      (filterStatus === "published" && post.is_published) ||
-      (filterStatus === "draft" && !post.is_published);
+      (filterStatus === "published" && post.isPublished) ||
+      (filterStatus === "draft" && !post.isPublished);
     return matchesSearch && matchesFilter;
   });
 
@@ -251,7 +258,7 @@ export default function BlogManagement() {
             <div>
               <p className="text-slate-300 text-sm">Published</p>
               <h3 className="text-2xl font-bold text-white">
-                {posts.filter((p) => p.is_published).length}
+                {posts.filter((p) => p.isPublished).length}
               </h3>
             </div>
             <Eye className="h-8 w-8 text-green-400" />
@@ -262,7 +269,7 @@ export default function BlogManagement() {
             <div>
               <p className="text-slate-300 text-sm">Drafts</p>
               <h3 className="text-2xl font-bold text-white">
-                {posts.filter((p) => !p.is_published).length}
+                {posts.filter((p) => !p.isPublished).length}
               </h3>
             </div>
             <Edit className="h-8 w-8 text-yellow-400" />
@@ -345,12 +352,12 @@ export default function BlogManagement() {
                       </h3>
                       <Badge
                         className={
-                          post.is_published
+                          post.isPublished
                             ? "bg-green-500/20 text-green-400 border-green-500/30"
                             : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                         }
                       >
-                        {post.is_published ? "Published" : "Draft"}
+                        {post.isPublished ? "Published" : "Draft"}
                       </Badge>
                     </div>
 
@@ -365,7 +372,7 @@ export default function BlogManagement() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        <span>{formatDate(post.created_at)}</span>
+                        <span>{formatDate(post.createdAt)}</span>
                       </div>
                       {post.tags && (
                         <div className="flex items-center gap-1">
@@ -426,17 +433,25 @@ export default function BlogManagement() {
             </div>
 
             <div>
-              <Label htmlFor="excerpt" className="text-slate-200">
-                Excerpt
+              <Label htmlFor="slug" className="text-slate-200">
+                URL Slug
               </Label>
-              <Textarea
-                id="excerpt"
-                value={formData.excerpt}
+              <Input
+                id="slug"
+                value={formData.slug}
                 onChange={(e) =>
-                  setFormData({ ...formData, excerpt: e.target.value })
+                  setFormData({ ...formData, slug: e.target.value })
                 }
-                className="bg-slate-800 border-slate-600 text-white h-20"
-                placeholder="Brief description of the post..."
+                onBlur={() => {
+                  if (!formData.slug && formData.title) {
+                    setFormData({
+                      ...formData,
+                      slug: generateSlug(formData.title),
+                    });
+                  }
+                }}
+                className="bg-slate-800 border-slate-600 text-white"
+                placeholder="url-friendly-slug"
               />
             </div>
 
@@ -457,14 +472,14 @@ export default function BlogManagement() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="image_url" className="text-slate-200">
+                <Label htmlFor="imageUrl" className="text-slate-200">
                   Featured Image URL
                 </Label>
                 <Input
-                  id="image_url"
-                  value={formData.image_url}
+                  id="imageUrl"
+                  value={formData.imageUrl}
                   onChange={(e) =>
-                    setFormData({ ...formData, image_url: e.target.value })
+                    setFormData({ ...formData, imageUrl: e.target.value })
                   }
                   className="bg-slate-800 border-slate-600 text-white"
                   placeholder="https://example.com/image.jpg"
@@ -489,14 +504,14 @@ export default function BlogManagement() {
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                id="is_published"
-                checked={formData.is_published}
+                id="isPublished"
+                checked={formData.isPublished}
                 onChange={(e) =>
-                  setFormData({ ...formData, is_published: e.target.checked })
+                  setFormData({ ...formData, isPublished: e.target.checked })
                 }
                 className="rounded border-slate-600 bg-slate-800"
               />
-              <Label htmlFor="is_published" className="text-slate-200">
+              <Label htmlFor="isPublished" className="text-slate-200">
                 Publish immediately
               </Label>
             </div>
