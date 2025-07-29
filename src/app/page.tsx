@@ -1,7 +1,9 @@
 import { headers } from "next/headers";
 import HomePageClient from "@/components/HomePageClient";
-import { getAllServices as getServicesFromApi } from "@/services/serviceService";
-import { Service } from "@/services/serviceService";
+import {
+  getAllServices as getServicesFromApi,
+  Service,
+} from "@/services/serviceService";
 import {
   contentService,
   Testimonial,

@@ -24,20 +24,9 @@ import { motion } from "framer-motion";
 import { Toaster } from "@/components/ui/sonner";
 import CTA from "@/components/CTA";
 import VideoShowcase from "@/components/VideoShowcase";
+import { Service } from "@/services/serviceService";
 
 // Define interfaces for fetched data
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  duration_minutes: number;
-  category_id: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  category_name: string;
-}
 
 interface Testimonial {
   id: number;
@@ -155,16 +144,16 @@ export default function HomePageClient({
   // Process data for rendering
   const displayedServices = services
     .slice(0, 3)
-    .map((service: any, index: number) => ({
+    .map((service: Service, index: number) => ({
       id: service.id,
       icon: service.name.includes("Panel") ? (
         <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />
       ) : service.name.includes("Paint") ? (
         <Paintbrush className="h-10 w-10 text-primary dark:text-sky-400" />
-      ) : service.name.includes("Oil") ? (
-        <Settings className="h-10 w-10 text-primary dark:text-sky-400" />
-      ) : service.name.includes("Brake") ? (
+      ) : service.name.includes("Rust") ? (
         <Shield className="h-10 w-10 text-primary dark:text-sky-400" />
+      ) : service.name.includes("Bumper") ? (
+        <Car className="h-10 w-10 text-primary dark:text-sky-400" />
       ) : (
         <Wrench className="h-10 w-10 text-primary dark:text-sky-400" />
       ), // Default
