@@ -30,7 +30,7 @@ const About = () => {
       name: "Tinashe Chigumira",
       role: "BMW Owner",
       content:
-        "The quality of work at Color-tech is exceptional. They restored my BMW to better than new condition after an accident. The team's expertise is unmatched in Harare.",
+        "The quality of work at Color-tech is exceptional and l loved it. They restored my BMW to better than new condition after an accident. The team's expertise is unmatched in Harare.",
       rating: 5,
     },
     {
