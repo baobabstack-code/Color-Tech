@@ -256,24 +256,64 @@ async function main() {
 
   console.log("✅ Sample FAQs created");
 
-  // Create sample testimonials
+  // Create sample testimonials with authentic African names
   const sampleTestimonials = [
     {
-      name: "John Smith",
-      role: "Customer",
+      name: "Tendai Mukamuri",
+      role: "Business Owner",
       image: null,
       quote:
-        "Excellent service! My car looks brand new after the panel beating work. Highly recommended!",
+        "Excellent service! My car looks brand new after the panel beating work. The team at Color Tech really knows their craft. Highly recommended!",
       rating: 5,
       status: "approved" as const,
       source: "website",
     },
     {
-      name: "Sarah Johnson",
-      role: "Customer",
+      name: "Chipo Nyamande",
+      role: "Teacher",
       image: null,
       quote:
-        "Professional team and great attention to detail. The paint job exceeded my expectations.",
+        "Professional team and great attention to detail. The paint job exceeded my expectations. My Honda looks better than when I first bought it!",
+      rating: 5,
+      status: "approved" as const,
+      source: "google",
+    },
+    {
+      name: "Blessing Moyo",
+      role: "Engineer",
+      image: null,
+      quote:
+        "After a minor accident, I was worried about my car's appearance. Color Tech restored it perfectly - you can't even tell there was damage. Excellent workmanship!",
+      rating: 5,
+      status: "approved" as const,
+      source: "website",
+    },
+    {
+      name: "Farai Chitongo",
+      role: "Entrepreneur",
+      image: null,
+      quote:
+        "I've used Color Tech twice now for different vehicles. Their rust treatment service saved my old bakkie, and the spray painting on my sedan is flawless. Very reliable!",
+      rating: 5,
+      status: "approved" as const,
+      source: "google",
+    },
+    {
+      name: "Memory Sibanda",
+      role: "Nurse",
+      image: null,
+      quote:
+        "The team was so professional and kept me updated throughout the repair process. My car was ready exactly when they promised, and the quality is outstanding.",
+      rating: 5,
+      status: "approved" as const,
+      source: "website",
+    },
+    {
+      name: "Takudzwa Madziva",
+      role: "IT Specialist",
+      image: null,
+      quote:
+        "Color Tech's attention to detail is impressive. They fixed hail damage on my car so well that it looks better than before. Fair pricing and excellent service!",
       rating: 5,
       status: "approved" as const,
       source: "google",
