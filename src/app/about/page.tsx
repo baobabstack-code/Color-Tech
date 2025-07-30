@@ -27,57 +27,64 @@ const About = () => {
 
   const testimonials = [
     {
-      name: "John Smith",
+      name: "Tinashe Chigumira",
       role: "BMW Owner",
       content:
-        "The quality of work at Color-tech is exceptional. They restored my BMW to better than new condition after an accident.",
+        "The quality of work at Color-tech is exceptional. They restored my BMW to better than new condition after an accident. The team's expertise is unmatched in Harare.",
       rating: 5,
     },
     {
-      name: "Sarah Johnson",
+      name: "Rutendo Mapfumo",
       role: "Mercedes Owner",
       content:
-        "Professional service from start to finish. Their attention to detail in paint matching is remarkable.",
+        "Professional service from start to finish. Their attention to detail in paint matching is remarkable. My Mercedes looks absolutely stunning now!",
       rating: 5,
     },
     {
-      name: "Michael Brown",
+      name: "Kudakwashe Mutasa",
       role: "Toyota Owner",
       content:
-        "Fast, efficient, and highly professional. The team kept me updated throughout the repair process.",
+        "Fast, efficient, and highly professional. The team kept me updated throughout the repair process. I couldn't be happier with the results on my Camry.",
+      rating: 5,
+    },
+    {
+      name: "Chiedza Nyakudya",
+      role: "Honda Owner",
+      content:
+        "After hail damage, I thought my car was beyond repair. Color-tech proved me wrong - it looks better than when I first bought it. Excellent craftsmanship!",
       rating: 5,
     },
   ];
 
   const teamMembers = [
     {
-      name: "David Wilson",
+      name: "Tafadzwa Mukamuri",
       role: "Master Panel Beater",
-      image: "/team/david.jpg",
+      image: "/team/tafadzwa.jpg",
       certifications: ["Certified Master Technician", "BMW Certified"],
       specializations: ["Structural Repairs", "Classic Car Restoration"],
       experience: "15+ years",
       contact: {
-        email: "david@color-tech.co.zw",
+        email: "tafadzwa@color-tech.co.zw",
         phone: "+263 77 123 4567",
       },
     },
     {
-      name: "James Thompson",
+      name: "Simbarashe Mpofu",
       role: "Head Spray Painter",
-      image: "/team/james.jpg",
+      image: "/team/simbarashe.jpg",
       certifications: ["PPG Certified Painter", "Color Match Specialist"],
       specializations: ["Custom Paint Work", "Color Matching"],
       experience: "12+ years",
       contact: {
-        email: "james@color-tech.co.zw",
+        email: "simbarashe@color-tech.co.zw",
         phone: "+263 77 123 4568",
       },
     },
     {
-      name: "Robert Chen",
+      name: "Nyasha Dube",
       role: "Quality Control Manager",
-      image: "/team/robert.jpg",
+      image: "/team/nyasha.jpg",
       certifications: [
         "Quality Management Certified",
         "Vehicle Safety Inspector",
@@ -85,7 +92,7 @@ const About = () => {
       specializations: ["Final Inspection", "Customer Relations"],
       experience: "10+ years",
       contact: {
-        email: "robert@color-tech.co.zw",
+        email: "nyasha@color-tech.co.zw",
         phone: "+263 77 123 4569",
       },
     },
