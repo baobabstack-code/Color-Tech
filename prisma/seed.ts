@@ -5,6 +5,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database...");
 
+  // Remove all existing services to avoid duplicates
+  await prisma.service.deleteMany({});
+
   // Create sample services
   const services = [
     {
@@ -61,6 +64,53 @@ async function main() {
       category: "Body Repair",
       status: "active" as const,
     },
+    // --- Added missing services below ---
+    {
+      name: "Fiber Glass Repair",
+      description:
+        "Expert fiber glass repairs for automotive panels, bumpers, and custom parts. Durable, seamless results for all vehicle types.",
+      basePrice: 180.0,
+      duration: 210, // 3.5 hours
+      category: "Body Repair",
+      status: "active" as const,
+    },
+    {
+      name: "Disc Skimming",
+      description:
+        "Precision disc skimming to restore brake performance and eliminate vibration. Suitable for all makes and models.",
+      basePrice: 60.0,
+      duration: 60, // 1 hour
+      category: "Brake Services",
+      status: "active" as const,
+    },
+    {
+      name: "Vehicle Servicing",
+      description:
+        "Comprehensive vehicle servicing including oil change, filter replacement, and safety checks. Keep your car running smoothly.",
+      basePrice: 100.0,
+      duration: 90, // 1.5 hours
+      category: "Maintenance",
+      status: "active" as const,
+    },
+    {
+      name: "Cutting and Joining Mechanics",
+      description:
+        "Professional cutting and joining services for chassis, frames, and body panels. Structural repairs and modifications done right.",
+      basePrice: 220.0,
+      duration: 240, // 4 hours
+      category: "Body Repair",
+      status: "active" as const,
+    },
+    {
+      name: "Wheel Alignment",
+      description:
+        "Computerized wheel alignment for improved handling, tire life, and safety. Precision adjustments for all vehicles.",
+      basePrice: 50.0,
+      duration: 45, // 45 minutes
+      category: "Suspension & Steering",
+      status: "active" as const,
+    },
+    // --- End added services ---
   ];
 
   for (const service of services) {
