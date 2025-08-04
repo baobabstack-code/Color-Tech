@@ -74,8 +74,8 @@ const Contact = () => {
     description:
       "Professional auto body repair, spray painting, and panel beating services in Harare, Zimbabwe",
     url: "https://color-tech.vercel.app",
-    telephone: "+263 77 123 4567",
-    email: "info@color-tech.co.zw",
+    telephone: "+263 78 125 3902",
+    email: "colorterch25@gmail.com",
     address: {
       "@type": "PostalAddress",
       streetAddress: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",

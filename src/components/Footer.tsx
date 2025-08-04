@@ -30,8 +30,8 @@ export default function Footer() {
 
   const contact = {
     address: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",
-    phone: "+1 234 567 8900",
-    email: "info@colortech.com",
+    phone: "+263 78 125 3902",
+    email: "colorterch25@gmail.com",
     hours: "Mon - Fri: 8:00 AM - 6:00 PM"
   };
 
