@@ -29,7 +29,7 @@ export default function Footer() {
   ];
 
   const contact = {
-    address: "123 Auto Street, Repair City, RC 12345",
+    address: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",
     phone: "+1 234 567 8900",
     email: "info@colortech.com",
     hours: "Mon - Fri: 8:00 AM - 6:00 PM"
