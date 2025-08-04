@@ -174,7 +174,7 @@ export const sendCustomerConfirmation = async (customerData: {
             <h3 style="color: #333; margin-top: 0;">Contact Information</h3>
             <p style="color: #555; margin: 5px 0;">📞 Phone: +263 77 123 4567</p>
             <p style="color: #555; margin: 5px 0;">📧 Email: info@colortech.co.zw</p>
-            <p style="color: #555; margin: 5px 0;">📍 Address: 123 Industrial Road, Harare, Zimbabwe</p>
+            <p style="color: #555; margin: 5px 0;">📍 Address: 667 Dias & lsafil complex, Hatfield Harare, workshop 28</p>
           </div>
           
           <div style="text-align: center; color: #666; font-size: 12px; margin-top: 20px;">

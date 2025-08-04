@@ -78,7 +78,7 @@ const Contact = () => {
     email: "info@color-tech.co.zw",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "123 Industrial Road",
+      streetAddress: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",
       addressLocality: "Harare",
       addressRegion: "Harare Province",
       postalCode: "00000",
@@ -150,8 +150,7 @@ const Contact = () => {
                 <MapPin className="w-6 h-6 mr-4 mt-1 text-white" />
                 <div>
                   <h3 className="font-semibold mb-1">Location</h3>
-                  <p>123 Industrial Road</p>
-                  <p>Harare, Zimbabwe</p>
+                  <p>667 Dias & lsafil complex, Hatfield Harare, workshop 28</p>
                 </div>
               </div>
 
