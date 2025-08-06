@@ -6,6 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 const ADMIN_EMAILS = [
   "admin@colortech.co.zw", // Your main admin email
   "mrshepard18@gmail.com", // Additional admin access
+  "colorterch25@gmail.com", // Added for dashboard admin access
   // Add more admin emails here as needed
   // "your-email@gmail.com",
   // "another-admin@gmail.com",
