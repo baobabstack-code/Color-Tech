@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Analytics } from "@vercel/analytics/next";
@@ -50,8 +51,9 @@ export default function RootLayout({
         <Analytics />
 
         {/* Chat Bot Script */}
-        <script
+        <Script
           src="https://cdn.jotfor.ms/agent/embedjs/019875f8b9967eac80c030506c583afa433a/embed.js?skipWelcome=1&maximizable=1"
+          strategy="afterInteractive"
         />
       </body>
     </html>
