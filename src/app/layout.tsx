@@ -49,11 +49,28 @@ export default function RootLayout({
         <LayoutWrapper>{children}</LayoutWrapper>
         <Analytics />
 
-        {/* Chat Bot Script */}
-        <script
-          src="https://cdn.jotfor.ms/agent/embedjs/019547dae6607a93955d06388991a907fb97/embed.js?skipWelcome=1&maximizable=1"
-          async
-        />
+        {/* Chat Bot Button */}
+        <div style={{ position: "fixed", bottom: 32, right: 32, zIndex: 9999 }}>
+          <a
+            style={{
+              textTransform: "uppercase",
+              fontSize: 14,
+              cursor: "pointer",
+              padding: "12px 18px",
+              fontFamily: "inherit",
+              backgroundColor: "#0075E3",
+              border: "1px solid #0075E3",
+              color: "#FFFFFF",
+              borderRadius: 4,
+              textDecoration: "none",
+              display: "inline-block",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            }}
+            href={"javascript:void(\n              window.open(\n                'https://agent.jotform.com/019875f8b9967eac80c030506c583afa433a?embedMode=popup&parentURL='+encodeURIComponent(window.top.location.href),\n                'blank',\n                'scrollbars=yes,toolbar=no,width=700,height=500,top='+(window.outerHeight / 2 - 250)+',left='+(window.outerWidth / 2 - 350)+'',\n              ))"}
+          >
+            Color Tech: Customer Support Agent
+          </a>
+        </div>
       </body>
     </html>
   );
