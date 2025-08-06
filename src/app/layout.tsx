@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,9 +16,9 @@ export const metadata = {
   publisher: "Color Tech",
   robots: "index, follow",
   openGraph: {
-    title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
+    title: "Auto Body Repair, Panel Beating & Spray Painting Harare | Color Tech Zimbabwe",
     description:
-      "Color Tech offers expert auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
+      "Color Tech offers expert auto body repair, panel beating, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
     url: "https://color-tech.vercel.app",
     siteName: "Color Tech",
     locale: "en_US",
@@ -29,7 +28,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
     description:
-      "Color Tech offers expert auto body repair, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
+      "Color Tech offers expert auto body repair, panel beating, wheel alignment, spray painting, rust protection, and dent removal services in Harare, Zimbabwe. 100% quality guaranteed.",
   },
   verification: {
     google: "your-google-verification-code", // Replace with actual verification code
@@ -49,7 +48,6 @@ export default function RootLayout({
 
         <LayoutWrapper>{children}</LayoutWrapper>
         <Analytics />
-        <SpeedInsights />
 
         {/* Chat Bot Script */}
         <script
