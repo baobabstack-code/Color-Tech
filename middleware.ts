@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 // Define admin emails - must match the ones in NextAuth config
 const ADMIN_EMAILS = [
-  "admin@colortech.co.zw", // Your main admin email
+  "colorterch25@gmail.com", // Your main admin email
   "mrshepard18@gmail.com", // Additional admin access
   // Add more admin emails here as needed
 ];
