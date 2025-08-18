@@ -9,12 +9,9 @@ const config = {
     '^@/lib/db$': '<rootDir>/src/lib/__mocks__/db.ts', // Mock the database module
   },
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-  },
-  globals: {
-    'ts-jest': {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
-    },
+    }],
   },
 };
 
