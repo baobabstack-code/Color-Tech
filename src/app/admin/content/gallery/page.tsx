@@ -240,7 +240,7 @@ export default function GalleryManagement() {
             <div>
               <p className="text-slate-400 text-sm">Published</p>
               <h3 className="text-2xl font-bold text-white">
-                {items.filter((i) => i.is_published).length}
+                {items.filter((i) => i.isPublished).length}
               </h3>
             </div>
             <Eye className="h-8 w-8 text-green-400" />
