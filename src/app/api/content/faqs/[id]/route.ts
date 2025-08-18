@@ -11,7 +11,10 @@ export async function GET(
     const faq = await DatabaseService.getFAQById(parseInt(id));
 
     if (!faq) {
-      return NextResponse.json({ message: "FAQ not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "FAQ not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(faq);
@@ -24,7 +27,7 @@ export async function GET(
   }
 }
 
-// PUT: Update a FAQ
+// PUT: Update a specific FAQ
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -41,7 +44,10 @@ export async function PUT(
     });
 
     if (!updatedFAQ) {
-      return NextResponse.json({ message: "FAQ not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "FAQ not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(updatedFAQ);
@@ -54,7 +60,7 @@ export async function PUT(
   }
 }
 
-// DELETE: Delete a FAQ
+// DELETE: Delete a specific FAQ
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -65,7 +71,10 @@ export async function DELETE(
     const deletedFAQ = await DatabaseService.deleteFAQ(parseInt(id));
 
     if (!deletedFAQ) {
-      return NextResponse.json({ message: "FAQ not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "FAQ not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ message: "FAQ deleted successfully" });

@@ -31,12 +31,19 @@ export default function ContentManagement() {
     setIsLoading(true);
     setError(null);
     try {
-      // Fetch all content counts in parallel
+      // Fetch all content counts in parallel using direct API calls
+      const [blogResponse, galleryResponse, testimonialsResponse, faqsResponse] = await Promise.all([
+        fetch("/api/content/blog"),
+        fetch("/api/content/gallery"),
+        fetch("/api/content/testimonials"),
+        fetch("/api/content/faqs"),
+      ]);
+
       const [blogPosts, gallery, testimonials, faqs] = await Promise.all([
-        contentService.getBlogPosts(),
-        contentService.getGalleryItems(),
-        contentService.getTestimonials(),
-        contentService.getFAQs(),
+        blogResponse.ok ? blogResponse.json() : [],
+        galleryResponse.ok ? galleryResponse.json() : [],
+        testimonialsResponse.ok ? testimonialsResponse.json() : [],
+        faqsResponse.ok ? faqsResponse.json() : [],
       ]);
 
       setContentCounts({

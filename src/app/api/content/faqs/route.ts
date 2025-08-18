@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     let faqs;
     if (status === "published") {
-      faqs = await DatabaseService.getFAQs(); // Only published
+      faqs = await DatabaseService.getFAQs(); // Only published FAQs
     } else {
       faqs = await DatabaseService.getAllFAQs(); // All FAQs
     }
