@@ -73,7 +73,7 @@ const Contact = () => {
     name: "Color Tech",
     description:
       "Professional auto body repair, spray painting, and panel beating services in Harare, Zimbabwe",
-    url: "https://color-tech.vercel.app",
+    url: "https://colortech.co.zw",
     telephone: "+263 78 125 3902",
     email: "colorterch25@gmail.com",
     address: {
