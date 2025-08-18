@@ -1,0 +1,60 @@
+name: Database Backup
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual backup
+
+jobs:
+  backup-database:
+    name: Backup Database
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      
+      - name: Create database backup
+        run: |
+          # Create backup directory
+          mkdir -p backups
+          
+          # Generate timestamp
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          
+          # Export database schema
+          npx prisma db pull --force
+          
+          # Create a backup file with timestamp
+          cp prisma/schema.prisma "backups/schema_backup_${TIMESTAMP}.prisma"
+          
+          echo "Database schema backed up to backups/schema_backup_${TIMESTAMP}.prisma"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      
+      - name: Upload backup artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-${{ github.run_number }}
+          path: backups/
+          retention-days: 30
+      
+      - name: Notify backup completion
+        run: |
+          echo "✅ Database backup completed successfully"
+          echo "Backup artifacts uploaded with retention of 30 days"

@@ -1,8 +1,12 @@
-# Color-Tech Auto Detailing
+# ColorTech Panel Beaters
+
+[![Deploy to Production](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/deploy.yml)
+[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml)
+[![Preview Deployment](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/preview.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/preview.yml)
 
 ## Overview
 
-This is a web application for Color-Tech Auto Detailing, featuring a Next.js frontend and a Strapi backend for content management.
+Professional automotive panel beating and spray painting services in Zimbabwe. This Next.js application features a comprehensive admin portal for content management, customer testimonials, service bookings, and more.
 
 ## Admin Dashboard
 
