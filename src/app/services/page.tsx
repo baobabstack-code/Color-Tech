@@ -114,13 +114,13 @@ const ServicesPage = async () => {
   const displayedServices = services.map((service) => ({
     id: service.id,
     icon: service.name.includes("Panel") ? (
-      <Wrench className="h-12 w-12 text-white" />
+      <Wrench className="h-12 w-12 text-slate-800 dark:text-white" />
     ) : service.name.includes("Paint") ? (
-      <Paintbrush className="h-12 w-12 text-white" />
+      <Paintbrush className="h-12 w-12 text-slate-800 dark:text-white" />
     ) : service.name.includes("Rust") ? (
-      <Shield className="h-12 w-12 text-white" />
+      <Shield className="h-12 w-12 text-slate-800 dark:text-white" />
     ) : (
-      <Car className="h-12 w-12 text-white" />
+      <Car className="h-12 w-12 text-slate-800 dark:text-white" />
     ), // Default icon
     title: service.name,
     description: service.description,
@@ -157,17 +157,17 @@ const ServicesPage = async () => {
             >
               <Card className="p-6 bg-white/90 dark:bg-slate-800 flex flex-col items-center text-center hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
                 <div className="mb-4">{service.icon}</div>
-                <h2 className="text-2xl font-semibold mb-2 text-white group-hover:text-slate-200">
+                <h2 className="text-2xl font-semibold mb-2 text-slate-800 dark:text-white group-hover:text-slate-600 dark:group-hover:text-slate-200">
                   {service.title}
                 </h2>
-                <p className="text-slate-300 mb-6 group-hover:text-slate-400">
+                <p className="text-slate-600 dark:text-slate-300 mb-6 group-hover:text-slate-500 dark:group-hover:text-slate-400">
                   {service.description}
                 </p>
                 <ul className="space-y-2 text-left w-full mb-6">
                   {service.features.map((feature, featureIndex) => (
                     <li
                       key={featureIndex}
-                      className="flex items-center text-slate-300"
+                      className="flex items-center text-slate-600 dark:text-slate-300"
                     >
                       <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
                       {feature}
@@ -175,9 +175,9 @@ const ServicesPage = async () => {
                   ))}
                 </ul>
                 <Button className="w-full" asChild>
-                  <span className="text-white hover:text-slate-200 flex items-center font-semibold">
+                  <span className="text-white dark:text-white hover:text-slate-200 dark:hover:text-slate-200 flex items-center font-semibold">
                     Learn More{" "}
-                    <ArrowRight className="ml-2 h-4 w-4 text-white group-hover:text-slate-200" />
+                    <ArrowRight className="ml-2 h-4 w-4 text-white dark:text-white group-hover:text-slate-200 dark:group-hover:text-slate-200" />
                   </span>
                 </Button>
               </Card>
