@@ -199,7 +199,7 @@ const ServicesPage = async () => {
         </div>
         <div className="w-full h-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-white/30">
           <iframe
-            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=123+Industrial+Road,Harare,Zimbabwe`}
+            src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=667 Seke Rd, Harare`}
             width="100%"
             height="100%"
             style={{ border: 0 }}
