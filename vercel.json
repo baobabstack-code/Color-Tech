@@ -1,4 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "installCommand": "npm install --no-optional --omit=optional --platform=linux --arch=x64"
+      }
+    }
+  ]
+}{
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
