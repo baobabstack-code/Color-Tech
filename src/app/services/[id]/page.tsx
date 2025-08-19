@@ -5,7 +5,7 @@ import {
   Service,
 } from "@/services/serviceService";
 import { notFound } from "next/navigation";
-import { Clock, Tag, DollarSign, ArrowLeft } from "lucide-react";
+import { Clock, Tag, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -55,16 +55,7 @@ const ServiceDetailPage = async ({ params }: PageProps) => {
             {service.description}
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
-            <div className="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-lg">
-              <DollarSign className="w-8 h-8 mx-auto mb-2 text-green-500" />
-              <h3 className="font-semibold text-slate-800 dark:text-white">
-                Price
-              </h3>
-              <p className="text-2xl font-bold text-primary dark:text-gray-200">
-                ${service.basePrice}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-center">
             <div className="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-lg">
               <Clock className="w-8 h-8 mx-auto mb-2 text-blue-500" />
               <h3 className="font-semibold text-slate-800 dark:text-white">
