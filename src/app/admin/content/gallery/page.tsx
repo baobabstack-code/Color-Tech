@@ -43,7 +43,10 @@ interface GalleryItem {
   id: number;
   title: string;
   body: string | null;
-  imageUrl: string;
+  imageUrl: string; // Main image for single, can be used as fallback
+  beforeImageUrl: string | null;
+  afterImageUrl: string | null;
+  type: string;
   isPublished: boolean;
   tags: string | null;
   author: string;
@@ -57,6 +60,9 @@ interface GalleryFormData {
   title: string;
   body: string;
   imageUrl: string;
+  beforeImageUrl: string;
+  afterImageUrl: string;
+  type: "single_image" | "before_after";
   isPublished: boolean;
   tags: string;
   author: string;
@@ -70,12 +76,17 @@ export default function GalleryManagement() {
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null); // For single image
+  const [beforeImageFile, setBeforeImageFile] = useState<File | null>(null);
+  const [afterImageFile, setAfterImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<GalleryFormData>({
     title: "",
     body: "",
     imageUrl: "",
+    beforeImageUrl: "",
+    afterImageUrl: "",
+    type: "single_image",
     isPublished: false,
     tags: "",
     author: "ColorTech Team",
@@ -107,24 +118,41 @@ export default function GalleryManagement() {
 
   const handleSave = async () => {
     setIsUploading(true);
-    let finalImageUrl = formData.imageUrl;
 
     try {
-      if (imageFile) {
-        const response = await fetch(`/api/upload?filename=${imageFile.name}`, {
+      let imageUrl = formData.imageUrl;
+      let beforeImageUrl = formData.beforeImageUrl;
+      let afterImageUrl = formData.afterImageUrl;
+
+      const uploadFile = async (file: File) => {
+        const response = await fetch(`/api/upload?filename=${file.name}`, {
           method: 'POST',
-          body: imageFile,
+          body: file,
         });
-
-        if (!response.ok) {
-          throw new Error('Image upload failed');
-        }
-
+        if (!response.ok) throw new Error(`Failed to upload ${file.name}`);
         const newBlob = await response.json();
-        finalImageUrl = newBlob.url;
+        return newBlob.url;
+      };
+
+      if (formData.type === 'single_image' && imageFile) {
+        imageUrl = await uploadFile(imageFile);
       }
 
-      const dataToSave = { ...formData, imageUrl: finalImageUrl };
+      if (formData.type === 'before_after') {
+        if (beforeImageFile) {
+          beforeImageUrl = await uploadFile(beforeImageFile);
+        }
+        if (afterImageFile) {
+          afterImageUrl = await uploadFile(afterImageFile);
+        }
+      }
+
+      const dataToSave = {
+        ...formData,
+        imageUrl,
+        beforeImageUrl,
+        afterImageUrl,
+      };
 
       const url = selectedItem
         ? `/api/content/gallery/${selectedItem.id}`
@@ -148,11 +176,12 @@ export default function GalleryManagement() {
         resetForm();
         fetchGalleryItems();
       } else {
-        throw new Error("Failed to save gallery item");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save gallery item");
       }
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Error saving item",
         description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
@@ -194,6 +223,9 @@ export default function GalleryManagement() {
         title: item.title,
         body: item.body || "",
         imageUrl: item.imageUrl,
+        beforeImageUrl: item.beforeImageUrl || "",
+        afterImageUrl: item.afterImageUrl || "",
+        type: item.type === "before_after" ? "before_after" : "single_image",
         isPublished: item.isPublished,
         tags: item.tags || "",
         author: item.author,
@@ -207,10 +239,15 @@ export default function GalleryManagement() {
   const resetForm = () => {
     setSelectedItem(null);
     setImageFile(null);
+    setBeforeImageFile(null);
+    setAfterImageFile(null);
     setFormData({
       title: "",
       body: "",
       imageUrl: "",
+      beforeImageUrl: "",
+      afterImageUrl: "",
+      type: "single_image",
       isPublished: false,
       tags: "",
       author: "ColorTech Team",
@@ -274,7 +311,9 @@ export default function GalleryManagement() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-slate-400 text-sm">Before/After</p>
-              <h3 className="text-2xl font-bold text-white">12</h3>
+              <h3 className="text-2xl font-bold text-white">
+                {items.filter((i) => i.type === "before_after").length}
+              </h3>
             </div>
             <Camera className="h-8 w-8 text-purple-400" />
           </div>
@@ -282,8 +321,10 @@ export default function GalleryManagement() {
         <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm">Categories</p>
-              <h3 className="text-2xl font-bold text-white">5</h3>
+              <p className="text-slate-400 text-sm">Tags</p>
+              <h3 className="text-2xl font-bold text-white">
+                { new Set(items.flatMap(i => i.tags ? i.tags.split(',').map(t => t.trim()) : [])).size }
+              </h3>
             </div>
             <Tag className="h-8 w-8 text-yellow-400" />
           </div>
@@ -365,13 +406,26 @@ export default function GalleryManagement() {
               key={item.id}
               className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 hover:bg-slate-800/70 transition-all duration-200 overflow-hidden"
             >
-              <div className="relative h-48">
-                <Image
-                  src={item.imageUrl}
-                  alt={item.title}
-                  fill
-                  className="object-cover"
-                />
+              <div className="relative h-48 w-full">
+                {item.type === 'before_after' && item.beforeImageUrl && item.afterImageUrl ? (
+                  <div className="flex h-full">
+                    <div className="relative w-1/2 h-full">
+                      <Image src={item.beforeImageUrl} alt={`Before - ${item.title}`} fill className="object-cover" />
+                      <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">BEFORE</div>
+                    </div>
+                    <div className="relative w-1/2 h-full">
+                      <Image src={item.afterImageUrl} alt={`After - ${item.title}`} fill className="object-cover" />
+                      <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">AFTER</div>
+                    </div>
+                  </div>
+                ) : (
+                  <Image
+                    src={item.imageUrl || '/placeholder.png'} // Fallback image
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                  />
+                )}
                 <div className="absolute top-2 right-2">
                   <Badge
                     className={
@@ -438,106 +492,209 @@ export default function GalleryManagement() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+            <DialogTitle>
               {selectedItem ? "Edit Gallery Item" : "Create New Gallery Item"}
             </DialogTitle>
           </DialogHeader>
-
-          <div className="space-y-6">
-            <div>
-              <Label htmlFor="title" className="text-slate-200">
+          <div className="grid gap-6 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
                 Title
               </Label>
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                className="bg-slate-800 border-slate-600 text-white"
-                placeholder="Enter gallery item title..."
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="col-span-3 bg-slate-800 border-slate-600"
               />
             </div>
-
-            <div>
-              <Label htmlFor="image" className="text-slate-200">
-                Image
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="type" className="text-right">
+                Type
               </Label>
-              <div className="mt-2 flex items-center gap-4">
-                {(formData.imageUrl || imageFile) && (
-                  <Image
-                    src={imageFile ? URL.createObjectURL(imageFile) : formData.imageUrl}
-                    alt="Preview"
-                    width={80}
-                    height={80}
-                    className="rounded-lg object-cover"
-                  />
-                )}
-                <div className="flex-1">
-                  <Input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        setImageFile(e.target.files[0]);
-                      }
-                    }}
-                    className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-                  />
-                  <p className="text-xs text-slate-400 mt-1">
-                    Upload a new image to replace the existing one.
-                  </p>
-                </div>
-              </div>
+              <Select
+                value={formData.type}
+                onValueChange={(value: "single_image" | "before_after") =>
+                  setFormData({ ...formData, type: value })
+                }
+              >
+                <SelectTrigger className="col-span-3 bg-slate-800 border-slate-600">
+                  <SelectValue placeholder="Select a type" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 text-white">
+                  <SelectItem value="single_image">Single Image</SelectItem>
+                  <SelectItem value="before_after">Before/After</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div>
-              <Label htmlFor="body" className="text-slate-200">
+            {formData.type === "single_image" ? (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="imageUrl" className="text-right">
+                  Image
+                </Label>
+                <div className="col-span-3">
+                  <Input
+                    id="imageUrl"
+                    type="file"
+                    onChange={(e) =>
+                      setImageFile(e.target.files ? e.target.files[0] : null)
+                    }
+                    className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                  />
+                  {imageFile && (
+                    <div className="mt-2">
+                      <Image
+                        src={URL.createObjectURL(imageFile)}
+                        alt="Image Preview"
+                        width={100}
+                        height={100}
+                        className="rounded-md object-cover"
+                      />
+                    </div>
+                  )}
+                  {!imageFile && formData.imageUrl && (
+                    <div className="mt-2">
+                      <Image
+                        src={formData.imageUrl}
+                        alt="Current Image"
+                        width={100}
+                        height={100}
+                        className="rounded-md object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="beforeImageUrl" className="text-right">
+                    Before Image
+                  </Label>
+                  <div className="col-span-3">
+                    <Input
+                      id="beforeImageUrl"
+                      type="file"
+                      onChange={(e) =>
+                        setBeforeImageFile(
+                          e.target.files ? e.target.files[0] : null
+                        )
+                      }
+                      className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                    />
+                    {beforeImageFile && (
+                      <div className="mt-2">
+                        <Image
+                          src={URL.createObjectURL(beforeImageFile)}
+                          alt="Before Image Preview"
+                          width={100}
+                          height={100}
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    )}
+                    {!beforeImageFile && formData.beforeImageUrl && (
+                      <div className="mt-2">
+                        <Image
+                          src={formData.beforeImageUrl}
+                          alt="Current Before Image"
+                          width={100}
+                          height={100}
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="afterImageUrl" className="text-right">
+                    After Image
+                  </Label>
+                  <div className="col-span-3">
+                    <Input
+                      id="afterImageUrl"
+                      type="file"
+                      onChange={(e) =>
+                        setAfterImageFile(
+                          e.target.files ? e.target.files[0] : null
+                        )
+                      }
+                      className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                    />
+                    {afterImageFile && (
+                      <div className="mt-2">
+                        <Image
+                          src={URL.createObjectURL(afterImageFile)}
+                          alt="After Image Preview"
+                          width={100}
+                          height={100}
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    )}
+                    {!afterImageFile && formData.afterImageUrl && (
+                      <div className="mt-2">
+                        <Image
+                          src={formData.afterImageUrl}
+                          alt="Current After Image"
+                          width={100}
+                          height={100}
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="body" className="text-right">
                 Description
               </Label>
               <Textarea
                 id="body"
                 value={formData.body}
-                onChange={(e) =>
-                  setFormData({ ...formData, body: e.target.value })
-                }
-                className="bg-slate-800 border-slate-600 text-white h-32"
-                placeholder="Enter description..."
+                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
+                className="col-span-3 bg-slate-800 border-slate-600 h-24"
+                placeholder="Enter a description..."
               />
             </div>
 
-            <div>
-              <Label htmlFor="tags" className="text-slate-200">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="tags" className="text-right">
                 Tags
               </Label>
               <Input
                 id="tags"
                 value={formData.tags}
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
-                }
-                className="bg-slate-800 border-slate-600 text-white"
-                placeholder="tag1, tag2, tag3"
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                className="col-span-3 bg-slate-800 border-slate-600"
+                placeholder="e.g., residential, commercial, interior"
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="isPublished"
-                checked={formData.isPublished}
-                onChange={(e) =>
-                  setFormData({ ...formData, isPublished: e.target.checked })
-                }
-                className="rounded border-slate-600 bg-slate-800"
-              />
-              <Label htmlFor="isPublished" className="text-slate-200">
-                Publish immediately
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="isPublished" className="text-right">
+                Status
               </Label>
+              <div className="col-span-3 flex items-center">
+                <input
+                  type="checkbox"
+                  id="isPublished"
+                  checked={formData.isPublished}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isPublished: e.target.checked })
+                  }
+                  className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label htmlFor="isPublished" className="ml-2 text-sm text-slate-300">
+                  Publish this item
+                </label>
+              </div>
             </div>
           </div>
-
           <DialogFooter className="gap-2">
             <Button
               variant="outline"
@@ -549,6 +706,7 @@ export default function GalleryManagement() {
             </Button>
             <Button
               onClick={handleSave}
+              disabled={isUploading}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
               {isUploading ? (

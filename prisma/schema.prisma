@@ -142,7 +142,10 @@ model GalleryItem {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(255)
   body        String?  @db.Text
-  imageUrl    String   @db.VarChar(512)
+  imageUrl       String   @db.VarChar(512)
+  beforeImageUrl String?  @db.VarChar(512)
+  afterImageUrl  String?  @db.VarChar(512)
+  type           String   @default("single_image") @db.VarChar(50)
   isPublished Boolean  @default(false)
   tags        String?  @db.VarChar(500)
   author      String   @db.VarChar(100)
