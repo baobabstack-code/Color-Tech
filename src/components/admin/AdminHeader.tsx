@@ -58,7 +58,7 @@ const AdminHeader = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-700" />
               <DropdownMenuItem className="flex flex-col items-start p-3 text-slate-200 hover:bg-slate-700">
-                <div className="font-medium text-white">
+                {/* <div className="font-medium text-white">
                   New form submission
                 </div>
                 <div className="text-sm text-slate-400">
@@ -72,7 +72,7 @@ const AdminHeader = () => {
                 </div>
                 <div className="text-sm text-slate-400">
                   Sarah Johnson requested oil change service
-                </div>
+                </div> */}
                 <div className="text-xs text-slate-500 mt-1">1 hour ago</div>
               </DropdownMenuItem>
               <DropdownMenuItem className="flex flex-col items-start p-3 text-slate-200 hover:bg-slate-700">
