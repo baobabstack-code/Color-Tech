@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       "Auto Body Repair Services Harare | Panel Beating & Spray Painting | Color Tech",
     description:
       "Professional auto body repair services in Harare including panel beating, spray painting, dent removal, and rust protection. Expert technicians with 15+ years experience.",
-    url: "https://color-tech.vercel.app/services",
+    url: "https://colortech.co.zw/services",
   },
 };
 
