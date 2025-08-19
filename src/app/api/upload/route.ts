@@ -9,9 +9,15 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ message: 'No file to upload.' }, { status: 400 });
   }
 
-  const blob = await put(filename, request.body, {
-    access: 'public',
-  });
-
-  return NextResponse.json(blob);
+  try {
+    const blob = await put(filename, request.body, {
+      access: 'public',
+    });
+    return NextResponse.json(blob);
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: `Failed to upload file: ${error.message}` },
+      { status: 500 }
+    );
+  }
 }
