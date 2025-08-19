@@ -125,13 +125,26 @@ export default function GalleryManagement() {
       let afterImageUrl = formData.afterImageUrl;
 
       const uploadFile = async (file: File) => {
-        const response = await fetch(`/api/upload?filename=${file.name}`, {
-          method: 'POST',
-          body: file,
-        });
-        if (!response.ok) throw new Error(`Failed to upload ${file.name}`);
-        const newBlob = await response.json();
-        return newBlob.url;
+        try {
+          const response = await fetch(`/api/upload?filename=${file.name}`, {
+            method: 'POST',
+            body: file,
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Upload error response:', errorData);
+            throw new Error(
+              `Failed to upload ${file.name}: ${errorData.message || 'Unknown error'}`
+            );
+          }
+          
+          const newBlob = await response.json();
+          return newBlob.url;
+        } catch (error) {
+          console.error('Upload failed:', error);
+          throw error;
+        }
       };
 
       if (formData.type === 'single_image' && imageFile) {
