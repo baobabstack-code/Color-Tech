@@ -59,6 +59,7 @@
     "@types/uuid": "latest",
     "@types/winston": "latest",
     "@vercel/analytics": "latest",
+    "@vercel/blob": "^1.1.1",
     "@vercel/speed-insights": "^1.2.0",
     "axios": "latest",
     "bcrypt": "latest",
@@ -126,7 +127,7 @@
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
-    "overrides": {
+  "overrides": {
     "lightningcss": "^1.30.1"
   }
 }

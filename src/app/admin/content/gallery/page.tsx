@@ -36,8 +36,8 @@ import {
   Camera,
   Tag,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 interface GalleryItem {
   id: number;
@@ -70,6 +70,8 @@ export default function GalleryManagement() {
   const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<GalleryFormData>({
     title: "",
     body: "",
@@ -104,7 +106,26 @@ export default function GalleryManagement() {
   };
 
   const handleSave = async () => {
+    setIsUploading(true);
+    let finalImageUrl = formData.imageUrl;
+
     try {
+      if (imageFile) {
+        const response = await fetch(`/api/upload?filename=${imageFile.name}`, {
+          method: 'POST',
+          body: imageFile,
+        });
+
+        if (!response.ok) {
+          throw new Error('Image upload failed');
+        }
+
+        const newBlob = await response.json();
+        finalImageUrl = newBlob.url;
+      }
+
+      const dataToSave = { ...formData, imageUrl: finalImageUrl };
+
       const url = selectedItem
         ? `/api/content/gallery/${selectedItem.id}`
         : "/api/content/gallery";
@@ -115,7 +136,7 @@ export default function GalleryManagement() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSave),
       });
 
       if (response.ok) {
@@ -129,12 +150,14 @@ export default function GalleryManagement() {
       } else {
         throw new Error("Failed to save gallery item");
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to save gallery item",
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -183,6 +206,7 @@ export default function GalleryManagement() {
 
   const resetForm = () => {
     setSelectedItem(null);
+    setImageFile(null);
     setFormData({
       title: "",
       body: "",
@@ -218,7 +242,7 @@ export default function GalleryManagement() {
         <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
           Gallery Management
         </h1>
-        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
+        <Button onClick={() => openModal()} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
           <Plus className="h-4 w-4 mr-2" />
           Add Image
         </Button>
@@ -436,18 +460,36 @@ export default function GalleryManagement() {
             </div>
 
             <div>
-              <Label htmlFor="imageUrl" className="text-slate-200">
-                Image URL
+              <Label htmlFor="image" className="text-slate-200">
+                Image
               </Label>
-              <Input
-                id="imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, imageUrl: e.target.value })
-                }
-                className="bg-slate-800 border-slate-600 text-white"
-                placeholder="https://example.com/image.jpg"
-              />
+              <div className="mt-2 flex items-center gap-4">
+                {(formData.imageUrl || imageFile) && (
+                  <Image
+                    src={imageFile ? URL.createObjectURL(imageFile) : formData.imageUrl}
+                    alt="Preview"
+                    width={80}
+                    height={80}
+                    className="rounded-lg object-cover"
+                  />
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        setImageFile(e.target.files[0]);
+                      }
+                    }}
+                    className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Upload a new image to replace the existing one.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -509,8 +551,17 @@ export default function GalleryManagement() {
               onClick={handleSave}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
-              <Save className="h-4 w-4 mr-2" />
-              {selectedItem ? "Update Item" : "Create Item"}
+              {isUploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  {selectedItem ? "Update Item" : "Create Item"}
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
