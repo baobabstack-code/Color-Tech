@@ -151,7 +151,7 @@ const GalleryPage = () => {
           {galleryImages.map((image, index) => (
             <Card
               key={index}
-              className="group cursor-pointer overflow-hidden rounded-2xl shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300 flex flex-col min-h-[480px]"
+              className="group cursor-pointer overflow-hidden rounded-2xl shadow-xl border-slate-200 dark:border-white/20 bg-white/90 dark:bg-slate-800/90 hover:scale-[1.02] transition-transform duration-300 flex flex-col min-h-[480px]"
               onClick={() => setSelectedImage(image.src)}
             >
               <CardHeader className="p-0 relative">
@@ -181,14 +181,14 @@ const GalleryPage = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-6 flex-grow">
-                <CardTitle className="text-lg font-semibold leading-tight mb-2 text-white">
+                <CardTitle className="text-lg font-semibold leading-tight mb-2 text-slate-800 dark:text-white">
                   {image.alt}
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-300 mb-2">
+                <CardDescription className="text-sm text-slate-600 dark:text-gray-300 mb-2">
                   {image.category}
                 </CardDescription>
                 {(image as any).description && (
-                  <p className="text-xs text-gray-400 line-clamp-2">
+                  <p className="text-xs text-slate-500 dark:text-gray-400 line-clamp-2">
                     {(image as any).description}
                   </p>
                 )}
