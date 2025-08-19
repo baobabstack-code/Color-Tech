@@ -73,7 +73,6 @@ export class DatabaseService {
 
     return services.map((service) => ({
       ...service,
-      price: service.basePrice,
       duration: service.duration,
       isActive: service.status === "active",
       bookingCount: service.bookings.length,
@@ -281,10 +280,7 @@ export class DatabaseService {
       }),
     ]);
 
-    const totalRevenue = completedBookings.reduce(
-      (sum, booking) => sum + booking.service.basePrice,
-      0
-    );
+    const totalRevenue = 0; // Revenue tracking removed
 
     return {
       stats: {
@@ -303,7 +299,6 @@ export class DatabaseService {
         service: {
           id: booking.service.id,
           name: booking.service.name,
-          basePrice: booking.service.basePrice,
         },
       })),
     };
