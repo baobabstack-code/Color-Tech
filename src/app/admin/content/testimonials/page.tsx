@@ -34,6 +34,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 
 interface Testimonial {
@@ -67,6 +68,8 @@ export default function TestimonialsManagement() {
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<TestimonialFormData>({
     name: "",
     role: "",
@@ -102,7 +105,26 @@ export default function TestimonialsManagement() {
   };
 
   const handleSave = async () => {
+    setIsUploading(true);
+    let finalImageUrl = formData.image;
+
     try {
+      if (imageFile) {
+        const response = await fetch(`/api/upload?filename=${imageFile.name}`, {
+          method: 'POST',
+          body: imageFile,
+        });
+
+        if (!response.ok) {
+          throw new Error('Image upload failed');
+        }
+
+        const newBlob = await response.json();
+        finalImageUrl = newBlob.url;
+      }
+
+      const dataToSave = { ...formData, image: finalImageUrl };
+
       const url = selectedTestimonial
         ? `/api/content/testimonials/${selectedTestimonial.id}`
         : "/api/content/testimonials";
@@ -113,7 +135,7 @@ export default function TestimonialsManagement() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSave),
       });
 
       if (response.ok) {
@@ -127,12 +149,14 @@ export default function TestimonialsManagement() {
       } else {
         throw new Error("Failed to save testimonial");
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to save testimonial",
+        description: error.message || "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -210,6 +234,7 @@ export default function TestimonialsManagement() {
 
   const resetForm = () => {
     setSelectedTestimonial(null);
+    setImageFile(null);
     setFormData({
       name: "",
       role: "",
@@ -511,6 +536,39 @@ export default function TestimonialsManagement() {
             </div>
 
             <div>
+              <Label htmlFor="image" className="text-slate-200">
+                Author Image
+              </Label>
+              <div className="mt-2 flex items-center gap-4">
+                {(formData.image || imageFile) && (
+                  <Image
+                    src={imageFile ? URL.createObjectURL(imageFile) : formData.image}
+                    alt="Preview"
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover"
+                  />
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        setImageFile(e.target.files[0]);
+                      }
+                    }}
+                    className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Upload a new image to replace the existing one.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
               <Label htmlFor="quote" className="text-slate-200">
                 Testimonial Quote
               </Label>
@@ -624,8 +682,17 @@ export default function TestimonialsManagement() {
               onClick={handleSave}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
-              <Save className="h-4 w-4 mr-2" />
-              {selectedTestimonial ? "Update Testimonial" : "Create Testimonial"}
+{isUploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  {selectedTestimonial ? "Update Testimonial" : "Create Testimonial"}
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
