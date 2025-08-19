@@ -51,52 +51,52 @@ const About = () => {
       name: "Chiedza Nyakudya",
       role: "Honda Owner",
       content:
-        "After hail damage, I thought my car was beyond repair. Color-tech proved me wrong - it looks better than when I first bought it. Excellent craftsmanship!",
+        "After hail damage, I thought my car was beyond repair. Color-tech proved me wrong - it looks better than when I first bought it. Excelupdatelent craftsmanship!",
       rating: 5,
     },
   ];
 
-  // const teamMembers = [
-  //   {
-  //     name: "Tafadzwa Mukamuri",
-  //     role: "Master Panel Beater",
-  //     image: "/team/tafadzwa.jpg",
-  //     certifications: ["Certified Master Technician", "BMW Certified"],
-  //     specializations: ["Structural Repairs", "Classic Car Restoration"],
-  //     experience: "15+ years",
-  //     contact: {
-  //       email: "tafadzwa@color-tech.co.zw",
-  //       phone: "+263 77 123 4567",
-  //     },
-  //   },
-  //   {
-  //     name: "Simbarashe Mpofu",
-  //     role: "Head Spray Painter",
-  //     image: "/team/simbarashe.jpg",
-  //     certifications: ["PPG Certified Painter", "Color Match Specialist"],
-  //     specializations: ["Custom Paint Work", "Color Matching"],
-  //     experience: "12+ years",
-  //     contact: {
-  //       email: "simbarashe@color-tech.co.zw",
-  //       phone: "+263 77 123 4568",
-  //     },
-  //   },
-  //   {
-  //     name: "Nyasha Dube",
-  //     role: "Quality Control Manager",
-  //     image: "/team/nyasha.jpg",
-  //     certifications: [
-  //       "Quality Management Certified",
-  //       "Vehicle Safety Inspector",
-  //     ],
-  //     specializations: ["Final Inspection", "Customer Relations"],
-  //     experience: "10+ years",
-  //     contact: {
-  //       email: "nyasha@color-tech.co.zw",
-  //       phone: "+263 77 123 4569",
-  //     },
-  //   },
-  // ];
+  const teamMembers = [
+    {
+      name: "Tafadzwa Mukamuri",
+      role: "Master Panel Beater",
+      image: "/team/tafadzwa.jpg",
+      certifications: ["Certified Master Technician", "BMW Certified"],
+      specializations: ["Structural Repairs", "Classic Car Restoration"],
+      experience: "15+ years",
+      contact: {
+        email: "tafadzwa@color-tech.co.zw",
+        phone: "+263 77 123 4567",
+      },
+    },
+    {
+      name: "Simbarashe Mpofu",
+      role: "Head Spray Painter",
+      image: "/team/simbarashe.jpg",
+      certifications: ["PPG Certified Painter", "Color Match Specialist"],
+      specializations: ["Custom Paint Work", "Color Matching"],
+      experience: "12+ years",
+      contact: {
+        email: "simbarashe@color-tech.co.zw",
+        phone: "+263 77 123 4568",
+      },
+    },
+    {
+      name: "Nyasha Dube",
+      role: "Quality Control Manager",
+      image: "/team/nyasha.jpg",
+      certifications: [
+        "Quality Management Certified",
+        "Vehicle Safety Inspector",
+      ],
+      specializations: ["Final Inspection", "Customer Relations"],
+      experience: "10+ years",
+      contact: {
+        email: "nyasha@color-tech.co.zw",
+        phone: "+263 77 123 4569",
+      },
+    },
+  ];
 
   const faqs = [
     {
