@@ -36,10 +36,10 @@ export default function Footer() {
   };
 
   const socials = [
-    { icon: <Facebook className="h-5 w-5" />, path: "https://facebook.com/colortech" },
-    { icon: <Twitter className="h-5 w-5" />, path: "https://twitter.com/colortech" },
-    { icon: <Instagram className="h-5 w-5" />, path: "https://instagram.com/colortech" },
-    { icon: <Linkedin className="h-5 w-5" />, path: "https://linkedin.com/company/colortech" },
+    { icon: <Facebook className="h-5 w-5" />, path: "https://www.facebook.com/share/17jzieXNoZ/" },
+    // { icon: <Twitter className="h-5 w-5" />, path: "https://twitter.com/colortech" },
+    // { icon: <Instagram className="h-5 w-5" />, path: "https://instagram.com/colortech" },
+    // { icon: <Linkedin className="h-5 w-5" />, path: "https://linkedin.com/company/colortech" },
   ];
 
   return (
