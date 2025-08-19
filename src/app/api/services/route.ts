@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.name || data.basePrice === undefined || !data.durationMinutes) {
+    if (!data.name || data.duration === undefined) {
       return NextResponse.json(
         {
-          message: "Missing required fields: name, basePrice, durationMinutes",
+          message: "Missing required fields: name, duration",
         },
         { status: 400 }
       );
@@ -42,10 +42,9 @@ export async function POST(request: NextRequest) {
     const newService = await DatabaseService.createService({
       name: data.name,
       description: data.description || "",
-      basePrice: data.basePrice,
-      duration: data.durationMinutes,
+      duration: data.duration,
       category: data.category || "General",
-      status: data.status || "active",
+      status: data.isActive ? "active" : "inactive",
     });
 
     return NextResponse.json(newService, { status: 201 });

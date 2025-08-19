@@ -14,7 +14,6 @@ async function main() {
       name: "Panel Beating & Dent Repair",
       description:
         "Professional panel beating services to restore your vehicle's body to its original condition. We handle everything from minor dents to major collision damage.",
-      basePrice: 150.0,
       duration: 180, // 3 hours
       category: "Body Repair",
       status: "active" as const,
@@ -23,7 +22,6 @@ async function main() {
       name: "Spray Painting & Refinishing",
       description:
         "High-quality automotive spray painting using premium paints and clear coats. Color matching and full vehicle resprays available.",
-      basePrice: 300.0,
       duration: 480, // 8 hours
       category: "Paint Services",
       status: "active" as const,
@@ -32,7 +30,6 @@ async function main() {
       name: "Rust Treatment & Prevention",
       description:
         "Complete rust removal and treatment services. We stop rust in its tracks and apply protective coatings to prevent future corrosion.",
-      basePrice: 120.0,
       duration: 240, // 4 hours
       category: "Rust Treatment",
       status: "active" as const,
@@ -41,7 +38,6 @@ async function main() {
       name: "Bumper Repair & Replacement",
       description:
         "Specialized bumper repair services including plastic welding, painting, and complete replacements for all vehicle types.",
-      basePrice: 200.0,
       duration: 300, // 5 hours
       category: "Body Repair",
       status: "active" as const,
@@ -50,7 +46,6 @@ async function main() {
       name: "Scratch & Scuff Removal",
       description:
         "Professional scratch removal and paint correction services. From light scratches to deep gouges, we restore your paint to perfection.",
-      basePrice: 80.0,
       duration: 120, // 2 hours
       category: "Paint Services",
       status: "active" as const,
@@ -59,7 +54,6 @@ async function main() {
       name: "Hail Damage Repair",
       description:
         "Specialized hail damage repair using paintless dent removal techniques. Restore your vehicle without affecting the original paint.",
-      basePrice: 250.0,
       duration: 360, // 6 hours
       category: "Body Repair",
       status: "active" as const,
@@ -69,7 +63,6 @@ async function main() {
       name: "Fiber Glass Repair",
       description:
         "Expert fiber glass repairs for automotive panels, bumpers, and custom parts. Durable, seamless results for all vehicle types.",
-      basePrice: 180.0,
       duration: 210, // 3.5 hours
       category: "Body Repair",
       status: "active" as const,
@@ -78,7 +71,6 @@ async function main() {
       name: "Disc Skimming",
       description:
         "Precision disc skimming to restore brake performance and eliminate vibration. Suitable for all makes and models.",
-      basePrice: 60.0,
       duration: 60, // 1 hour
       category: "Brake Services",
       status: "active" as const,
@@ -87,7 +79,6 @@ async function main() {
       name: "Vehicle Servicing",
       description:
         "Comprehensive vehicle servicing including oil change, filter replacement, and safety checks. Keep your car running smoothly.",
-      basePrice: 100.0,
       duration: 90, // 1.5 hours
       category: "Maintenance",
       status: "active" as const,
@@ -96,7 +87,6 @@ async function main() {
       name: "Cutting and Joining Mechanics",
       description:
         "Professional cutting and joining services for chassis, frames, and body panels. Structural repairs and modifications done right.",
-      basePrice: 220.0,
       duration: 240, // 4 hours
       category: "Body Repair",
       status: "active" as const,
@@ -105,7 +95,6 @@ async function main() {
       name: "Wheel Alignment",
       description:
         "Computerized wheel alignment for improved handling, tire life, and safety. Precision adjustments for all vehicles.",
-      basePrice: 50.0,
       duration: 45, // 45 minutes
       category: "Suspension & Steering",
       status: "active" as const,

@@ -41,10 +41,9 @@ export async function PUT(
     const updatedService = await DatabaseService.updateService(parseInt(id), {
       name: data.name,
       description: data.description,
-      basePrice: data.basePrice,
-      duration: data.durationMinutes,
+      duration: data.duration,
       category: data.category,
-      status: data.status,
+      status: typeof data.isActive === 'boolean' ? (data.isActive ? 'active' : 'inactive') : undefined,
     });
 
     return NextResponse.json(updatedService);

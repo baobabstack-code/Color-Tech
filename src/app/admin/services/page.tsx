@@ -35,7 +35,6 @@ interface Service {
   id: string;
   name: string;
   description: string;
-  price: number;
   duration: number; // in minutes
   category?: string; // Optional category field
   isActive: boolean;
@@ -55,10 +54,9 @@ const ServiceForm = ({
   const [formData, setFormData] = useState({
     name: service?.name || "",
     description: service?.description || "",
-    basePrice: service?.price || 0,
-    durationMinutes: service?.duration || 30,
+    duration: service?.duration || 30,
     category: service?.category || "General",
-    status: service?.isActive ? "active" : "inactive",
+    isActive: service?.isActive ?? true,
   });
 
   const handleSubmit = (e: FormEvent) => {
@@ -94,44 +92,23 @@ const ServiceForm = ({
           className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="price" className="text-slate-200">
-            Price ($)
-          </Label>
-          <Input
-            id="price"
-            type="number"
-            step="0.01"
-            value={formData.basePrice}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                basePrice: parseFloat(e.target.value) || 0,
-              })
-            }
-            required
-            className="bg-slate-800 border-slate-600 text-white"
-          />
-        </div>
-        <div>
-          <Label htmlFor="duration" className="text-slate-200">
-            Duration (minutes)
-          </Label>
-          <Input
-            id="duration"
-            type="number"
-            value={formData.durationMinutes}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                durationMinutes: parseInt(e.target.value) || 0,
-              })
-            }
-            required
-            className="bg-slate-800 border-slate-600 text-white"
-          />
-        </div>
+      <div>
+        <Label htmlFor="duration" className="text-slate-200">
+          Duration (minutes)
+        </Label>
+        <Input
+          id="duration"
+          type="number"
+          value={formData.duration}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              duration: parseInt(e.target.value) || 0,
+            })
+          }
+          required
+          className="bg-slate-800 border-slate-600 text-white"
+        />
       </div>
       <div>
         <Label htmlFor="category" className="text-slate-200">
@@ -150,11 +127,11 @@ const ServiceForm = ({
       <div className="flex items-center space-x-2">
         <Switch
           id="isActive"
-          checked={formData.status === "active"}
+          checked={formData.isActive}
           onCheckedChange={(checked) =>
             setFormData({
               ...formData,
-              status: checked ? "active" : "inactive",
+              isActive: checked,
             })
           }
         />

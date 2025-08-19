@@ -31,7 +31,6 @@ model Service {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(100)
   description String    @db.Text
-  basePrice   Float
   duration    Int       // Duration in minutes
   category    String    @db.VarChar(50)
   status      ServiceStatus @default(active)
