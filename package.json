@@ -125,7 +125,7 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
-  }
+  },
     "overrides": {
     "lightningcss": "^1.30.1"
   }
