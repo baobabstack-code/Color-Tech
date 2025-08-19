@@ -129,10 +129,7 @@ export default function GalleryManagement() {
           method: 'POST',
           body: file,
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Failed to upload ${file.name}: ${errorData.message || 'Unknown error'}`);
-        }
+        if (!response.ok) throw new Error(`Failed to upload ${file.name}`);
         const newBlob = await response.json();
         return newBlob.url;
       };
