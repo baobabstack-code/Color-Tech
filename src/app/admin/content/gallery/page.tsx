@@ -120,9 +120,9 @@ export default function GalleryManagement() {
     setIsUploading(true);
 
     try {
-      let imageUrl = formData.imageUrl;
-      let beforeImageUrl = formData.beforeImageUrl;
-      let afterImageUrl = formData.afterImageUrl;
+      let newImageUrl: string = formData.imageUrl;
+      let newBeforeImageUrl: string | null = formData.beforeImageUrl;
+      let newAfterImageUrl: string | null = formData.afterImageUrl;
 
       const uploadFile = async (file: File) => {
         try {
@@ -147,24 +147,37 @@ export default function GalleryManagement() {
         }
       };
 
-      if (formData.type === 'single_image' && imageFile) {
-        imageUrl = await uploadFile(imageFile);
-      }
-
-      if (formData.type === 'before_after') {
-        if (beforeImageFile) {
-          beforeImageUrl = await uploadFile(beforeImageFile);
+      if (formData.type === 'single_image') {
+        if (imageFile) {
+          newImageUrl = await uploadFile(imageFile);
+        } else if (selectedItem) {
+          newImageUrl = selectedItem.imageUrl; // Retain existing URL if no new file
         }
+      } else { // type === 'before_after'
+        if (beforeImageFile) {
+          newBeforeImageUrl = await uploadFile(beforeImageFile);
+        } else if (selectedItem) {
+          newBeforeImageUrl = selectedItem.beforeImageUrl; // Retain existing URL
+        }
+
         if (afterImageFile) {
-          afterImageUrl = await uploadFile(afterImageFile);
+          newAfterImageUrl = await uploadFile(afterImageFile);
+        } else if (selectedItem) {
+          newAfterImageUrl = selectedItem.afterImageUrl; // Retain existing URL
+        }
+        // For before_after type, imageUrl can be a fallback or primary display.
+        // If no single image file is provided, retain the existing imageUrl from selectedItem.
+        // If it's a new item, or no existing imageUrl, it might be empty or a placeholder.
+        if (!imageFile && selectedItem) {
+          newImageUrl = selectedItem.imageUrl;
         }
       }
 
       const dataToSave = {
         ...formData,
-        imageUrl,
-        beforeImageUrl,
-        afterImageUrl,
+        imageUrl: newImageUrl,
+        beforeImageUrl: newBeforeImageUrl,
+        afterImageUrl: newAfterImageUrl,
       };
 
       const url = selectedItem
