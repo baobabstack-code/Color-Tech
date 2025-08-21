@@ -1,13 +1,25 @@
-import { list, put } from "@vercel/blob";
 import { NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
 
 export async function GET(): Promise<NextResponse> {
     try {
-        const { blobs } = await list();
-        const imageRegex = /\.(png|jpe?g|gif|webp|svg|avif)$/i;
-        const images = blobs
-            .filter((b) => b.url && imageRegex.test(b.pathname))
-            .map((b) => ({ id: b.pathname, url: b.url }));
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+
+        const resources = await cloudinary.api.resources({
+            type: "upload",
+            resource_type: "image",
+            prefix: process.env.CLOUDINARY_FOLDER || "colortech",
+            max_results: 100,
+        });
+
+        const images = (resources.resources || []).map((r: any) => ({
+            id: r.public_id,
+            url: r.secure_url,
+        }));
         return NextResponse.json(images);
     } catch (error: any) {
         return NextResponse.json(
@@ -19,25 +31,42 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+
         const formData = await request.formData();
         const file = formData.get("file");
 
         if (!(file instanceof File)) {
             return NextResponse.json(
-                {
-                    error: "No file provided",
-                    details: {
-                        expectedField: "file",
-                    },
-                },
+                { error: "No file provided", details: { expectedField: "file" } },
                 { status: 400 }
             );
         }
 
-        const filename = `${Date.now()}-${file.name}`;
-        const blob = await put(filename, file, { access: "public" });
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        return NextResponse.json({ id: blob.pathname, url: blob.url });
+        const result: any = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                {
+                    folder: process.env.CLOUDINARY_FOLDER || "colortech",
+                    public_id: `${Date.now()}-${file.name}`.replace(/\.[^/.]+$/, ""),
+                    resource_type: "image",
+                    overwrite: true,
+                },
+                (error, uploadResult) => {
+                    if (error) return reject(error);
+                    resolve(uploadResult);
+                }
+            );
+            stream.end(buffer);
+        });
+
+        return NextResponse.json({ id: result.public_id, url: result.secure_url });
     } catch (error: any) {
         return NextResponse.json(
             {

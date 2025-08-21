@@ -66,6 +66,7 @@
     "bcryptjs": "latest",
     "better-sqlite3": "latest",
     "class-variance-authority": "latest",
+    "cloudinary": "^2.7.0",
     "clsx": "latest",
     "cmdk": "latest",
     "dotenv": "latest",

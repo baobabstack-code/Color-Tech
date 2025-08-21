@@ -1,5 +1,5 @@
-import { del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
 
 export async function DELETE(
     _request: NextRequest,
@@ -7,8 +7,12 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
-        // id corresponds to pathname (what we returned from list/put)
-        await del(id);
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+        await cloudinary.uploader.destroy(id, { resource_type: 'image' });
         return NextResponse.json({ ok: true });
     } catch (error: any) {
         return NextResponse.json(
