@@ -36,6 +36,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import GalleryPicker from "@/components/media/GalleryPicker";
 import { useToast } from "@/hooks/use-toast";
 
 interface BlogPost {
@@ -43,6 +44,7 @@ interface BlogPost {
   title: string;
   body: string;
   imageUrl: string | null;
+  videoUrl: string | null;
   isPublished: boolean;
   tags: string | null;
   author: string;
@@ -57,6 +59,7 @@ interface BlogFormData {
   title: string;
   body: string;
   imageUrl: string;
+  videoUrl: string;
   isPublished: boolean;
   tags: string;
   author: string;
@@ -74,11 +77,13 @@ export default function BlogManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<BlogFormData>({
     title: "",
     body: "",
     imageUrl: "",
+    videoUrl: "",
     isPublished: false,
     tags: "",
     author: "Admin User",
@@ -207,6 +212,7 @@ export default function BlogManagement() {
         title: post.title,
         body: post.body,
         imageUrl: post.imageUrl || "",
+        videoUrl: post.videoUrl || "",
         isPublished: post.isPublished,
         tags: post.tags || "",
         author: post.author || "Admin User",
@@ -225,6 +231,7 @@ export default function BlogManagement() {
       title: "",
       body: "",
       imageUrl: "",
+      videoUrl: "",
       isPublished: false,
       tags: "",
       author: "Admin User",
@@ -511,19 +518,24 @@ export default function BlogManagement() {
                     />
                   )}
                   <div className="flex-1">
-                    <Input
-                      id="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          setImageFile(e.target.files[0]);
-                        }
-                      }}
-                      className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            setImageFile(e.target.files[0]);
+                          }
+                        }}
+                        className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+                      />
+                      <Button type="button" variant="outline" onClick={() => setShowMediaPicker(true)}>
+                        Choose from Library
+                      </Button>
+                    </div>
                     <p className="text-xs text-slate-400 mt-1">
-                      Upload a new image to replace the existing one.
+                      Upload or pick from your media library.
                     </p>
                   </div>
                 </div>
@@ -541,6 +553,42 @@ export default function BlogManagement() {
                   className="bg-slate-800 border-slate-600 text-white"
                   placeholder="tag1, tag2, tag3"
                 />
+              </div>
+              <div>
+                <Label htmlFor="video" className="text-slate-200">
+                  Featured Video (optional)
+                </Label>
+                <div className="mt-2 flex items-center gap-4">
+                  {formData.videoUrl && (
+                    <video src={formData.videoUrl} width={160} height={80} className="rounded-md" controls />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex gap-2">
+                      <Input
+                        id="video"
+                        type="file"
+                        accept="video/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const fd = new FormData();
+                          fd.append('file', file);
+                          fd.append('type', 'video');
+                          const res = await fetch('/api/media', { method: 'POST', body: fd });
+                          if (res.ok) {
+                            const data = await res.json();
+                            setFormData({ ...formData, videoUrl: data.url });
+                          }
+                        }}
+                        className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+                      />
+                      <Button type="button" variant="outline" onClick={() => setShowMediaPicker(true)}>
+                        Choose from Library
+                      </Button>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1">Upload or pick a video from your library.</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -573,7 +621,7 @@ export default function BlogManagement() {
               onClick={handleSave}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
-{isUploading ? (
+              {isUploading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Uploading...
@@ -588,6 +636,19 @@ export default function BlogManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {showMediaPicker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Select Media</h2>
+              <Button variant="ghost" onClick={() => setShowMediaPicker(false)}>
+                Close
+              </Button>
+            </div>
+            <GalleryPicker onSelect={(url) => { setFormData({ ...formData, imageUrl: url }); setImageFile(null); setShowMediaPicker(false); }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

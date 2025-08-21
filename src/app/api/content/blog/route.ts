@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       title: data.title,
       body: data.body,
       imageUrl: data.imageUrl || null,
+      videoUrl: data.videoUrl || null,
       isPublished: data.isPublished || false,
       tags: data.tags || null,
       author: data.author || "Admin",

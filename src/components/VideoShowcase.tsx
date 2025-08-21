@@ -1,21 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface VideoShowcaseProps {
   videos: {
-    id: string;
-    title: string;
-    description: string;
-    thumbnail: string;
+    id: string | number;
+    title?: string;
+    description?: string;
+    thumbnail?: string;
     videoUrl: string;
   }[];
 }
 
 export default function VideoShowcase({ videos }: VideoShowcaseProps) {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [items, setItems] = useState<VideoShowcaseProps["videos"]>(videos || []);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      if (videos && videos.length > 0) return; // external data provided
+      setLoading(true);
+      try {
+        const res = await fetch("/api/content/videos");
+        if (!res.ok) throw new Error("Failed to fetch videos");
+        const data = await res.json();
+        if (!ignore) {
+          const mapped = (data || []).map((v: any) => ({
+            id: v.id,
+            title: v.title,
+            description: v.description,
+            thumbnail: v.thumbnailUrl,
+            videoUrl: v.videoUrl,
+          }));
+          setItems(mapped);
+        }
+      } catch (e) {
+        if (!ignore) setItems([]);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    load();
+    return () => { ignore = true; };
+  }, [videos]);
 
   return (
     <div className="py-16">
@@ -31,18 +62,26 @@ export default function VideoShowcase({ videos }: VideoShowcaseProps) {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {videos.map((video) => (
+          {loading ? (
+            <div className="col-span-full text-center text-gray-500">Loading videos...</div>
+          ) : items.length === 0 ? (
+            <div className="col-span-full text-center text-gray-500">No videos yet.</div>
+          ) : items.map((video) => (
             <div
               key={video.id}
               className="group relative overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
               onClick={() => setSelectedVideo(video.videoUrl)}
             >
               <div className="aspect-video relative">
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className="w-full h-full object-cover"
-                />
+                {video.thumbnail ? (
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title || "Video"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <video src={video.videoUrl} className="w-full h-full object-cover" muted playsInline />
+                )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <Play
@@ -54,10 +93,10 @@ export default function VideoShowcase({ videos }: VideoShowcaseProps) {
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
-                  {video.title}
+                  {video.title || "Video"}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  {video.description}
+                  {video.description || ""}
                 </p>
               </div>
             </div>

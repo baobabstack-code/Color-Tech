@@ -12,7 +12,11 @@ export async function DELETE(
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
-        await cloudinary.uploader.destroy(id, { resource_type: 'image' });
+        // Determine resource type (image default, or video via query param 'rt=video')
+        // Note: NextRequest is not available here because we don't accept it as arg, so we use the global? Instead, pass _request
+        const url = new URL((_request as any).url);
+        const rt = url.searchParams.get('rt') === 'video' ? 'video' : 'image';
+        await cloudinary.uploader.destroy(id, { resource_type: rt as any });
         return NextResponse.json({ ok: true });
     } catch (error: any) {
         return NextResponse.json(

@@ -10,7 +10,22 @@ const Blog = () => {
   useEffect(() => {
     const fetchBlogPosts = async () => {
       const posts = await contentService.getBlogPosts();
-      setBlogPosts(posts);
+      // Map the posts to ensure they match the BlogPost interface
+      const formattedPosts = posts.map(post => ({
+        id: post.id,
+        title: post.title,
+        body: post.body,
+        imageUrl: post.imageUrl,
+        isPublished: post.isPublished,
+        tags: post.tags,
+        author: post.author,
+        slug: post.slug || "",
+        createdBy: 1, // Default value
+        updatedBy: 1, // Default value
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt
+      }));
+      setBlogPosts(formattedPosts);
     };
 
     fetchBlogPosts();

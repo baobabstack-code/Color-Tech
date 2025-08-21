@@ -79,7 +79,7 @@ export class DatabaseService {
       averageRating:
         service.reviews.length > 0
           ? service.reviews.reduce((sum, review) => sum + review.rating, 0) /
-            service.reviews.length
+          service.reviews.length
           : 0,
     }));
   }
@@ -310,6 +310,19 @@ export class DatabaseService {
   static async getPosts() {
     return await prisma.post.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        videoUrl: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        slug: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   }
 
@@ -317,18 +330,73 @@ export class DatabaseService {
     return await prisma.post.findMany({
       where: { isPublished: true },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        videoUrl: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        slug: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   }
 
   static async getPostById(id: number) {
     return await prisma.post.findUnique({
       where: { id },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        videoUrl: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        slug: true,
+        createdAt: true,
+        updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      }
     });
   }
 
-  static async createPost(data: any) {
+  static async createPost(data: {
+    title: string;
+    body: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    isPublished?: boolean;
+    tags?: string;
+    author: string;
+    slug: string;
+    createdBy: number;
+    updatedBy: number;
+  }) {
     return await prisma.post.create({
-      data,
+      data: {
+        title: data.title,
+        body: data.body,
+        imageUrl: data.imageUrl,
+        videoUrl: data.videoUrl,
+        isPublished: data.isPublished ?? false,
+        tags: data.tags,
+        author: data.author,
+        slug: data.slug,
+        createdBy: data.createdBy,
+        updatedBy: data.updatedBy
+      },
     });
   }
 
@@ -350,24 +418,95 @@ export class DatabaseService {
     return await prisma.galleryItem.findMany({
       where: { isPublished: true },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        beforeImageUrl: true,
+        afterImageUrl: true,
+        videoUrl: true,
+        type: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   }
 
   static async getAllGalleryItems() {
     return await prisma.galleryItem.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        beforeImageUrl: true,
+        afterImageUrl: true,
+        videoUrl: true,
+        type: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   }
 
   static async getGalleryItemById(id: number) {
     return await prisma.galleryItem.findUnique({
       where: { id },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        imageUrl: true,
+        beforeImageUrl: true,
+        afterImageUrl: true,
+        videoUrl: true,
+        type: true,
+        isPublished: true,
+        tags: true,
+        author: true,
+        createdAt: true,
+        updatedAt: true
+      }
     });
   }
 
-  static async createGalleryItem(data: any) {
+  static async createGalleryItem(data: {
+    title: string;
+    body?: string;
+    imageUrl: string;
+    beforeImageUrl?: string;
+    afterImageUrl?: string;
+    videoUrl?: string;
+    type?: string;
+    isPublished?: boolean;
+    tags?: string;
+    author: string;
+    createdBy: number;
+    updatedBy: number;
+  }) {
     return await prisma.galleryItem.create({
-      data,
+      data: {
+        title: data.title,
+        body: data.body,
+        imageUrl: data.imageUrl,
+        beforeImageUrl: data.beforeImageUrl,
+        afterImageUrl: data.afterImageUrl,
+        videoUrl: data.videoUrl,
+        type: data.type || 'single_image',
+        isPublished: data.isPublished ?? false,
+        tags: data.tags,
+        author: data.author,
+        createdBy: data.createdBy,
+        updatedBy: data.updatedBy
+      },
     });
   }
 
@@ -382,6 +521,45 @@ export class DatabaseService {
     return await prisma.galleryItem.delete({
       where: { id },
     });
+  }
+
+  // Videos
+  static async getVideos() {
+    return await prisma.video.findMany({ 
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        thumbnailUrl: true,
+        videoUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
+  }
+  
+  static async createVideo(data: { 
+    title: string; 
+    description?: string; 
+    thumbnailUrl?: string; 
+    videoUrl: string;
+    isPublished?: boolean;
+  }) {
+    return await prisma.video.create({ 
+      data: {
+        title: data.title,
+        description: data.description,
+        thumbnailUrl: data.thumbnailUrl,
+        videoUrl: data.videoUrl,
+        isPublished: data.isPublished ?? true
+      }
+    });
+  }
+  
+  static async deleteVideo(id: number) {
+    return await prisma.video.delete({ where: { id } });
   }
 
   // FAQs

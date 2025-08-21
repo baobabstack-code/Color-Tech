@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import GalleryPicker from "@/components/media/GalleryPicker";
 import {
   getGeneralSettings,
   updateGeneralSettings,
@@ -60,6 +62,9 @@ export default function AdminSettingsPage() {
     fallbackImageUrl: "",
     carouselImageUrls: [] as string[],
   });
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
+  type AppearanceTarget = "logoUrl" | "heroImageUrl" | "fallbackImageUrl" | "carouselImageUrls";
+  const [mediaTarget, setMediaTarget] = useState<AppearanceTarget | null>(null);
   const [bookingSettings, setBookingSettings] = useState({
     defaultDuration: 60,
     bookingWindow: 30,
@@ -171,6 +176,25 @@ export default function AdminSettingsPage() {
     } else {
       setAppearanceSettings((prev) => ({ ...prev, [id]: value }));
     }
+  };
+
+  const openMediaPicker = (target: AppearanceTarget) => {
+    setMediaTarget(target);
+    setShowMediaPicker(true);
+  };
+
+  const handleMediaSelect = (url: string) => {
+    if (!mediaTarget) return;
+    if (mediaTarget === "carouselImageUrls") {
+      setAppearanceSettings((prev) => ({
+        ...prev,
+        carouselImageUrls: [...(prev.carouselImageUrls || []), url],
+      }));
+    } else {
+      setAppearanceSettings((prev) => ({ ...prev, [mediaTarget]: url } as any));
+    }
+    setShowMediaPicker(false);
+    setMediaTarget(null);
   };
 
   const handleAppearanceSubmit = async (e: React.FormEvent) => {
@@ -576,57 +600,76 @@ export default function AdminSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Logo URL</label>
-                  <input
-                    type="text"
-                    id="logoUrl"
-                    value={appearanceSettings.logoUrl}
-                    onChange={handleAppearanceChange}
-                    placeholder="https://res.cloudinary.com/..."
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
+                  <div className="mt-1 flex gap-2">
+                    <input
+                      type="text"
+                      id="logoUrl"
+                      value={appearanceSettings.logoUrl}
+                      onChange={handleAppearanceChange}
+                      placeholder="https://res.cloudinary.com/..."
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                    <Button type="button" variant="outline" onClick={() => openMediaPicker("logoUrl")}>Choose</Button>
+                  </div>
                 </div>
                 <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Hero Image URL</label>
-                    <input
-                      type="text"
-                      id="heroImageUrl"
-                      value={appearanceSettings.heroImageUrl}
-                      onChange={handleAppearanceChange}
-                      placeholder="https://res.cloudinary.com/..."
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                    />
+                    <div className="mt-1 flex gap-2">
+                      <input
+                        type="text"
+                        id="heroImageUrl"
+                        value={appearanceSettings.heroImageUrl}
+                        onChange={handleAppearanceChange}
+                        placeholder="https://res.cloudinary.com/..."
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                      />
+                      <Button type="button" variant="outline" onClick={() => openMediaPicker("heroImageUrl")}>Choose</Button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Fallback Image URL</label>
-                    <input
-                      type="text"
-                      id="fallbackImageUrl"
-                      value={appearanceSettings.fallbackImageUrl}
-                      onChange={handleAppearanceChange}
-                      placeholder="https://res.cloudinary.com/..."
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                    />
+                    <div className="mt-1 flex gap-2">
+                      <input
+                        type="text"
+                        id="fallbackImageUrl"
+                        value={appearanceSettings.fallbackImageUrl}
+                        onChange={handleAppearanceChange}
+                        placeholder="https://res.cloudinary.com/..."
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                      />
+                      <Button type="button" variant="outline" onClick={() => openMediaPicker("fallbackImageUrl")}>Choose</Button>
+                    </div>
                   </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Carousel Image URLs (comma separated)</label>
-                  <input
-                    type="text"
-                    id="carouselImageUrls"
-                    value={appearanceSettings.carouselImageUrls.join(',')}
-                    onChange={(e) =>
-                      setAppearanceSettings((prev) => ({
-                        ...prev,
-                        carouselImageUrls: e.target.value
-                          .split(',')
-                          .map((s) => s.trim())
-                          .filter(Boolean),
-                      }))
-                    }
-                    placeholder="url1,url2,url3"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
+                  <div className="mt-1 flex gap-2">
+                    <input
+                      type="text"
+                      id="carouselImageUrls"
+                      value={appearanceSettings.carouselImageUrls.join(',')}
+                      onChange={(e) =>
+                        setAppearanceSettings((prev) => ({
+                          ...prev,
+                          carouselImageUrls: e.target.value
+                            .split(',')
+                            .map((s) => s.trim())
+                            .filter(Boolean),
+                        }))
+                      }
+                      placeholder="url1,url2,url3"
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                    <Button type="button" variant="outline" onClick={() => openMediaPicker("carouselImageUrls")}>Add from Library</Button>
+                  </div>
+                  {appearanceSettings.carouselImageUrls.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {appearanceSettings.carouselImageUrls.map((u, i) => (
+                        <span key={i} className="text-xs bg-gray-100 border rounded px-2 py-1">{u}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label
@@ -817,8 +860,8 @@ export default function AdminSettingsPage() {
                   type="button"
                   onClick={() => handleIntegrationToggle("googleCalendar")}
                   className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.googleCalendar
-                      ? "bg-red-100 text-red-700 hover:bg-red-200"
-                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200"
+                    : "bg-green-100 text-green-700 hover:bg-green-200"
                     }`}
                 >
                   {integrations.googleCalendar ? "Disconnect" : "Connect"}
@@ -835,8 +878,8 @@ export default function AdminSettingsPage() {
                   type="button"
                   onClick={() => handleIntegrationToggle("stripe")}
                   className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.stripe
-                      ? "bg-red-100 text-red-700 hover:bg-red-200"
-                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200"
+                    : "bg-green-100 text-green-700 hover:bg-green-200"
                     }`}
                 >
                   {integrations.stripe ? "Disconnect" : "Connect"}
@@ -853,8 +896,8 @@ export default function AdminSettingsPage() {
                   type="button"
                   onClick={() => handleIntegrationToggle("mailchimp")}
                   className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.mailchimp
-                      ? "bg-red-100 text-red-700 hover:bg-red-200"
-                      : "bg-green-100 text-green-700 hover:bg-green-200"
+                    ? "bg-red-100 text-red-700 hover:bg-red-200"
+                    : "bg-green-100 text-green-700 hover:bg-green-200"
                     }`}
                 >
                   {integrations.mailchimp ? "Disconnect" : "Connect"}
@@ -864,6 +907,20 @@ export default function AdminSettingsPage() {
           </SettingsCard>
         </TabsContent>
       </Tabs>
+
+      {showMediaPicker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Select Image</h2>
+              <Button variant="ghost" onClick={() => setShowMediaPicker(false)}>
+                Close
+              </Button>
+            </div>
+            <GalleryPicker onSelect={handleMediaSelect} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

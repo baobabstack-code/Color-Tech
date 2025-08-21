@@ -54,6 +54,8 @@ export default function RootLayout({
                 window.__APP_LOGO_URL__ = localStorage.getItem('appearance.logoUrl') || '';
                 window.__APP_HERO_URL__ = localStorage.getItem('appearance.heroImageUrl') || '';
                 window.__APP_FALLBACK_URL__ = localStorage.getItem('appearance.fallbackImageUrl') || '';
+                var list = (localStorage.getItem('appearance.carouselImageUrls') || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
+                window.__APP_CAROUSEL_URLS__ = list;
               } catch (e) {}
             })();
           `}

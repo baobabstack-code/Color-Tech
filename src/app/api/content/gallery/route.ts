@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.title || !data.imageUrl) {
+    if (!data.title || (!data.imageUrl && !data.videoUrl)) {
       return NextResponse.json(
-        { message: "Missing required fields: title, imageUrl" },
+        { message: "Missing required fields: title, imageUrl or videoUrl" },
         { status: 400 }
       );
     }
@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
     const newGalleryItem = await DatabaseService.createGalleryItem({
       title: data.title,
       body: data.body || null,
-      imageUrl: data.imageUrl,
+      imageUrl: data.imageUrl || (data.type === 'video' ? '' : ''),
+      videoUrl: data.videoUrl || null,
       isPublished: data.isPublished || false,
       tags: data.tags || null,
       author: data.author || "Admin",

@@ -40,6 +40,7 @@ export async function PUT(
       title: data.title,
       body: data.body,
       imageUrl: data.imageUrl,
+      videoUrl: data.videoUrl,
       isPublished: data.isPublished,
       tags: data.tags,
       author: data.author,

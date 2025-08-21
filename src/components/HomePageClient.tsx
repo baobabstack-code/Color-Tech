@@ -522,34 +522,8 @@ export default function HomePageClient({
           </div>
         </div>
 
-        {/* Video Showcase Section */}
-        <VideoShowcase
-          videos={[
-            {
-              id: "1",
-              title: "Panel Beating Process",
-              description:
-                "Watch our expert technicians restore damaged panels to perfection",
-              thumbnail: "/colortech/4.jpg",
-              videoUrl: "/colortech/1 .mp4",
-            },
-            {
-              id: "2",
-              title: "Spray Painting Technique",
-              description:
-                "Professional spray painting process for flawless finish",
-              thumbnail: "/colortech/7.jpg",
-              videoUrl: "/colortech/2.mp4",
-            },
-            {
-              id: "3",
-              title: "Complete Restoration",
-              description: "Full vehicle restoration from start to finish",
-              thumbnail: "/colortech/21.jpg",
-              videoUrl: "/colortech/3.mp4",
-            },
-          ]}
-        />
+        {/* Video Showcase Section (dynamic) */}
+        <VideoShowcase videos={[] /* Populated at runtime by fetching /api/content/videos on the page or within the component in a follow-up enhancement */} />
 
         {/* Blog Section */}
         <div className="py-16">

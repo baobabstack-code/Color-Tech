@@ -8,9 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 export default function GalleryPicker({
   onSelect,
   className = "",
+  type = 'image',
 }: {
   onSelect: (url: string) => void;
   className?: string;
+  type?: 'image' | 'video';
 }) {
   const { toast } = useToast();
   const [images, setImages] = useState<{ id: string; url: string }[]>([]);
@@ -21,7 +23,7 @@ export default function GalleryPicker({
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/media");
+      const res = await fetch(`/api/media?type=${type}`);
       const data = await res.json();
       setImages(data);
     } catch (error) {
@@ -38,6 +40,7 @@ export default function GalleryPicker({
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append('type', type);
 
     try {
       const uploadedMedia = await fetch("/api/media", {
@@ -82,7 +85,7 @@ export default function GalleryPicker({
       <div className="flex items-center gap-2">
         <Input
           type="file"
-          accept="image/*"
+          accept={type === 'video' ? 'video/*' : 'image/*'}
           className="hidden"
           id="media-upload"
           onChange={handleUpload}
@@ -97,7 +100,7 @@ export default function GalleryPicker({
           ) : (
             <ImagePlus className="h-4 w-4" />
           )}
-          Upload Image
+          {type === 'video' ? 'Upload Video' : 'Upload Image'}
         </label>
       </div>
 

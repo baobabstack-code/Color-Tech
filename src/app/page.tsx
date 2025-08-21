@@ -26,10 +26,21 @@ async function getTestimonials() {
 async function getGalleryPreviews() {
   const galleryItems = await contentService.getGalleryItems();
   return galleryItems
-    .map((item: GalleryItem) => {
+    .map((item) => {
+      // Create a GalleryItem compatible object from the database item
       return {
-        ...item,
+        id: item.id,
+        title: item.title,
         body: typeof item.body === "string" ? item.body : item.title,
+        imageUrl: item.imageUrl,
+        isPublished: item.isPublished,
+        tags: item.tags,
+        author: item.author,
+        createdBy: 1, // Default value
+        updatedBy: 1, // Default value
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        // Ignore additional properties from the database that aren't in GalleryItem
       };
     })
     .slice(0, 2);

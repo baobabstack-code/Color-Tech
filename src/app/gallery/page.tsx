@@ -21,6 +21,7 @@ interface GalleryItem {
   title: string;
   body: string | null;
   imageUrl: string;
+  videoUrl?: string | null;
   beforeImageUrl?: string | null;
   afterImageUrl?: string | null;
   type?: string;
@@ -74,7 +75,8 @@ const GalleryPage = () => {
 
   // Transform gallery items for display
   const galleryImages = allGalleryItems.map((item) => ({
-    src: item.imageUrl,
+    src: (item as any).videoUrl || item.imageUrl,
+    isVideo: !!(item as any).videoUrl,
     alt: item.title,
     category: item.tags ? item.tags.split(",")[0].trim() : "Our Work",
     description: item.body || "",
@@ -150,17 +152,25 @@ const GalleryPage = () => {
             >
               <CardHeader className="p-0 relative">
                 <div className="aspect-w-4 aspect-h-3">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    width={600}
-                    height={450}
-                    className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-t-2xl"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = (image as any).fallback;
-                    }}
-                  />
+                  {(image as any).isVideo ? (
+                    <video
+                      src={image.src}
+                      className="object-cover w-full h-full rounded-t-2xl"
+                      controls
+                    />
+                  ) : (
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      width={600}
+                      height={450}
+                      className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-t-2xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = (image as any).fallback;
+                      }}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-t-2xl">
                     <div className="text-white text-center p-4">
                       <ZoomIn className="w-8 h-8 mx-auto mb-2 text-white" />
@@ -200,18 +210,18 @@ const GalleryPage = () => {
         </div>
       </div>
 
-      {/* Image Modal */}
+      {/* Media Modal */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative max-w-5xl w-full">
-            <img
-              src={selectedImage}
-              alt="Selected work"
-              className="w-full h-auto rounded-lg"
-            />
+            {/\.mp4($|\?)/.test(selectedImage) ? (
+              <video src={selectedImage} controls className="w-full h-auto rounded-lg" />
+            ) : (
+              <img src={selectedImage} alt="Selected work" className="w-full h-auto rounded-lg" />
+            )}
             <button
               type="button"
               className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors duration-200"

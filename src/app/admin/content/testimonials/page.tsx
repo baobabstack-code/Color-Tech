@@ -35,6 +35,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import GalleryPicker from "@/components/media/GalleryPicker";
 import { useToast } from "@/hooks/use-toast";
 
 interface Testimonial {
@@ -69,6 +70,7 @@ export default function TestimonialsManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<TestimonialFormData>({
     name: "",
@@ -550,20 +552,21 @@ export default function TestimonialsManagement() {
                   />
                 )}
                 <div className="flex-1">
-                  <Input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        setImageFile(e.target.files[0]);
-                      }
-                    }}
-                    className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-                  />
-                  <p className="text-xs text-slate-400 mt-1">
-                    Upload a new image to replace the existing one.
-                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          setImageFile(e.target.files[0]);
+                        }
+                      }}
+                      className="bg-slate-800 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
+                    />
+                    <Button type="button" variant="outline" onClick={() => setShowMediaPicker(true)}>Choose from Library</Button>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">Upload or pick from your media library.</p>
                 </div>
               </div>
             </div>
@@ -682,7 +685,7 @@ export default function TestimonialsManagement() {
               onClick={handleSave}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
             >
-{isUploading ? (
+              {isUploading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Uploading...
@@ -697,6 +700,19 @@ export default function TestimonialsManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {showMediaPicker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Select Image</h2>
+              <Button variant="ghost" onClick={() => setShowMediaPicker(false)}>
+                Close
+              </Button>
+            </div>
+            <GalleryPicker onSelect={(url) => { setFormData({ ...formData, image: url }); setShowMediaPicker(false); }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

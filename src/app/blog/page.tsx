@@ -11,6 +11,7 @@ interface BlogPost {
   title: string;
   body: string;
   imageUrl: string | null;
+  videoUrl?: string | null;
   isPublished: boolean;
   tags: string | null;
   author: string;
@@ -64,6 +65,7 @@ const BlogPage = () => {
     readTime: `${Math.ceil(post.body.length / 200)} min`,
     image:
       post.imageUrl || "https://via.placeholder.com/800x400?text=Blog+Image",
+    video: post.videoUrl || null,
     featured: post.tags?.includes("featured") || false,
   }));
 
@@ -99,13 +101,17 @@ const BlogPage = () => {
       {featuredPost && (
         <div className="container mx-auto mb-16">
           <div className="relative rounded-2xl overflow-hidden shadow-xl border border-white/20 bg-white/10 hover:scale-[1.02] transition-transform duration-300 group">
-            <Image
-              src={featuredPost.image}
-              alt={featuredPost.title}
-              width={800}
-              height={400}
-              className="w-full h-[400px] object-cover rounded-2xl"
-            />
+            {featuredPost.video ? (
+              <video src={featuredPost.video} className="w-full h-[400px] object-cover rounded-2xl" controls />
+            ) : (
+              <Image
+                src={featuredPost.image}
+                alt={featuredPost.title}
+                width={800}
+                height={400}
+                className="w-full h-[400px] object-cover rounded-2xl"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end rounded-2xl">
               <div className="p-8 text-white">
                 <span className="inline-block bg-secondary px-3 py-1 rounded-full text-sm mb-4">
@@ -202,13 +208,17 @@ const BlogPage = () => {
                 <Link key={post.id} href={`/blog/${post.id}`} className="block">
                   <article className="bg-white/90 dark:bg-slate-900/90 rounded-2xl overflow-hidden shadow-xl border border-white/30 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 group">
                     <div className="relative h-48">
-                      <Image
-                        src={post.image}
-                        alt={post.title}
-                        width={800}
-                        height={400}
-                        className="w-full h-full object-cover rounded-t-2xl"
-                      />
+                      {post.video ? (
+                        <video src={post.video} className="w-full h-full object-cover rounded-t-2xl" controls />
+                      ) : (
+                        <Image
+                          src={post.image}
+                          alt={post.title}
+                          width={800}
+                          height={400}
+                          className="w-full h-full object-cover rounded-t-2xl"
+                        />
+                      )}
                       <span className="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm">
                         {post.category}
                       </span>

@@ -37,6 +37,7 @@ import {
   Tag,
 } from "lucide-react";
 import Image from "next/image";
+import GalleryPicker from "@/components/media/GalleryPicker";
 import { useToast } from "@/hooks/use-toast";
 
 interface GalleryItem {
@@ -79,6 +80,7 @@ export default function GalleryManagement() {
   const [imageFile, setImageFile] = useState<File | null>(null); // For single image
   const [beforeImageFile, setBeforeImageFile] = useState<File | null>(null);
   const [afterImageFile, setAfterImageFile] = useState<File | null>(null);
+  const [showMediaPicker, setShowMediaPicker] = useState<null | 'single' | 'before' | 'after'>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<GalleryFormData>({
     title: "",
@@ -130,7 +132,7 @@ export default function GalleryManagement() {
             method: 'POST',
             body: file,
           });
-          
+
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             console.error('Upload error response:', errorData);
@@ -138,7 +140,7 @@ export default function GalleryManagement() {
               `Failed to upload ${file.name}: ${errorData.message || 'Unknown error'}`
             );
           }
-          
+
           const newBlob = await response.json();
           return newBlob.url;
         } catch (error) {
@@ -349,7 +351,7 @@ export default function GalleryManagement() {
             <div>
               <p className="text-slate-400 text-sm">Tags</p>
               <h3 className="text-2xl font-bold text-white">
-                { new Set(items.flatMap(i => i.tags ? i.tags.split(',').map(t => t.trim()) : [])).size }
+                {new Set(items.flatMap(i => i.tags ? i.tags.split(',').map(t => t.trim()) : [])).size}
               </h3>
             </div>
             <Tag className="h-8 w-8 text-yellow-400" />
@@ -560,14 +562,17 @@ export default function GalleryManagement() {
                   Image
                 </Label>
                 <div className="col-span-3">
-                  <Input
-                    id="imageUrl"
-                    type="file"
-                    onChange={(e) =>
-                      setImageFile(e.target.files ? e.target.files[0] : null)
-                    }
-                    className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="imageUrl"
+                      type="file"
+                      onChange={(e) =>
+                        setImageFile(e.target.files ? e.target.files[0] : null)
+                      }
+                      className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                    />
+                    <Button type="button" variant="outline" onClick={() => setShowMediaPicker('single')}>Choose from Library</Button>
+                  </div>
                   {imageFile && (
                     <div className="mt-2">
                       <Image
@@ -599,16 +604,19 @@ export default function GalleryManagement() {
                     Before Image
                   </Label>
                   <div className="col-span-3">
-                    <Input
-                      id="beforeImageUrl"
-                      type="file"
-                      onChange={(e) =>
-                        setBeforeImageFile(
-                          e.target.files ? e.target.files[0] : null
-                        )
-                      }
-                      className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="beforeImageUrl"
+                        type="file"
+                        onChange={(e) =>
+                          setBeforeImageFile(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        }
+                        className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                      />
+                      <Button type="button" variant="outline" onClick={() => setShowMediaPicker('before')}>Choose from Library</Button>
+                    </div>
                     {beforeImageFile && (
                       <div className="mt-2">
                         <Image
@@ -638,16 +646,19 @@ export default function GalleryManagement() {
                     After Image
                   </Label>
                   <div className="col-span-3">
-                    <Input
-                      id="afterImageUrl"
-                      type="file"
-                      onChange={(e) =>
-                        setAfterImageFile(
-                          e.target.files ? e.target.files[0] : null
-                        )
-                      }
-                      className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="afterImageUrl"
+                        type="file"
+                        onChange={(e) =>
+                          setAfterImageFile(
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        }
+                        className="col-span-3 bg-slate-800 border-slate-600 file:text-white"
+                      />
+                      <Button type="button" variant="outline" onClick={() => setShowMediaPicker('after')}>Choose from Library</Button>
+                    </div>
                     {afterImageFile && (
                       <div className="mt-2">
                         <Image
@@ -750,6 +761,25 @@ export default function GalleryManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {showMediaPicker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Select Image</h2>
+              <Button variant="ghost" onClick={() => setShowMediaPicker(null)}>
+                Close
+              </Button>
+            </div>
+            <GalleryPicker onSelect={(url) => {
+              if (showMediaPicker === 'single') setFormData((p) => ({ ...p, imageUrl: url }));
+              if (showMediaPicker === 'before') setFormData((p) => ({ ...p, beforeImageUrl: url } as any));
+              if (showMediaPicker === 'after') setFormData((p) => ({ ...p, afterImageUrl: url } as any));
+              setShowMediaPicker(null);
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
