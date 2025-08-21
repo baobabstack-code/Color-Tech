@@ -9,6 +9,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     settings.general = { ...settings.general, ...body };
+    // expose select appearance URLs to the client via a tiny inline script (read at layout)
     console.log('Updated general settings:', settings.general);
     return NextResponse.json(settings.general);
   } catch (error) {

@@ -55,6 +55,10 @@ export default function AdminSettingsPage() {
   const [appearanceSettings, setAppearanceSettings] = useState({
     themeColor: "#000000",
     logo: null as File | null,
+    logoUrl: "",
+    heroImageUrl: "",
+    fallbackImageUrl: "",
+    carouselImageUrls: [] as string[],
   });
   const [bookingSettings, setBookingSettings] = useState({
     defaultDuration: 60,
@@ -172,10 +176,19 @@ export default function AdminSettingsPage() {
   const handleAppearanceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Note: File upload logic would be more complex in a real app
       await updateAppearanceSettings({
         themeColor: appearanceSettings.themeColor,
+        logoUrl: appearanceSettings.logoUrl,
+        heroImageUrl: appearanceSettings.heroImageUrl,
+        fallbackImageUrl: appearanceSettings.fallbackImageUrl,
+        carouselImageUrls: appearanceSettings.carouselImageUrls,
       });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('appearance.logoUrl', appearanceSettings.logoUrl || '');
+        localStorage.setItem('appearance.heroImageUrl', appearanceSettings.heroImageUrl || '');
+        localStorage.setItem('appearance.fallbackImageUrl', appearanceSettings.fallbackImageUrl || '');
+        localStorage.setItem('appearance.carouselImageUrls', (appearanceSettings.carouselImageUrls || []).join(','));
+      }
       toast({
         title: "Success!",
         description: "Appearance settings have been updated.",
@@ -562,6 +575,60 @@ export default function AdminSettingsPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700">Logo URL</label>
+                  <input
+                    type="text"
+                    id="logoUrl"
+                    value={appearanceSettings.logoUrl}
+                    onChange={handleAppearanceChange}
+                    placeholder="https://res.cloudinary.com/..."
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Hero Image URL</label>
+                    <input
+                      type="text"
+                      id="heroImageUrl"
+                      value={appearanceSettings.heroImageUrl}
+                      onChange={handleAppearanceChange}
+                      placeholder="https://res.cloudinary.com/..."
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Fallback Image URL</label>
+                    <input
+                      type="text"
+                      id="fallbackImageUrl"
+                      value={appearanceSettings.fallbackImageUrl}
+                      onChange={handleAppearanceChange}
+                      placeholder="https://res.cloudinary.com/..."
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">Carousel Image URLs (comma separated)</label>
+                  <input
+                    type="text"
+                    id="carouselImageUrls"
+                    value={appearanceSettings.carouselImageUrls.join(',')}
+                    onChange={(e) =>
+                      setAppearanceSettings((prev) => ({
+                        ...prev,
+                        carouselImageUrls: e.target.value
+                          .split(',')
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      }))
+                    }
+                    placeholder="url1,url2,url3"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div>
                   <label
                     htmlFor="logo"
                     className="block text-sm font-medium text-gray-700"
@@ -749,11 +816,10 @@ export default function AdminSettingsPage() {
                 <button
                   type="button"
                   onClick={() => handleIntegrationToggle("googleCalendar")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    integrations.googleCalendar
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.googleCalendar
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
-                  }`}
+                    }`}
                 >
                   {integrations.googleCalendar ? "Disconnect" : "Connect"}
                 </button>
@@ -768,11 +834,10 @@ export default function AdminSettingsPage() {
                 <button
                   type="button"
                   onClick={() => handleIntegrationToggle("stripe")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    integrations.stripe
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.stripe
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
-                  }`}
+                    }`}
                 >
                   {integrations.stripe ? "Disconnect" : "Connect"}
                 </button>
@@ -787,11 +852,10 @@ export default function AdminSettingsPage() {
                 <button
                   type="button"
                   onClick={() => handleIntegrationToggle("mailchimp")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    integrations.mailchimp
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${integrations.mailchimp
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
-                  }`}
+                    }`}
                 >
                   {integrations.mailchimp ? "Disconnect" : "Connect"}
                 </button>

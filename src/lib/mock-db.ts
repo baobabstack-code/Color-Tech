@@ -64,24 +64,24 @@ export let bookings = [
 ];
 
 export let reviews = [
-    {
-        id: 1,
-        bookingId: 2,
-        customerId: 2,
-        serviceId: 1,
-        rating: 5,
-        comment: 'Fantastic job! My car looks brand new.',
-        createdAt: new Date().toISOString(),
-    },
-    {
-        id: 2,
-        bookingId: 1,
-        customerId: 1,
-        serviceId: 2,
-        rating: 4,
-        comment: 'Very thorough, but took a bit longer than expected.',
-        createdAt: new Date().toISOString(),
-    }
+  {
+    id: 1,
+    bookingId: 2,
+    customerId: 2,
+    serviceId: 1,
+    rating: 5,
+    comment: 'Fantastic job! My car looks brand new.',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    bookingId: 1,
+    customerId: 1,
+    serviceId: 2,
+    rating: 4,
+    comment: 'Very thorough, but took a bit longer than expected.',
+    createdAt: new Date().toISOString(),
+  }
 ];
 
 export let settings = {
@@ -98,6 +98,9 @@ export let settings = {
   appearance: {
     themeColor: '#000000',
     logoUrl: null,
+    heroImageUrl: null,
+    fallbackImageUrl: null,
+    carouselImageUrls: [] as string[],
   },
   booking: {
     defaultDuration: 60,

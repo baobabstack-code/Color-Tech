@@ -46,6 +46,18 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900`}
       >
+        <Script id="app-image-config" strategy="beforeInteractive">
+          {`
+            (function(){
+              try {
+                // These can be set server-side later; for now, pull from localStorage if present
+                window.__APP_LOGO_URL__ = localStorage.getItem('appearance.logoUrl') || '';
+                window.__APP_HERO_URL__ = localStorage.getItem('appearance.heroImageUrl') || '';
+                window.__APP_FALLBACK_URL__ = localStorage.getItem('appearance.fallbackImageUrl') || '';
+              } catch (e) {}
+            })();
+          `}
+        </Script>
 
         <LayoutWrapper>{children}</LayoutWrapper>
         <Analytics />

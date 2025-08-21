@@ -8,12 +8,13 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    // Note: Handling file uploads (logo) would require a different setup,
-    // typically using multipart/form-data. For this mock API, we'll just handle the theme color.
-    if (body.themeColor) {
-      settings.appearance.themeColor = body.themeColor;
-    }
-    
+    // Accept simple image URL fields and theme color
+    if (body.themeColor !== undefined) settings.appearance.themeColor = body.themeColor;
+    if (body.logoUrl !== undefined) settings.appearance.logoUrl = body.logoUrl;
+    if (body.heroImageUrl !== undefined) settings.appearance.heroImageUrl = body.heroImageUrl;
+    if (body.fallbackImageUrl !== undefined) settings.appearance.fallbackImageUrl = body.fallbackImageUrl;
+    if (Array.isArray(body.carouselImageUrls)) settings.appearance.carouselImageUrls = body.carouselImageUrls;
+
     console.log('Updated appearance settings:', settings.appearance);
     return NextResponse.json(settings.appearance);
   } catch (error) {

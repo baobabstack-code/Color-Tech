@@ -200,7 +200,7 @@ export default function HomePageClient({
             {/* Background Image */}
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
               <Image
-                src="/images/hero/colorful-car.png"
+                src={(typeof window !== 'undefined' && (window as any).__APP_HERO_URL__) || "/images/hero/colorful-car.png"}
                 alt="Colorful car"
                 fill
                 style={{ objectFit: "cover", objectPosition: "center" }}
