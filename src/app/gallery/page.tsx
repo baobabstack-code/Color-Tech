@@ -21,6 +21,9 @@ interface GalleryItem {
   title: string;
   body: string | null;
   imageUrl: string;
+  beforeImageUrl?: string | null;
+  afterImageUrl?: string | null;
+  type?: string;
   isPublished: boolean;
   tags: string | null;
   author: string;
@@ -78,25 +81,16 @@ const GalleryPage = () => {
     fallback: "https://via.placeholder.com/600x450?text=ColorTech",
   }));
 
-  // Before/After transformations using ColorTech images
-  const transformations = [
-    {
-      beforeImage: "/colortech/16.jpg",
-      afterImage: "/colortech/21.jpg",
-      title: "Complete Vehicle Restoration",
-      description:
-        "Major collision damage repair and full vehicle restoration showcasing our expertise",
-      duration: "2 weeks",
-    },
-    {
-      beforeImage: "/colortech/17.jpg",
-      afterImage: "/colortech/25.jpg",
-      title: "Professional Paint & Finish",
-      description:
-        "Surface preparation to final quality finish with attention to detail",
-      duration: "1 week",
-    },
-  ];
+  // Build Before/After transformations from published gallery items
+  const transformations = allGalleryItems
+    .filter((item) => (item.type === "before_after") && item.beforeImageUrl && item.afterImageUrl)
+    .map((item) => ({
+      beforeImage: item.beforeImageUrl as string,
+      afterImage: item.afterImageUrl as string,
+      title: item.title,
+      description: item.body || "",
+      duration: "", // Optional: extend schema to include duration if needed
+    }));
 
   // Render loading spinner or skeleton UI
   if (isLoading) {
