@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, Clock, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { CriticalImage } from "@/components/ui/performance-optimized-image";
 import { Button } from "@/components/ui/button";
 
 interface BlogPost {
@@ -90,7 +90,7 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
     ? blogPost.tags.split(",")[0].trim()
     : "Uncategorized";
   const imageUrl =
-    blogPost.imageUrl || "https://via.placeholder.com/1200x600?text=Blog+Image";
+    blogPost.imageUrl || "/images/fallbacks/blog-fallback.jpg";
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
@@ -104,12 +104,22 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
 
         <article className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden">
           <div className="relative h-80 md:h-96">
-            <Image
+            <CriticalImage
               src={imageUrl}
-              alt={blogPost.title}
-              layout="fill"
-              objectFit="cover"
+              alt={`Blog post featured image: ${blogPost.title}`}
+              fill
+              style={{ objectFit: "cover" }}
               className="rounded-t-2xl"
+              contentType="blog"
+              imageOptions={{
+                width: 1200,
+                height: 600,
+                quality: 85,
+                format: 'auto',
+                crop: 'fill'
+              }}
+              sizes="(max-width: 768px) 100vw, 1200px"
+              longDescription={`Featured image for the blog post titled "${blogPost.title}". This image provides visual context for the article content about automotive repair and maintenance.`}
             />
           </div>
           <div className="p-6 md:p-8">

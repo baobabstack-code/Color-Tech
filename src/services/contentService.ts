@@ -73,17 +73,17 @@ export const contentService = {
   },
 
   async createBlogPost(post: Omit<BlogPost, "id">) {
-    const response = await api.post<BlogPost>("/blog-posts", post);
+    const response = await api.post<BlogPost>("/content/blog", post);
     return response.data;
   },
 
   async updateBlogPost(id: string, post: Partial<BlogPost>) {
-    const response = await api.put<BlogPost>(`/blog-posts/${id}`, post);
+    const response = await api.put<BlogPost>(`/content/blog/${id}`, post);
     return response.data;
   },
 
   async deleteBlogPost(id: string) {
-    await api.delete(`/blog-posts/${id}`);
+    await api.delete(`/content/blog/${id}`);
   },
 
   // Gallery Management
@@ -104,7 +104,7 @@ export const contentService = {
   },
 
   async uploadGalleryItem(formData: FormData) {
-    const response = await api.post<GalleryItem>("/gallery", formData, {
+    const response = await api.post<GalleryItem>("/content/media", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -113,7 +113,7 @@ export const contentService = {
   },
 
   async deleteGalleryItem(id: string) {
-    await api.delete(`/gallery/${id}`);
+    await api.delete(`/content/gallery/${id}`);
   },
 
   // FAQ Management
@@ -134,22 +134,22 @@ export const contentService = {
   },
 
   async getFAQById(id: string) {
-    const response = await api.get<FAQ>(`/faqs/${id}`);
+    const response = await api.get<FAQ>(`/content/faqs/${id}`);
     return response.data;
   },
 
   async createFAQ(faq: Omit<FAQ, "id">) {
-    const response = await api.post<FAQ>("/faqs", faq);
+    const response = await api.post<FAQ>("/content/faqs", faq);
     return response.data;
   },
 
   async updateFAQ(id: string, faq: Partial<FAQ>) {
-    const response = await api.put<FAQ>(`/faqs/${id}`, faq);
+    const response = await api.put<FAQ>(`/content/faqs/${id}`, faq);
     return response.data;
   },
 
   async deleteFAQ(id: string) {
-    await api.delete(`/faqs/${id}`);
+    await api.delete(`/content/faqs/${id}`);
   },
 
   async incrementFAQViews(id: string) {
@@ -175,25 +175,25 @@ export const contentService = {
   },
 
   async getTestimonialById(id: string) {
-    const response = await api.get<Testimonial>(`/testimonials/${id}`);
+    const response = await api.get<Testimonial>(`/content/testimonials/${id}`);
     return response.data;
   },
 
   async createTestimonial(testimonial: Omit<Testimonial, "id">) {
-    const response = await api.post<Testimonial>("/testimonials", testimonial);
+    const response = await api.post<Testimonial>("/content/testimonials", testimonial);
     return response.data;
   },
 
   async updateTestimonial(id: string, testimonial: Partial<Testimonial>) {
     const response = await api.put<Testimonial>(
-      `/testimonials/${id}`,
+      `/content/testimonials/${id}`,
       testimonial
     );
     return response.data;
   },
 
   async deleteTestimonial(id: string) {
-    await api.delete(`/testimonials/${id}`);
+    await api.delete(`/content/testimonials/${id}`);
   },
 
   async approveTestimonial(id: string) {
@@ -203,4 +203,47 @@ export const contentService = {
   async rejectTestimonial(id: string) {
     return this.updateTestimonial(id, { status: "rejected" });
   },
+
+  // Alias for updateBlogPost to maintain compatibility
+  async updatePost(id: string, data: any): Promise<BlogPost> {
+    // Map form data to BlogPost format
+    const blogPostData = {
+      title: data.title,
+      body: data.content || data.body,
+      imageUrl: data.imageUrl || null,
+      isPublished: data.isPublished || false,
+      tags: data.tags || null,
+      author: data.author || 'Admin',
+      slug: data.slug,
+      createdBy: 1, // Default user ID
+      updatedBy: 1, // Default user ID
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    return this.updateBlogPost(id, blogPostData);
+  },
+
+  // Alias for createBlogPost to maintain compatibility
+  async createPost(data: any): Promise<BlogPost> {
+    // Map form data to BlogPost format
+    const blogPostData = {
+      title: data.title,
+      body: data.content || data.body,
+      imageUrl: data.imageUrl || null,
+      isPublished: data.isPublished || false,
+      tags: data.tags || null,
+      author: data.author || 'Admin',
+      slug: data.slug,
+      createdBy: 1, // Default user ID
+      updatedBy: 1, // Default user ID
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    return this.createBlogPost(blogPostData);
+  },
 };
+
+export default contentService;
+
+// Export type for better TypeScript support
+export type ContentServiceType = typeof contentService;

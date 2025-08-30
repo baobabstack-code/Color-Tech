@@ -105,6 +105,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "latest",
     "@tailwindcss/forms": "^0.5.10",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bcryptjs": "latest",
     "@types/better-sqlite3": "latest",
     "@types/jest": "latest",
@@ -116,6 +119,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "jest-environment-jsdom": "^30.1.1",
     "postcss": "^8.4.31",
     "prettier": "latest",
     "prisma": "latest",

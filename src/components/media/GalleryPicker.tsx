@@ -23,7 +23,7 @@ export default function GalleryPicker({
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/media?type=${type}`);
+      const res = await fetch(`/api/content/media?type=${type}`);
       const data = await res.json();
       setImages(data);
     } catch (error) {
@@ -43,7 +43,7 @@ export default function GalleryPicker({
     formData.append('type', type);
 
     try {
-      const uploadedMedia = await fetch("/api/media", {
+      const uploadedMedia = await fetch("/api/content/media", {
         method: "POST",
         body: formData,
       });

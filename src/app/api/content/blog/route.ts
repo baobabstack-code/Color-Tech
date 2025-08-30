@@ -32,16 +32,16 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Basic validation
-    if (!data.title || !data.body || !data.slug) {
+    if (!data.title || (!data.body && !data.content) || !data.slug) {
       return NextResponse.json(
-        { message: "Missing required fields: title, body, slug" },
+        { message: "Missing required fields: title, body/content, slug" },
         { status: 400 }
       );
     }
 
     const newPost = await DatabaseService.createPost({
       title: data.title,
-      body: data.body,
+      body: data.body || data.content, // Use data.body or data.content
       imageUrl: data.imageUrl || null,
       videoUrl: data.videoUrl || null,
       isPublished: data.isPublished || false,

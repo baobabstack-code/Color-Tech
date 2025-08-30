@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { Loader2, Image as ImageIcon, Eye } from 'lucide-react'
 import BlogEditor from '@/components/blog/Editor'
 import GalleryPicker from '@/components/media/GalleryPicker'
-import { ContentService } from '@/services/content'
+import { contentService } from '@/services/contentService'
 import { useToast } from '@/components/ui/use-toast'
 
 type PostFormProps = {
@@ -45,7 +45,7 @@ export default function PostForm({ initialData }: PostFormProps) {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '')
-      setFormData({...formData, slug})
+      setFormData({ ...formData, slug })
     }
   }, [formData.title])
 
@@ -56,7 +56,7 @@ export default function PostForm({ initialData }: PostFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     if (!validateSlug(formData.slug)) {
       toast({
         title: 'Invalid Slug',
@@ -66,16 +66,16 @@ export default function PostForm({ initialData }: PostFormProps) {
       setLoading(false)
       return
     }
-    
+
     try {
       if (initialData?.id) {
-        await ContentService.updatePost(initialData.id.toString(), formData)
+        await contentService.updatePost(initialData.id.toString(), formData)
         toast({
           title: 'Success',
           description: 'Post updated successfully',
         })
       } else {
-        await ContentService.createPost(formData)
+        await contentService.createPost(formData)
         toast({
           title: 'Success',
           description: 'Post created successfully',
@@ -101,7 +101,7 @@ export default function PostForm({ initialData }: PostFormProps) {
           <Input
             id="title"
             value={formData.title}
-            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             required
           />
         </div>
@@ -111,7 +111,7 @@ export default function PostForm({ initialData }: PostFormProps) {
           <Textarea
             id="excerpt"
             value={formData.excerpt}
-            onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             rows={3}
           />
         </div>
@@ -120,15 +120,15 @@ export default function PostForm({ initialData }: PostFormProps) {
           <Label>Featured Image</Label>
           {formData.imageUrl ? (
             <div className="relative group">
-              <img 
-                src={formData.imageUrl} 
-                alt="Featured" 
+              <img
+                src={formData.imageUrl}
+                alt="Featured"
                 className="w-full h-48 object-cover rounded-md"
               />
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="text-white"
                   onClick={() => setShowGallery(true)}
                 >
@@ -137,7 +137,7 @@ export default function PostForm({ initialData }: PostFormProps) {
               </div>
             </div>
           ) : (
-            <div 
+            <div
               className="border-2 border-dashed rounded-md p-12 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50"
               onClick={() => setShowGallery(true)}
             >
@@ -149,9 +149,9 @@ export default function PostForm({ initialData }: PostFormProps) {
 
         <div className="space-y-2">
           <Label>Content</Label>
-          <BlogEditor 
-            content={formData.content} 
-            setContent={(content) => setFormData({...formData, content})}
+          <BlogEditor
+            content={formData.content}
+            setContent={(content) => setFormData({ ...formData, content })}
           />
         </div>
 
@@ -160,10 +160,10 @@ export default function PostForm({ initialData }: PostFormProps) {
             <div className="space-y-2">
               <Label>Publishing</Label>
               <div className="flex items-center space-x-2">
-                <Switch 
-                  id="publish-status" 
+                <Switch
+                  id="publish-status"
                   checked={formData.isPublished}
-                  onCheckedChange={(checked) => setFormData({...formData, isPublished: checked})}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isPublished: checked })}
                 />
                 <Label htmlFor="publish-status">
                   {formData.isPublished ? 'Published' : 'Draft'}
@@ -176,7 +176,7 @@ export default function PostForm({ initialData }: PostFormProps) {
               <Input
                 id="slug"
                 value={formData.slug}
-                onChange={(e) => setFormData({...formData, slug: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 required
               />
             </div>
@@ -184,8 +184,8 @@ export default function PostForm({ initialData }: PostFormProps) {
         </div>
 
         <div className="flex justify-end gap-4 pt-4">
-          <Button 
-            type="button" 
+          <Button
+            type="button"
             variant="outline"
             onClick={() => window.open(`/blog/preview/${formData.slug || 'temp'}`, '_blank')}
           >
@@ -209,7 +209,7 @@ export default function PostForm({ initialData }: PostFormProps) {
               </Button>
             </div>
             <GalleryPicker onSelect={(url) => {
-              setFormData({...formData, imageUrl: url})
+              setFormData({ ...formData, imageUrl: url })
               setShowGallery(false)
             }} />
           </div>

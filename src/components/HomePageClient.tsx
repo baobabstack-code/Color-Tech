@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { EnhancedImage } from "@/components/ui/enhanced-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -168,7 +168,7 @@ export default function HomePageClient({
       name:
         t.name || `${t.user_first_name || ""} ${t.user_last_name || ""}`.trim(),
       role: t.role || t.user_email || "Customer",
-      image: t.image || "/images/default-avatar.png",
+      image: t.image || "/images/fallbacks/avatar-fallback.jpg",
       quote: t.quote || t.comment || "Great service!",
       rating: t.rating || 5,
     }));
@@ -177,8 +177,8 @@ export default function HomePageClient({
     .slice(0, 2)
     .map((g: GalleryItem, index: number) => {
       return {
-        before: g.imageUrl || "/images/hero/colorful-car.png",
-        after: g.imageUrl || "/images/hero/colorful-car.png",
+        before: g.imageUrl || "/images/fallbacks/gallery-fallback.jpg",
+        after: g.imageUrl || "/images/fallbacks/gallery-fallback.jpg",
         title: g.title,
         description:
           g.body || "Professional automotive repair and restoration work",
@@ -199,12 +199,21 @@ export default function HomePageClient({
           >
             {/* Background Image */}
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
-              <Image
-                src={(typeof window !== 'undefined' && (window as any).__APP_HERO_URL__) || "/images/hero/colorful-car.png"}
-                alt="Colorful car"
+              <EnhancedImage
+                src="/images/hero/colorful-car.png"
+                alt="Professional automotive repair and restoration services - colorful car showcasing expert panel beating and spray painting work"
                 fill
                 style={{ objectFit: "cover", objectPosition: "center" }}
                 priority
+                contentType="hero"
+                imageOptions={{
+                  quality: 85,
+                  format: 'auto',
+                  crop: 'fill'
+                }}
+                maxRetries={2}
+                showLoadingSkeleton={false}
+                longDescription="Hero image showing a professionally restored colorful car that demonstrates the high-quality panel beating and spray painting services offered by ColorTech. The vibrant colors showcase the precision and artistry of our automotive restoration work."
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
             </div>
@@ -434,27 +443,39 @@ export default function HomePageClient({
                 <Link key={index} href="/gallery" className="block">
                   <div className="group relative overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 hover:scale-[1.02] transition-transform duration-300">
                     <div className="aspect-video relative">
-                      <Image
+                      <EnhancedImage
                         src={preview.after}
-                        alt={preview.title}
+                        alt={`After restoration: ${preview.title} - Professional automotive repair showcasing completed work`}
                         width={600}
                         height={338}
                         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 rounded-2xl"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/images/hero/colorful-car.png";
+                        contentType="gallery"
+                        imageOptions={{
+                          width: 600,
+                          height: 338,
+                          quality: 80,
+                          format: 'auto',
+                          crop: 'fill'
                         }}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        longDescription={`Gallery image showing the completed restoration work for ${preview.title}. This demonstrates the quality and attention to detail in our automotive repair services.`}
                       />
-                      <Image
+                      <EnhancedImage
                         src={preview.before}
-                        alt={`Before ${preview.title}`}
+                        alt={`Before restoration: ${preview.title} - Vehicle condition prior to professional repair work`}
                         width={600}
                         height={338}
                         className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-2xl"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/images/hero/colorful-car.png";
+                        contentType="gallery"
+                        imageOptions={{
+                          width: 600,
+                          height: 338,
+                          quality: 80,
+                          format: 'auto',
+                          crop: 'fill'
                         }}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        longDescription={`Gallery image showing the initial condition of ${preview.title} before our professional restoration work began. Compare with the after image to see the transformation.`}
                       />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6 rounded-2xl">
@@ -547,12 +568,22 @@ export default function HomePageClient({
                   <Card className="overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 h-full flex flex-col hover:scale-[1.02] transition-transform duration-300">
                     {post.image_url && (
                       <div className="relative h-48">
-                        <Image
+                        <EnhancedImage
                           src={post.image_url}
-                          alt={post.title}
+                          alt={`Blog post featured image: ${post.title}`}
                           fill
                           style={{ objectFit: "cover" }}
                           className="group-hover:scale-105 transition-transform duration-300"
+                          contentType="blog"
+                          imageOptions={{
+                            width: 400,
+                            height: 192,
+                            quality: 75,
+                            format: 'auto',
+                            crop: 'fill'
+                          }}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          longDescription={`Featured image for the blog post titled "${post.title}". This image provides visual context for the article content.`}
                         />
                       </div>
                     )}

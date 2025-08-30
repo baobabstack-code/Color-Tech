@@ -1,0 +1,9 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f8fafc"/>
+  <rect x="20" y="20" width="360" height="260" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,4"/>
+  <circle cx="200" cy="120" r="30" fill="#e2e8f0"/>
+  <path d="M 180 140 L 200 120 L 220 140 L 240 120 L 260 140 L 260 180 L 140 180 L 140 140 Z" fill="#cbd5e1"/>
+  <text x="50%" y="85%" text-anchor="middle" dy=".3em" font-family="Arial, sans-serif" font-size="16" fill="#64748b">
+    Image Unavailable
+  </text>
+</svg>

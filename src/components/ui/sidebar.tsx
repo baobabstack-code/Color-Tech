@@ -4,6 +4,7 @@ import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
+import { MobileDetectionBoundary } from "./mobile-detection-boundary"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,7 +46,7 @@ function useSidebar() {
   return context
 }
 
-const SidebarProvider = React.forwardRef<
+const SidebarProviderInner = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     defaultOpen?: boolean
@@ -152,6 +153,20 @@ const SidebarProvider = React.forwardRef<
     )
   }
 )
+SidebarProviderInner.displayName = "SidebarProviderInner"
+
+const SidebarProvider = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div"> & {
+    defaultOpen?: boolean
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+  }
+>((props, ref) => (
+  <MobileDetectionBoundary>
+    <SidebarProviderInner {...props} ref={ref} />
+  </MobileDetectionBoundary>
+))
 SidebarProvider.displayName = "SidebarProvider"
 
 const Sidebar = React.forwardRef<
@@ -612,7 +627,7 @@ const SidebarMenuAction = React.forwardRef<
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
+        "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
         className
       )}
       {...props}

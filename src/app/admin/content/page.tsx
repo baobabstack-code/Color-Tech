@@ -118,13 +118,15 @@ export default function ContentManagement() {
             />
             Refresh
           </Button>
-          <Button
-            variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Content Settings
-          </Button>
+          <Link href="/admin/content/settings">
+            <Button
+              variant="outline"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Content Settings
+            </Button>
+          </Link>
         </div>
       </div>
 
