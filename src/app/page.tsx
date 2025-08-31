@@ -46,6 +46,28 @@ async function getGalleryPreviews() {
     .slice(0, 2);
 }
 
+async function getHomepageSections() {
+  try {
+    const { DatabaseService } = await import("@/lib/database");
+    const sections = await DatabaseService.getHomepageSections();
+
+    // Convert to a key-value object for easier access
+    const sectionsMap = sections.reduce((acc, section) => {
+      acc[section.sectionKey] = {
+        title: section.title,
+        subtitle: section.subtitle,
+        description: section.description,
+      };
+      return acc;
+    }, {} as Record<string, any>);
+
+    return sectionsMap;
+  } catch (error) {
+    console.error("Failed to fetch homepage sections:", error);
+    return {};
+  }
+}
+
 async function getServices() {
   try {
     // Import database service directly for server-side rendering
@@ -61,12 +83,13 @@ async function getServices() {
 }
 
 export default async function HomePage() {
-  const [featuredPosts, testimonials, galleryPreviews, services] =
+  const [featuredPosts, testimonials, galleryPreviews, services, homepageSections] =
     await Promise.all([
       getFeaturedPosts(),
       getTestimonials(),
       getGalleryPreviews(),
       getServices(),
+      getHomepageSections(),
     ]);
 
   // Structured data for SEO
@@ -117,6 +140,7 @@ export default async function HomePage() {
           testimonials={testimonials as any}
           galleryPreviews={galleryPreviews as any}
           services={services as any}
+          homepageSections={homepageSections}
         />
       </main>
     </div>

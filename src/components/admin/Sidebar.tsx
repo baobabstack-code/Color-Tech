@@ -47,6 +47,11 @@ const navItems: NavItem[] = [
     icon: <FileEdit className="h-5 w-5" />,
     children: [
       {
+        name: "Homepage Sections",
+        href: "/admin/content/homepage",
+        icon: <Home className="h-4 w-4" />,
+      },
+      {
         name: "Blog Posts",
         href: "/admin/content/blog",
         icon: <FileText className="h-4 w-4" />,
@@ -114,11 +119,10 @@ const Sidebar = () => {
         <div className="flex items-center">
           <Link
             href={item.href}
-            className={`flex items-center flex-1 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${
-              active
+            className={`flex items-center flex-1 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${active
                 ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
                 : "text-slate-100 hover:text-white hover:bg-slate-800/50"
-            } ${level > 0 ? "ml-6 pl-6" : ""}`}
+              } ${level > 0 ? "ml-6 pl-6" : ""}`}
           >
             <span
               className={`mr-3 transition-colors ${active ? "text-white" : "text-slate-200 group-hover:text-white"}`}
@@ -135,9 +139,8 @@ const Sidebar = () => {
             <button
               type="button"
               onClick={() => toggleExpanded(item.name)}
-              className={`p-1.5 rounded-md transition-colors ${
-                active ? "text-white" : "text-slate-200 hover:text-white"
-              }`}
+              className={`p-1.5 rounded-md transition-colors ${active ? "text-white" : "text-slate-200 hover:text-white"
+                }`}
             >
               {isExpanded ? (
                 <ChevronDown className="h-4 w-4" />

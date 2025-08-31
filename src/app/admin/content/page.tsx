@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Settings,
   RefreshCw,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { contentService } from "@/services/contentService";
@@ -70,6 +71,13 @@ export default function ContentManagement() {
   }, []);
 
   const contentSections = [
+    {
+      title: "Homepage Sections",
+      icon: <Home className="h-6 w-6" />,
+      description: "Manage homepage section content",
+      path: "/admin/content/homepage",
+      count: "Dynamic",
+    },
     {
       title: "Blog Posts",
       icon: <FileText className="h-6 w-6" />,
@@ -145,14 +153,14 @@ export default function ContentManagement() {
                   {section.description}
                 </p>
                 <div className="text-sm">
-                  {isLoading ? (
+                  {isLoading && typeof section.count === 'number' ? (
                     <span className="flex items-center justify-center text-slate-400">
                       <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
                       Loading...
                     </span>
                   ) : (
                     <span className="bg-slate-700/50 px-3 py-1 rounded-full text-slate-300">
-                      {section.count} Items
+                      {typeof section.count === 'number' ? `${section.count} Items` : section.count}
                     </span>
                   )}
                 </div>

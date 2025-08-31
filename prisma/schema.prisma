@@ -173,6 +173,19 @@ model Video {
   @@map("videos")
 }
 
+model HomepageSection {
+  id          Int      @id @default(autoincrement())
+  sectionKey  String   @unique @db.VarChar(100) // e.g., "transformation_gallery", "hero_section"
+  title       String   @db.VarChar(255)
+  subtitle    String?  @db.Text
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("homepage_sections")
+}
+
 
 
 

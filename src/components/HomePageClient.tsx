@@ -78,6 +78,11 @@ interface HomePageClientProps {
   testimonials: Testimonial[];
   galleryPreviews: GalleryItem[];
   services: Service[];
+  homepageSections: Record<string, {
+    title: string;
+    subtitle?: string;
+    description?: string;
+  }>;
 }
 
 export default function HomePageClient({
@@ -85,6 +90,7 @@ export default function HomePageClient({
   testimonials,
   galleryPreviews,
   services,
+  homepageSections,
 }: HomePageClientProps) {
   const features = [
     {
@@ -275,11 +281,16 @@ export default function HomePageClient({
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
-              Why Choose Us
+              {homepageSections.why_choose_us?.title || "Why Choose Us"}
             </h2>
+            {homepageSections.why_choose_us?.subtitle && (
+              <h3 className="text-xl text-gray-600 dark:text-gray-400 mb-2">
+                {homepageSections.why_choose_us.subtitle}
+              </h3>
+            )}
             <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-              We combine expertise, quality, and customer service to deliver the
-              best auto body repair experience
+              {homepageSections.why_choose_us?.description ||
+                "We combine expertise, quality, and customer service to deliver the best auto body repair experience"}
             </p>
           </div>
           <motion.div
@@ -323,10 +334,16 @@ export default function HomePageClient({
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 text-primary dark:text-white">
-                Our Services
+                {homepageSections.our_services?.title || "Our Services"}
               </h2>
+              {homepageSections.our_services?.subtitle && (
+                <h3 className="text-xl text-gray-600 dark:text-gray-400 mb-2">
+                  {homepageSections.our_services.subtitle}
+                </h3>
+              )}
               <p className="text-lg text-gray-700 dark:text-gray-300">
-                Comprehensive auto body repair and painting services
+                {homepageSections.our_services?.description ||
+                  "Comprehensive auto body repair and painting services"}
               </p>
             </div>
             <motion.div
@@ -431,11 +448,16 @@ export default function HomePageClient({
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-primary dark:text-white mb-4">
-                Transformation Gallery
+                {homepageSections.transformation_gallery?.title || "Transformation Gallery"}
               </h2>
+              {homepageSections.transformation_gallery?.subtitle && (
+                <h3 className="text-xl text-gray-600 dark:text-gray-400 mb-2">
+                  {homepageSections.transformation_gallery.subtitle}
+                </h3>
+              )}
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                See the dramatic transformations we achieve through our expert
-                repair and restoration work
+                {homepageSections.transformation_gallery?.description ||
+                  "See the dramatic transformations we achieve through our expert repair and restoration work"}
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">

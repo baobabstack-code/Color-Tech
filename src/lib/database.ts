@@ -525,7 +525,7 @@ export class DatabaseService {
 
   // Videos
   static async getVideos() {
-    return await prisma.video.findMany({ 
+    return await prisma.video.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -539,15 +539,15 @@ export class DatabaseService {
       }
     });
   }
-  
-  static async createVideo(data: { 
-    title: string; 
-    description?: string; 
-    thumbnailUrl?: string; 
+
+  static async createVideo(data: {
+    title: string;
+    description?: string;
+    thumbnailUrl?: string;
     videoUrl: string;
     isPublished?: boolean;
   }) {
-    return await prisma.video.create({ 
+    return await prisma.video.create({
       data: {
         title: data.title,
         description: data.description,
@@ -557,7 +557,7 @@ export class DatabaseService {
       }
     });
   }
-  
+
   static async deleteVideo(id: number) {
     return await prisma.video.delete({ where: { id } });
   }
@@ -636,6 +636,57 @@ export class DatabaseService {
 
   static async deleteTestimonial(id: number) {
     return await prisma.testimonial.delete({
+      where: { id },
+    });
+  }
+
+  // Homepage Sections
+  static async getHomepageSections() {
+    return await prisma.homepageSection.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getAllHomepageSections() {
+    return await prisma.homepageSection.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  static async getHomepageSectionByKey(sectionKey: string) {
+    return await prisma.homepageSection.findUnique({
+      where: { sectionKey },
+    });
+  }
+
+  static async createHomepageSection(data: {
+    sectionKey: string;
+    title: string;
+    subtitle?: string;
+    description?: string;
+    isActive?: boolean;
+  }) {
+    return await prisma.homepageSection.create({
+      data: {
+        sectionKey: data.sectionKey,
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description,
+        isActive: data.isActive ?? true,
+      },
+    });
+  }
+
+  static async updateHomepageSection(id: number, data: any) {
+    return await prisma.homepageSection.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static async deleteHomepageSection(id: number) {
+    return await prisma.homepageSection.delete({
       where: { id },
     });
   }
