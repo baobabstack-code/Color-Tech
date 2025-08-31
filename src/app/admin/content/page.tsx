@@ -138,7 +138,7 @@ export default function ContentManagement() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {contentSections.map((section) => (
           <Link key={section.title} href={section.path} className="block group">
             <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200 h-full">
