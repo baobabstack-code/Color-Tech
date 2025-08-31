@@ -642,22 +642,37 @@ export class DatabaseService {
 
   // Homepage Sections
   static async getHomepageSections() {
-    return await prisma.homepageSection.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: "desc" },
-    });
+    try {
+      return await prisma.homepageSection.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (error) {
+      console.error('Homepage sections table may not exist yet:', error);
+      return [];
+    }
   }
 
   static async getAllHomepageSections() {
-    return await prisma.homepageSection.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    try {
+      return await prisma.homepageSection.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (error) {
+      console.error('Homepage sections table may not exist yet:', error);
+      return [];
+    }
   }
 
   static async getHomepageSectionByKey(sectionKey: string) {
-    return await prisma.homepageSection.findUnique({
-      where: { sectionKey },
-    });
+    try {
+      return await prisma.homepageSection.findUnique({
+        where: { sectionKey },
+      });
+    } catch (error) {
+      console.error('Homepage sections table may not exist yet:', error);
+      return null;
+    }
   }
 
   static async createHomepageSection(data: {
