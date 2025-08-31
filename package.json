@@ -76,7 +76,6 @@
     "input-otp": "latest",
     "jest": "latest",
     "jsonwebtoken": "latest",
-
     "lucide-react": "latest",
     "mocha": "latest",
     "multer": "latest",
@@ -132,6 +131,5 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
-  },
-
+  }
 }
