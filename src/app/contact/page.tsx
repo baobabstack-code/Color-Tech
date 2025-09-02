@@ -74,8 +74,8 @@ const Contact = () => {
     description:
       "Professional auto body repair, spray painting, and panel beating services in Harare, Zimbabwe",
     url: "https://colortech.co.zw",
-    telephone: "+263 78 125 3902",
-    email: "colorterch25@gmail.com",
+  telephone: "+263781253902",
+  email: "colorterch25@gmail.com",
     address: {
       "@type": "PostalAddress",
       streetAddress: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",
@@ -132,8 +132,7 @@ const Contact = () => {
                 <Phone className="w-6 h-6 mr-4 mt-1 text-white" />
                 <div>
                   <h3 className="font-semibold mb-1">Phone</h3>
-                  <p>+263 77 123 4567</p>
-                  <p>+263 71 987 6543</p>
+                  <p>+263 78 125 3902</p>
                 </div>
               </div>
 
@@ -141,8 +140,7 @@ const Contact = () => {
                 <Mail className="w-6 h-6 mr-4 mt-1 text-white" />
                 <div>
                   <h3 className="font-semibold mb-1">Email</h3>
-                  <p>info@color-tech.co.zw</p>
-                  <p>support@color-tech.co.zw</p>
+                  <p>colorterch25@gmail.com</p>
                 </div>
               </div>
 

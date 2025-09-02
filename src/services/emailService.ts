@@ -172,7 +172,7 @@ export const sendCustomerConfirmation = async (customerData: {
           
           <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Contact Information</h3>
-            <p style="color: #555; margin: 5px 0;">📞 Phone: +263 78 125 3902</p>
+            <p style="color: #555; margin: 5px 0;">📞 Phone: +263781253902</p>
             <p style="color: #555; margin: 5px 0;">📧 Email: colorterch25@gmail.com</p>
             <p style="color: #555; margin: 5px 0;">📍 Address: 667 Dias & lsafil complex, Hatfield Harare, workshop 28</p>
           </div>
