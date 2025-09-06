@@ -25,7 +25,7 @@ export function HeroImageExample() {
             src="https://res.cloudinary.com/your-cloud/image/upload/v1234567890/hero-image.jpg"
             alt="ColorTech hero image showcasing our services"
             contentType="hero"
-            fallbackSrc="/images/fallbacks/hero-fallback.jpg"
+            // No fallback image - will show error state instead
             imageOptions={{
                 width: 1920,
                 height: 1080,

@@ -149,6 +149,19 @@ function EnhancedImageInner({
 
     // Initialize state
     const [state, setState] = useState<ImageState>(() => {
+        // Handle empty or invalid src
+        if (!src || src.trim() === '') {
+            return {
+                isLoading: false,
+                hasError: true,
+                retryCount: 0,
+                currentSrc: '',
+                errorMessage: 'No image source provided',
+                errorType: 'invalid_url' as const,
+                loadStartTime: Date.now(),
+            };
+        }
+
         const determinedContentType = contentType || determineContentType(src);
         const processedSrc = imageService.processImageUrl(src, imageOptions, determinedContentType);
 
@@ -422,16 +435,18 @@ function EnhancedImageInner({
 
     return (
         <figure className={cn("relative", className)}>
-            <Image
-                {...props}
-                src={state.currentSrc}
-                alt={decorative ? "" : alt}
-                aria-hidden={decorative}
-                aria-describedby={longDescription ? descriptionId : undefined}
-                onLoad={handleLoad}
-                onError={() => handleError()}
-                className={cn("max-w-full h-auto", className)}
-            />
+            {state.currentSrc && (
+                <Image
+                    {...props}
+                    src={state.currentSrc}
+                    alt={decorative ? "" : alt}
+                    aria-hidden={decorative}
+                    aria-describedby={longDescription ? descriptionId : undefined}
+                    onLoad={handleLoad}
+                    onError={() => handleError()}
+                    className={cn("max-w-full h-auto", className)}
+                />
+            )}
 
             {/* Visually hidden long description for screen readers */}
             {longDescription && (

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,26 +15,26 @@ model User {
   password  String?   @db.VarChar(255)
   address   String?   @db.VarChar(500)
   role      UserRole  @default(admin)
-  bookings  Booking[]
-  reviews   Review[]
-  posts     Post[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+  posts     Post[]
+  reviews   Review[]
 
   @@map("users")
 }
 
 model Service {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  description String    @db.Text
-  duration    Int       // Duration in minutes
-  category    String    @db.VarChar(50)
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  description String
+  duration    Int
+  category    String        @db.VarChar(50)
   status      ServiceStatus @default(active)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   bookings    Booking[]
   reviews     Review[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 
   @@map("services")
 }
@@ -49,28 +46,28 @@ model Booking {
   scheduledAt DateTime
   status      BookingStatus @default(pending)
   notes       String?       @db.VarChar(1000)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   customer    User          @relation(fields: [customerId], references: [id], onDelete: Cascade)
   service     Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   reviews     Review[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
 
   @@map("bookings")
 }
 
 model Review {
-  id         Int         @id @default(autoincrement())
-  userId     Int
-  serviceId  Int
-  bookingId  Int?        // Optional - reviews can exist without bookings
-  rating     Int         @db.SmallInt
-  comment    String?     @db.Text
-  status     ReviewStatus @default(pending)
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  service    Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  booking    Booking?    @relation(fields: [bookingId], references: [id], onDelete: SetNull)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id        Int          @id @default(autoincrement())
+  userId    Int
+  serviceId Int
+  bookingId Int?
+  rating    Int          @db.SmallInt
+  comment   String?
+  status    ReviewStatus @default(pending)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  booking   Booking?     @relation(fields: [bookingId], references: [id])
+  service   Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }
@@ -78,9 +75,8 @@ model Review {
 model Post {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(255)
-  body        String   @db.Text
+  body        String
   imageUrl    String?  @db.VarChar(512)
-  videoUrl    String?  @db.VarChar(512)
   isPublished Boolean  @default(false)
   tags        String?  @db.VarChar(500)
   author      String   @db.VarChar(100)
@@ -89,6 +85,7 @@ model Post {
   updatedBy   Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  videoUrl    String?  @db.VarChar(512)
   creator     User     @relation(fields: [createdBy], references: [id])
 
   @@index([slug])
@@ -96,13 +93,12 @@ model Post {
   @@map("posts")
 }
 
-
 model Testimonial {
   id        Int               @id @default(autoincrement())
   name      String            @db.VarChar(100)
   role      String?           @db.VarChar(100)
   image     String?           @db.VarChar(512)
-  quote     String            @db.Text
+  quote     String
   rating    Int               @db.SmallInt
   status    TestimonialStatus @default(pending)
   source    String            @db.VarChar(50)
@@ -113,49 +109,49 @@ model Testimonial {
 }
 
 model FAQ {
-  id          Int       @id @default(autoincrement())
-  question    String    @db.VarChar(500)
-  answer      String    @db.Text
-  category    String    @db.VarChar(100)
-  status      FAQStatus @default(published)
-  views       Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        Int       @id @default(autoincrement())
+  question  String    @db.VarChar(500)
+  answer    String
+  category  String    @db.VarChar(100)
+  status    FAQStatus @default(published)
+  views     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("faqs")
 }
 
 model FormSubmission {
-  id        Int                    @id @default(autoincrement())
-  type      String                 @db.VarChar(50)
-  name      String                 @db.VarChar(100)
-  email     String                 @db.VarChar(255)
-  phone     String?                @db.VarChar(20)
-  service   String?                @db.VarChar(100)
-  message   String                 @db.Text
-  status    FormSubmissionStatus   @default(new)
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
+  id        Int                  @id @default(autoincrement())
+  type      String               @db.VarChar(50)
+  name      String               @db.VarChar(100)
+  email     String               @db.VarChar(255)
+  phone     String?              @db.VarChar(20)
+  service   String?              @db.VarChar(100)
+  message   String
+  status    FormSubmissionStatus @default(new)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
 
   @@map("form_submissions")
 }
 
 model GalleryItem {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  body        String?  @db.Text
+  id             Int      @id @default(autoincrement())
+  title          String   @db.VarChar(255)
+  body           String?
   imageUrl       String   @db.VarChar(512)
-  beforeImageUrl String?  @db.VarChar(512)
+  isPublished    Boolean  @default(false)
+  tags           String?  @db.VarChar(500)
+  author         String   @db.VarChar(100)
+  createdBy      Int
+  updatedBy      Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   afterImageUrl  String?  @db.VarChar(512)
-  videoUrl       String?  @db.VarChar(512)
+  beforeImageUrl String?  @db.VarChar(512)
   type           String   @default("single_image") @db.VarChar(50)
-  isPublished Boolean  @default(false)
-  tags        String?  @db.VarChar(500)
-  author      String   @db.VarChar(100)
-  createdBy   Int
-  updatedBy   Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  videoUrl       String?  @db.VarChar(512)
 
   @@map("gallery_items")
 }
@@ -163,7 +159,7 @@ model GalleryItem {
 model Video {
   id           Int      @id @default(autoincrement())
   title        String   @db.VarChar(255)
-  description  String?  @db.Text
+  description  String?
   thumbnailUrl String?  @db.VarChar(512)
   videoUrl     String   @db.VarChar(512)
   isPublished  Boolean  @default(true)
@@ -175,10 +171,10 @@ model Video {
 
 model HomepageSection {
   id          Int      @id @default(autoincrement())
-  sectionKey  String   @unique @db.VarChar(100) // e.g., "transformation_gallery", "hero_section"
+  sectionKey  String   @unique @db.VarChar(100)
   title       String   @db.VarChar(255)
-  subtitle    String?  @db.Text
-  description String?  @db.Text
+  subtitle    String?
+  description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -186,11 +182,6 @@ model HomepageSection {
   @@map("homepage_sections")
 }
 
-
-
-
-
-// Enums
 enum UserRole {
   admin
   staff

@@ -1,9 +1,0 @@
-<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="#f3f4f6"/>
-  <circle cx="100" cy="100" r="90" fill="none" stroke="#d1d5db" stroke-width="2"/>
-  <circle cx="100" cy="80" r="30" fill="#e5e7eb"/>
-  <path d="M 60 140 Q 100 120 140 140 L 140 160 Q 100 180 60 160 Z" fill="#e5e7eb"/>
-  <text x="50%" y="90%" text-anchor="middle" dy=".3em" font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
-    Avatar Unavailable
-  </text>
-</svg>

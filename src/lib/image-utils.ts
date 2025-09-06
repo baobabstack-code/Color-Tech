@@ -33,11 +33,11 @@ export type ContentType = 'hero' | 'gallery' | 'blog' | 'avatar' | 'general';
 const DEFAULT_CONFIG: ImageConfig = {
     cloudinaryBaseUrl: 'https://res.cloudinary.com',
     defaultFallbacks: {
-        hero: '/images/fallbacks/hero-fallback.jpg',
-        gallery: '/images/fallbacks/gallery-fallback.jpg',
-        blog: '/images/fallbacks/blog-fallback.jpg',
-        avatar: '/images/fallbacks/avatar-fallback.jpg',
-        general: '/images/fallbacks/general-fallback.jpg',
+        hero: '',
+        gallery: '',
+        blog: '',
+        avatar: '',
+        general: '',
     },
     optimizationSettings: {
         quality: 80,
