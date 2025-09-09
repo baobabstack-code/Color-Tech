@@ -157,7 +157,7 @@ function EnhancedImageInner({
                 retryCount: 0,
                 currentSrc: '',
                 errorMessage: 'No image source provided',
-                errorType: 'invalid_url' as const,
+                errorType: 'validation' as const,
                 loadStartTime: Date.now(),
             };
         }

@@ -74,8 +74,8 @@ const Contact = () => {
     description:
       "Professional auto body repair, spray painting, and panel beating services in Harare, Zimbabwe",
     url: "https://colortech.co.zw",
-  telephone: "+263781253902",
-  email: "colorterch25@gmail.com",
+    telephone: "+263781253902",
+    email: "colorterch25@gmail.com",
     address: {
       "@type": "PostalAddress",
       streetAddress: "667 Dias & lsafil complex, Hatfield Harare, workshop 28",
@@ -166,16 +166,27 @@ const Contact = () => {
             {/* Map */}
             <div className="mt-8">
               <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden">
-                <img
-                  src="/contact/map.jpg"
-                  alt="Location Map"
-                  className="w-full h-full object-cover rounded-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "https://source.unsplash.com/random/800x400?map";
-                  }}
-                />
+                {process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY ? (
+                  <iframe
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_MAPS_PLATFORM_API_KEY}&q=Dias+%26+Isafil+Complex,Harare,Zimbabwe`}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="rounded-2xl"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center">
+                    <div className="text-center text-primary">
+                      <MapPin className="w-12 h-12 mx-auto mb-2" />
+                      <p className="font-semibold">Location Map</p>
+                      <p className="text-sm mt-1">667 Dias & Isafil Complex</p>
+                      <p className="text-sm">Hatfield, Harare</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -288,11 +299,10 @@ const Contact = () => {
 
               {submitMessage && (
                 <div
-                  className={`p-4 rounded-lg text-center ${
-                    submitMessage.includes("Thank you")
+                  className={`p-4 rounded-lg text-center ${submitMessage.includes("Thank you")
                       ? "bg-green-100 text-green-800 border border-green-200"
                       : "bg-red-100 text-red-800 border border-red-200"
-                  }`}
+                    }`}
                 >
                   {submitMessage}
                 </div>

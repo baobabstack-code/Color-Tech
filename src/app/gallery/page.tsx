@@ -60,7 +60,10 @@ const GalleryPage = () => {
         const data = await res.json();
         if (isMounted) setAllGalleryItems(data || []);
       } catch (e) {
-        console.error("Error fetching gallery items:", e);
+        // Only log errors that aren't abort errors
+        if (e instanceof Error && e.name !== 'AbortError') {
+          console.error("Error fetching gallery items:", e);
+        }
         if (isMounted) setAllGalleryItems([]);
       } finally {
         if (isMounted) setIsLoading(false);

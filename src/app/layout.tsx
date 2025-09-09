@@ -4,7 +4,11 @@ import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Analytics } from "@vercel/analytics/next";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata = {
   title: "Auto Body Repair & Spray Painting Harare | Color Tech Zimbabwe",
@@ -16,6 +20,11 @@ export const metadata = {
   creator: "Color Tech",
   publisher: "Color Tech",
   robots: "index, follow",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "Auto Body Repair, Panel Beating & Spray Painting Harare | Color Tech Zimbabwe",
     description:

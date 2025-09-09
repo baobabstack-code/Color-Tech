@@ -60,7 +60,7 @@ const About = () => {
     {
       name: "Tafadzwa Mukamuri",
       role: "Master Panel Beater",
-      image: "/team/tafadzwa.jpg",
+      image: "", // Will be uploaded through admin
       certifications: ["Certified Master Technician", "BMW Certified"],
       specializations: ["Structural Repairs", "Classic Car Restoration"],
       experience: "15+ years",
@@ -72,7 +72,7 @@ const About = () => {
     {
       name: "Simbarashe Mpofu",
       role: "Head Spray Painter",
-      image: "/team/simbarashe.jpg",
+      image: "", // Will be uploaded through admin
       certifications: ["PPG Certified Painter", "Color Match Specialist"],
       specializations: ["Custom Paint Work", "Color Matching"],
       experience: "12+ years",
@@ -84,7 +84,7 @@ const About = () => {
     {
       name: "Nyasha Dube",
       role: "Quality Control Manager",
-      image: "/team/nyasha.jpg",
+      image: "", // Will be uploaded through admin
       certifications: [
         "Quality Management Certified",
         "Vehicle Safety Inspector",
@@ -196,16 +196,13 @@ const About = () => {
         <div className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300">
           <div className="md:flex">
             <div className="md:w-1/2">
-              <img
-                src="/images/about/workshop.jpg"
-                alt="Our Workshop"
-                className="w-full h-full object-cover rounded-l-2xl"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src =
-                    "https://placehold.co/800x600/F97316/ffffff?text=Workshop";
-                }}
-              />
+              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 rounded-l-2xl flex items-center justify-center">
+                <div className="text-center p-8">
+                  <Wrench className="w-16 h-16 text-primary mx-auto mb-4" />
+                  <p className="text-primary font-semibold">Our Workshop</p>
+                  <p className="text-sm text-gray-600 mt-2">Professional automotive repair facility</p>
+                </div>
+              </div>
             </div>
             <div className="md:w-1/2 p-8 md:p-12">
               <h2 className="text-3xl font-bold text-primary dark:text-white mb-6">
@@ -263,16 +260,20 @@ const About = () => {
               className="bg-white/90 dark:bg-slate-800 rounded-2xl shadow-xl border border-white/30 overflow-hidden hover:scale-[1.02] transition-transform duration-300"
             >
               <div className="aspect-w-4 aspect-h-3">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover rounded-t-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "https://source.unsplash.com/random/400x300?mechanic";
-                  }}
-                />
+                {member.image ? (
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover rounded-t-2xl"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-2xl flex items-center justify-center">
+                    <div className="text-center">
+                      <Users className="w-16 h-16 text-primary mx-auto mb-2" />
+                      <p className="text-primary font-semibold text-sm">Team Member</p>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
@@ -393,11 +394,10 @@ const About = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                    index === currentTestimonial
+                  className={`w-2 h-2 rounded-full transition-all duration-200 ${index === currentTestimonial
                       ? "bg-white w-4"
                       : "bg-white/50"
-                  }`}
+                    }`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
               ))}
@@ -438,9 +438,8 @@ const About = () => {
 
                 <div
                   id={`faq-answer-${index}`}
-                  className={`p-4 bg-white/90 dark:bg-slate-800 transition-all duration-200 ${
-                    openFaq === index ? "block" : "hidden"
-                  }`}
+                  className={`p-4 bg-white/90 dark:bg-slate-800 transition-all duration-200 ${openFaq === index ? "block" : "hidden"
+                    }`}
                   role="region"
                   aria-labelledby={`faq-question-${index}`}
                 >
