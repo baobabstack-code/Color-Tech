@@ -23,6 +23,7 @@
   "dependencies": {
     "@faker-js/faker": "latest",
     "@hookform/resolvers": "latest",
+    "@neondatabase/serverless": "^1.0.1",
     "@next-auth/prisma-adapter": "latest",
     "@prisma/client": "^6.15.0",
     "@radix-ui/react-accordion": "latest",
