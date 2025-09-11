@@ -27,7 +27,11 @@ export class MobileDetectionBoundary extends Component<
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-        // Only log mobile detection related errors to avoid noise
+        // Only log mobile detection related errors to avoid noise, but specifically ignore "Unknown action: is-mobile"
+        if (error.message === 'Unknown action: is-mobile') {
+            // This specific error is expected and handled by the boundary, so we don't need to warn
+            return;
+        }
         if (error.message.includes('mobile') || error.message.includes('is-mobile')) {
             console.warn('Mobile detection error caught:', error, errorInfo);
         }
