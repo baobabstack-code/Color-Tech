@@ -136,7 +136,7 @@ describe('Image Error Handling Integration', () => {
             />
         );
 
-        const image = screen.getByTestId('mock-image');
+        const image = screen.getByTestId('mock-image') as HTMLImageElement;
 
         // Simulate image error
         const errorEvent = new Event('error');
@@ -201,7 +201,7 @@ describe('Image Error Handling Integration', () => {
         );
 
         // Should use fallback immediately without attempting to load
-        const image = screen.getByTestId('mock-image');
+        const image = screen.getByTestId('mock-image') as HTMLImageElement;
         expect(image.src).toContain('fallback');
     });
 

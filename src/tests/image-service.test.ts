@@ -82,7 +82,7 @@ describe('ImageErrorService', () => {
 
         it('should store errors in localStorage in production', () => {
             const originalEnv = process.env.NODE_ENV;
-            process.env.NODE_ENV = 'production';
+            (process.env as any).NODE_ENV = 'production';
 
             localStorageMock.getItem.mockReturnValue('[]');
 
