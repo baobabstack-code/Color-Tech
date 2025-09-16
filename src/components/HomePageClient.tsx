@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { EnhancedImage } from "@/components/ui/enhanced-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -92,6 +93,7 @@ export default function HomePageClient({
   services,
   homepageSections,
 }: HomePageClientProps) {
+
   const features = [
     {
       icon: <Wrench className="h-8 w-8 text-primary dark:text-sky-400" />,
@@ -168,6 +170,8 @@ export default function HomePageClient({
       link: service.name.toLowerCase().replace(/\s/g, "-"), // Generate slug from name
     }));
 
+
+
   const displayedTestimonials = testimonials
     .slice(0, 3)
     .map((t: any, index: number) => ({
@@ -183,11 +187,9 @@ export default function HomePageClient({
     .slice(0, 2)
     .map((g: GalleryItem, index: number) => {
       return {
-        before: g.imageUrl || "/images/fallbacks/gallery-fallback.jpg",
-        after: g.imageUrl || "/images/fallbacks/gallery-fallback.jpg",
+        image: g.imageUrl || "/colortech/4.jpg", // Use actual image from database
         title: g.title,
-        description:
-          g.body || "Professional automotive repair and restoration work",
+        description: g.body || "Professional automotive repair and restoration work",
       };
     });
 
@@ -195,6 +197,8 @@ export default function HomePageClient({
     <>
       <Toaster />
       <div className="min-h-screen">
+
+
         {/* Hero Section */}
         <div className="mx-auto px-4 sm:px-8 md:px-16 lg:px-24 mt-32 md:mt-36">
           <motion.div
@@ -204,24 +208,17 @@ export default function HomePageClient({
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Background Image */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-sky-200/60 via-fuchsia-100/60 to-emerald-100/60 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden">
-              <EnhancedImage
-                src="/images/hero/colorful-car.png"
-                alt="Professional automotive repair and restoration services - colorful car showcasing expert panel beating and spray painting work"
-                fill
-                style={{ objectFit: "cover", objectPosition: "center" }}
-                priority
-                contentType="hero"
-                imageOptions={{
-                  quality: 85,
-                  format: 'auto',
-                  crop: 'fill'
-                }}
-                maxRetries={2}
-                showLoadingSkeleton={false}
-                longDescription="Hero image showing a professionally restored colorful car that demonstrates the high-quality panel beating and spray painting services offered by ColorTech. The vibrant colors showcase the precision and artistry of our automotive restoration work."
-              />
+            <div
+              className="absolute inset-0 z-0 rounded-3xl shadow-2xl border border-white/20 backdrop-blur-2xl backdrop-saturate-200 overflow-hidden"
+              style={{
+                backgroundImage: `url('/images/hero/colorful-car.png')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-200/20 via-fuchsia-100/20 to-emerald-100/20 dark:from-slate-900/60 dark:via-slate-950/60 dark:to-slate-900/60" />
             </div>
             {/* Content */}
             <motion.div
@@ -346,46 +343,37 @@ export default function HomePageClient({
                   "Comprehensive auto body repair and painting services"}
               </p>
             </div>
-            <motion.div
-              className="grid md:grid-cols-3 gap-8"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.15,
-                  },
-                },
-              }}
-            >
-              {displayedServices.map((service, index) => (
-                <Link
-                  key={index}
-                  href={`/services/${service.id}`}
-                  className="block" // Make the link a block element to wrap the card
-                >
-                  <motion.div
-                    className="p-8 bg-white/90 dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col items-start text-left h-full hover:scale-105 hover:shadow-2xl transition-all duration-300"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 * index }}
-                    whileHover={{ scale: 1.07 }}
+
+
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {displayedServices && displayedServices.length > 0 ? (
+                displayedServices.map((service, index) => (
+                  <div
+                    key={service.id || index}
+                    className="p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border dark:border-slate-700"
                   >
-                    {service.icon}
-                    <h3 className="text-xl font-semibold mt-4 mb-2 text-slate-900 dark:text-white">
+                    <div className="mb-4">{service.icon}</div>
+                    <h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
                       {service.title}
                     </h3>
-                    <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">
+                    <p className="text-gray-700 dark:text-gray-300 mb-4">
                       {service.description}
                     </p>
-                    <div className="mt-auto flex items-center text-primary dark:text-sky-400 font-semibold">
-                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
-            </motion.div>
+                    <Link
+                      href={`/services/${service.id}`}
+                      className="text-primary dark:text-sky-400 font-semibold hover:underline"
+                    >
+                      Learn More →
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">No services available</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -465,39 +453,13 @@ export default function HomePageClient({
                 <Link key={index} href="/gallery" className="block">
                   <div className="group relative overflow-hidden rounded-2xl shadow-xl border dark:border-slate-700 bg-white/10 dark:bg-slate-800/80 hover:scale-[1.02] transition-transform duration-300">
                     <div className="aspect-video relative">
-                      <EnhancedImage
-                        src={preview.after}
-                        alt={`After restoration: ${preview.title} - Professional automotive repair showcasing completed work`}
+                      <Image
+                        src={preview.image}
+                        alt={`${preview.title} - Professional automotive repair work`}
                         width={600}
                         height={338}
-                        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 rounded-2xl"
-                        contentType="gallery"
-                        imageOptions={{
-                          width: 600,
-                          height: 338,
-                          quality: 80,
-                          format: 'auto',
-                          crop: 'fill'
-                        }}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        longDescription={`Gallery image showing the completed restoration work for ${preview.title}. This demonstrates the quality and attention to detail in our automotive repair services.`}
-                      />
-                      <EnhancedImage
-                        src={preview.before}
-                        alt={`Before restoration: ${preview.title} - Vehicle condition prior to professional repair work`}
-                        width={600}
-                        height={338}
-                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-2xl"
-                        contentType="gallery"
-                        imageOptions={{
-                          width: 600,
-                          height: 338,
-                          quality: 80,
-                          format: 'auto',
-                          crop: 'fill'
-                        }}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        longDescription={`Gallery image showing the initial condition of ${preview.title} before our professional restoration work began. Compare with the after image to see the transformation.`}
+                        className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
+                        quality={80}
                       />
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6 rounded-2xl">
@@ -526,47 +488,55 @@ export default function HomePageClient({
                 What Our Customers Say
               </h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
-                Real stories from satisfied clients who trust us with their
-                vehicles.
+                Real stories from satisfied clients who trust us with their vehicles.
               </p>
             </div>
+
+
+
             <div className="grid md:grid-cols-3 gap-8">
-              {displayedTestimonials.map((testimonial, index) => (
-                <Card
-                  key={index}
-                  className="p-6 bg-white dark:bg-slate-800/80 rounded-2xl shadow-xl border dark:border-slate-700 flex flex-col"
-                >
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center mr-4">
-                      <Users className="h-6 w-6 text-primary dark:text-sky-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white">
-                        {testimonial.name}
-                      </h4>
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-400" : "text-gray-300 dark:text-slate-600"}`}
-                            fill="currentColor"
-                          />
-                        ))}
+              {displayedTestimonials && displayedTestimonials.length > 0 ? (
+                displayedTestimonials.map((testimonial, index) => (
+                  <div
+                    key={index}
+                    className="p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border dark:border-slate-700"
+                  >
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-slate-700 flex items-center justify-center mr-4">
+                        <Users className="h-6 w-6 text-primary dark:text-sky-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-900 dark:text-white">
+                          {testimonial.name}
+                        </h4>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${i < testimonial.rating ? "text-yellow-400" : "text-gray-300 dark:text-slate-600"}`}
+                              fill="currentColor"
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    <blockquote className="text-gray-600 dark:text-gray-300 italic">
+                      <Quote className="h-5 w-5 text-gray-300 dark:text-slate-600 mr-2 inline-block" />
+                      {testimonial.quote}
+                    </blockquote>
                   </div>
-                  <blockquote className="text-gray-600 dark:text-gray-300 italic flex-grow">
-                    <Quote className="h-5 w-5 text-gray-300 dark:text-slate-600 mr-2 inline-block" />
-                    {testimonial.quote}
-                  </blockquote>
-                </Card>
-              ))}
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400">No testimonials available</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Video Showcase Section (dynamic) */}
-        <VideoShowcase videos={[] /* Populated at runtime by fetching /api/content/videos on the page or within the component in a follow-up enhancement */} />
+        <VideoShowcase videos={[]} />
 
         {/* Blog Section */}
         <div className="py-16">

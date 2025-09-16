@@ -32,6 +32,7 @@ export class MobileDetectionBoundary extends Component<
             // This specific error is expected and handled by the boundary, so we don't need to warn
             return;
         }
+
         if (error.message.includes('mobile') || error.message.includes('is-mobile')) {
             console.warn('Mobile detection error caught:', error, errorInfo);
         }

@@ -92,6 +92,8 @@ export default async function HomePage() {
       getHomepageSections(),
     ]);
 
+
+
   // Structured data for SEO
   const structuredData = {
     "@context": "https://schema.org",

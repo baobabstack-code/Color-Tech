@@ -42,6 +42,7 @@ const BlogPage = () => {
           return;
         }
         const data = await res.json();
+
         setAllBlogPosts(data || []);
       } catch (e) {
         console.error("Error fetching blog posts:", e);
@@ -64,7 +65,7 @@ const BlogPage = () => {
     date: new Date(post.createdAt).toISOString().split("T")[0],
     readTime: `${Math.ceil(post.body.length / 200)} min`,
     image:
-      post.imageUrl || "/images/fallbacks/blog-fallback.jpg",
+      post.imageUrl || "/colortech/4.jpg", // Use an actual image that exists
     video: post.videoUrl || null,
     featured: post.tags?.includes("featured") || false,
   }));
@@ -104,22 +105,10 @@ const BlogPage = () => {
             {featuredPost.video ? (
               <video src={featuredPost.video} className="w-full h-[400px] object-cover rounded-2xl" controls />
             ) : (
-              <CriticalImage
+              <img
                 src={featuredPost.image}
                 alt={featuredPost.title}
-                width={800}
-                height={400}
                 className="w-full h-[400px] object-cover rounded-2xl"
-                contentType="blog"
-                imageOptions={{
-                  width: 800,
-                  height: 400,
-                  quality: 85,
-                  format: 'auto',
-                  crop: 'fill'
-                }}
-                sizes="(max-width: 768px) 100vw, 800px"
-                longDescription={`Featured blog post image for "${featuredPost.title}". This image provides visual context for the featured article.`}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end rounded-2xl">
@@ -221,23 +210,10 @@ const BlogPage = () => {
                       {post.video ? (
                         <video src={post.video} className="w-full h-full object-cover rounded-t-2xl" controls />
                       ) : (
-                        <LazyImage
+                        <img
                           src={post.image}
                           alt={post.title}
-                          width={400}
-                          height={192}
                           className="w-full h-full object-cover rounded-t-2xl"
-                          contentType="blog"
-                          imageOptions={{
-                            width: 400,
-                            height: 192,
-                            quality: 75,
-                            format: 'auto',
-                            crop: 'fill'
-                          }}
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          longDescription={`Blog post thumbnail image for "${post.title}". This image provides a visual preview of the article content.`}
-                          placeholder="skeleton"
                         />
                       )}
                       <span className="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm">

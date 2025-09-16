@@ -3,7 +3,6 @@ export interface Service {
   id: number;
   name: string;
   description: string;
-  basePrice: number;
   duration: number; // Duration in minutes
   category: string;
   status: "active" | "inactive";

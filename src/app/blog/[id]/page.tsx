@@ -46,6 +46,7 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
           return;
         }
         const data = await res.json();
+
         setBlogPost(data);
       } catch (e) {
         setError("Failed to fetch blog post");
@@ -90,7 +91,7 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
     ? blogPost.tags.split(",")[0].trim()
     : "Uncategorized";
   const imageUrl =
-    blogPost.imageUrl || "/images/fallbacks/blog-fallback.jpg";
+    blogPost.imageUrl || "/colortech/4.jpg"; // Use an actual image that exists
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
@@ -104,22 +105,10 @@ const SingleBlogPostPage = ({ params }: PageProps) => {
 
         <article className="bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-white/30 overflow-hidden">
           <div className="relative h-80 md:h-96">
-            <CriticalImage
+            <img
               src={imageUrl}
               alt={`Blog post featured image: ${blogPost.title}`}
-              fill
-              style={{ objectFit: "cover" }}
-              className="rounded-t-2xl"
-              contentType="blog"
-              imageOptions={{
-                width: 1200,
-                height: 600,
-                quality: 85,
-                format: 'auto',
-                crop: 'fill'
-              }}
-              sizes="(max-width: 768px) 100vw, 1200px"
-              longDescription={`Featured image for the blog post titled "${blogPost.title}". This image provides visual context for the article content about automotive repair and maintenance.`}
+              className="w-full h-full object-cover rounded-t-2xl"
             />
           </div>
           <div className="p-6 md:p-8">

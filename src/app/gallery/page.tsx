@@ -58,6 +58,7 @@ const GalleryPage = () => {
           return;
         }
         const data = await res.json();
+
         if (isMounted) setAllGalleryItems(data || []);
       } catch (e) {
         // Only log errors that aren't abort errors
@@ -78,12 +79,12 @@ const GalleryPage = () => {
 
   // Transform gallery items for display
   const galleryImages = allGalleryItems.map((item) => ({
-    src: (item as any).videoUrl || item.imageUrl,
+    src: (item as any).videoUrl || item.imageUrl || "/colortech/4.jpg", // Fallback to a known good image
     isVideo: !!(item as any).videoUrl,
     alt: item.title,
     category: item.tags ? item.tags.split(",")[0].trim() : "Our Work",
     description: item.body || "",
-    fallback: "/images/fallbacks/gallery-fallback.jpg",
+    fallback: "/colortech/4.jpg", // Use an actual image that exists
   }));
 
   // Build Before/After transformations from published gallery items
@@ -162,24 +163,11 @@ const GalleryPage = () => {
                       controls
                     />
                   ) : (
-                    <LazyImage
+                    <img
                       src={image.src}
                       alt={image.alt}
-                      width={600}
-                      height={450}
                       className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-110 rounded-t-2xl"
-                      contentType="gallery"
-                      imageOptions={{
-                        width: 600,
-                        height: 450,
-                        quality: 80,
-                        format: 'auto',
-                        crop: 'fill'
-                      }}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      longDescription={`Gallery image showing ${image.alt}. ${image.description || 'Professional automotive repair work showcasing our expertise.'}`}
-                      placeholder="skeleton"
-                      rootMargin="100px"
+                      style={{ width: '100%', height: '300px' }}
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-t-2xl">
