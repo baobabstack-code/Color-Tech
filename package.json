@@ -80,7 +80,7 @@
     "lucide-react": "latest",
     "mocha": "latest",
     "multer": "latest",
-    "next": "latest",
+    "next": "^15.5.3",
     "next-auth": "latest",
     "next-themes": "latest",
     "nodemailer": "latest",

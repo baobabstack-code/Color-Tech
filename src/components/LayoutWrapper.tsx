@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function LayoutWrapper({
   children,
@@ -20,6 +21,7 @@ export default function LayoutWrapper({
         {!isAdminRoute && <Navigation />}
         {children}
         {!isAdminRoute && <Footer />}
+        {!isAdminRoute && <WhatsAppButton phoneNumber="+263781253902" />}
       </AuthProvider>
     </SessionProvider>
   );
