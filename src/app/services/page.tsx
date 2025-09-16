@@ -224,12 +224,12 @@ const ServicesPage = async () => {
             </p>
             <Button
               size="lg"
-              variant="secondary"
-              className="w-full sm:w-auto shadow-xl"
+              variant="outline"
+              className="w-full sm:w-auto shadow-xl bg-white/10 border-white/30 text-white hover:bg-white/20"
               asChild
             >
               <Link href="/contact" className="flex items-center gap-2">
-                <PhoneCall className="h-5 w-5 text-white" />
+                <PhoneCall className="h-5 w-5" />
                 Get a Quote
               </Link>
             </Button>
