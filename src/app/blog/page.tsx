@@ -262,8 +262,8 @@ const BlogPage = () => {
 
       {/* Newsletter Section */}
       <div className="container mx-auto mt-16">
-        <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
+        <div className="bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 opacity-40"></div>
           <div className="relative z-10">
             <h2 className="text-3xl font-bold text-white mb-4">
               Stay Updated with Auto Care Tips

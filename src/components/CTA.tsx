@@ -6,7 +6,7 @@ export default function CTA() {
   return (
     <div className="py-16">
       <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-800 via-purple-700 to-fuchsia-600 p-16 text-center shadow-2xl">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 p-16 text-center shadow-2xl">
           <div className="relative z-10">
             <h2 className="text-4xl font-bold text-white mb-4">
               Ready to Transform Your Vehicle?

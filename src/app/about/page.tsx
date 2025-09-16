@@ -342,7 +342,7 @@ const About = () => {
 
       {/* Testimonials Section */}
       <div className="container mx-auto mb-16">
-        <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-lg p-8 md:p-12">
+        <div className="bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 text-white rounded-lg p-8 md:p-12">
           <h2 className="text-3xl font-bold mb-12 text-center text-white">
             Client Testimonials
           </h2>
@@ -456,8 +456,8 @@ const About = () => {
 
       {/* CTA Section */}
       <div className="container mx-auto text-center">
-        <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary opacity-40"></div>
+        <div className="bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 rounded-2xl p-8 md:p-12 text-white text-center relative overflow-hidden shadow-2xl border border-white/30">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 opacity-40"></div>
           <div className="relative z-10">
             <h2 className="text-3xl font-bold mb-4">
               Experience the Color-tech Difference

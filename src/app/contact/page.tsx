@@ -124,7 +124,7 @@ const Contact = () => {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Contact Information */}
-          <div className="bg-gradient-to-r from-primary to-fuchsia-500 rounded-2xl p-8 text-white shadow-xl border border-white/30 hover:scale-[1.02] transition-transform duration-300">
+          <div className="bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 rounded-2xl p-8 text-white shadow-xl border border-white/30 hover:scale-[1.02] transition-transform duration-300">
             <h2 className="text-2xl font-bold mb-8">Get in Touch</h2>
 
             <div className="space-y-6">
@@ -300,8 +300,8 @@ const Contact = () => {
               {submitMessage && (
                 <div
                   className={`p-4 rounded-lg text-center ${submitMessage.includes("Thank you")
-                      ? "bg-green-100 text-green-800 border border-green-200"
-                      : "bg-red-100 text-red-800 border border-red-200"
+                    ? "bg-green-100 text-green-800 border border-green-200"
+                    : "bg-red-100 text-red-800 border border-red-200"
                     }`}
                 >
                   {submitMessage}
@@ -312,7 +312,7 @@ const Contact = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="shadow-xl flex items-center justify-center font-bold text-white bg-gradient-to-r from-primary to-fuchsia-500 hover:opacity-90 transition-opacity duration-300 py-3 px-8 rounded-full disabled:opacity-50"
+                  className="shadow-xl flex items-center justify-center font-bold text-white bg-gradient-to-r from-purple-800 via-purple-600 to-pink-500 hover:opacity-90 transition-opacity duration-300 py-3 px-8 rounded-full disabled:opacity-50"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   {isSubmitting ? "Sending..." : "Send Message"}
