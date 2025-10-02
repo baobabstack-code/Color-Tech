@@ -1,45 +1,38 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { authMiddleware } from "@clerk/nextjs";
 
-// Define admin emails - must match the ones in NextAuth config
-const ADMIN_EMAILS = [
-  "colorterch25@gmail.com", // Your main admin email
-  "mrshepard18@gmail.com", // Additional admin access
-  // Add more admin emails here as needed
-];
-
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const { pathname } = req.nextUrl;
-
-    // Check if user is trying to access admin routes
-    if (pathname.startsWith("/admin")) {
-      // If no token or user is not an admin, redirect to home
-      if (!token || !token.email || !ADMIN_EMAILS.includes(token.email)) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
-
-        // Allow access to non-admin routes for any authenticated user
-        if (!pathname.startsWith("/admin")) {
-          return !!token;
-        }
-
-        // For admin routes, check if user email is in admin list
-        return !!token && !!token.email && ADMIN_EMAILS.includes(token.email);
-      },
-    },
-  }
-);
+export default authMiddleware({
+  // Routes that can be accessed while signed out
+  publicRoutes: [
+    "/",
+    "/about",
+    "/contact",
+    "/gallery",
+    "/services",
+    "/services/(.*)",
+    "/blog",
+    "/blog/(.*)",
+    "/api/content/(.*)",
+    "/api/services",
+    "/api/services/(.*)",
+    "/api/form-submissions",
+    "/sign-in",
+    "/sign-up",
+    "/accessibility-showcase"
+  ],
+  // Routes that can always be accessed, and have
+  // no authentication information
+  ignoredRoutes: [
+    "/api/webhooks/(.*)",
+    "/_next/(.*)",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml"
+  ]
+});
 
 export const config = {
-  matcher: ["/admin/:path*", "/client/:path*"],
+  // Protects all routes, including api/trpc.
+  // See https://clerk.com/docs/references/nextjs/auth-middleware
+  // for more information about configuring your Middleware
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

@@ -8,6 +8,7 @@ const inter = Inter({
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-inter',
+  fallback: ['system-ui', 'arial'],
 });
 
 export const metadata = {

@@ -21,6 +21,7 @@
     "docker:down": "docker-compose down"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.33.1",
     "@faker-js/faker": "latest",
     "@hookform/resolvers": "latest",
     "@neondatabase/serverless": "^1.0.1",
