@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60, // Cache images for at least 60 seconds
     dangerouslyAllowSVG: true, // Allow SVG optimization for fallback images
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.colortech.co.zw https://*.clerk.accounts.dev https://*.clerk.com; connect-src 'self' https://clerk.colortech.co.zw https://*.clerk.accounts.dev https://*.clerk.com; sandbox;",
     unoptimized: false,
     // Loader configuration for better Cloudinary integration
     loader: "default",

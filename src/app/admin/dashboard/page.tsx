@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+// Removed NextAuth - using Clerk
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { getAllReviews } from "@/services/reviewService";
@@ -100,13 +100,12 @@ const RecentBookingsTable = ({ bookings }: { bookings: Booking[] }) => (
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
                 <span
-                  className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    booking.status === "completed"
-                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                      : booking.status === "confirmed"
-                        ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                  }`}
+                  className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${booking.status === "completed"
+                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                    : booking.status === "confirmed"
+                      ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                      : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                    }`}
                 >
                   {booking.status}
                 </span>
@@ -140,11 +139,10 @@ const RecentReviewsTable = ({ reviews }: { reviews: Review[] }) => (
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${
-                        i < review.rating
-                          ? "text-yellow-400 fill-current"
-                          : "text-slate-600"
-                      }`}
+                      className={`h-4 w-4 ${i < review.rating
+                        ? "text-yellow-400 fill-current"
+                        : "text-slate-600"
+                        }`}
                     />
                   ))}
                 </div>
@@ -153,15 +151,14 @@ const RecentReviewsTable = ({ reviews }: { reviews: Review[] }) => (
                 </span>
               </div>
               <span
-                className={`px-2 py-1 text-xs rounded-full ${
-                  review.status === "published"
-                    ? "bg-green-500/20 text-green-400"
-                    : review.status === "pending"
-                      ? "bg-yellow-500/20 text-yellow-400"
-                      : review.status === "flagged"
-                        ? "bg-red-500/20 text-red-400"
-                        : "bg-slate-500/20 text-slate-400"
-                }`}
+                className={`px-2 py-1 text-xs rounded-full ${review.status === "published"
+                  ? "bg-green-500/20 text-green-400"
+                  : review.status === "pending"
+                    ? "bg-yellow-500/20 text-yellow-400"
+                    : review.status === "flagged"
+                      ? "bg-red-500/20 text-red-400"
+                      : "bg-slate-500/20 text-slate-400"
+                  }`}
               >
                 {review.status}
               </span>
@@ -180,7 +177,6 @@ const RecentReviewsTable = ({ reviews }: { reviews: Review[] }) => (
 );
 
 export default function AdminDashboardPage() {
-  const { data: session, status: sessionStatus } = useSession();
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -252,9 +248,9 @@ export default function AdminDashboardPage() {
     averageRating:
       reviews.length > 0
         ? (
-            reviews.reduce((sum, review) => sum + review.rating, 0) /
-            reviews.length
-          ).toFixed(1)
+          reviews.reduce((sum, review) => sum + review.rating, 0) /
+          reviews.length
+        ).toFixed(1)
         : "0.0",
     pending: reviews.filter((review) => review.status === "pending").length,
     flagged: reviews.filter((review) => review.status === "flagged").length,

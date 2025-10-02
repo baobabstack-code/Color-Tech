@@ -1,8 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
-import { useToast } from "@/hooks/use-toast";
+import React, { createContext, useContext } from "react";
+import { useUser, useAuth as useClerkAuth } from "@clerk/nextjs";
 
 interface User {
   id: string;
@@ -23,95 +22,43 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: session, status } = useSession();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const toast = useToast();
-
-  useEffect(() => {
-    setIsLoading(status === "loading");
-    if (status === "authenticated" && session?.user) {
-      setError(null);
-    }
-  }, [status, session]);
+  const { user: clerkUser, isLoaded } = useUser();
+  const { signOut } = useClerkAuth();
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
-
-      if (result?.error) {
-        setError(result.error);
-        toast.toast({
-          title: "Login Failed",
-          description: result.error,
-          variant: "destructive",
-        });
-        throw new Error(result.error);
-      }
-
-      if (result?.ok) {
-        toast.toast({
-          title: "Login Successful",
-          description: `Welcome back!`,
-        });
-      }
-      return result;
-    } catch (err: any) {
-      console.error("Login failed:", err);
-      setError(err.message || "An unexpected error occurred during login.");
-      throw err;
-    } finally {
-      setIsLoading(false);
+    // Clerk handles login through their components
+    // This is kept for compatibility but redirects to sign-in
+    if (typeof window !== "undefined") {
+      window.location.href = "/sign-in";
     }
+    return Promise.resolve();
   };
 
   const logout = async () => {
-    setIsLoading(true);
-    try {
-      await signOut({
-        redirect: true,
-        callbackUrl: "/",
-      });
-      toast.toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-    } catch (err) {
-      console.error("Logout error:", err);
-      setError("An unexpected error occurred during logout.");
-      // Fallback redirect if signOut fails
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
-    } finally {
-      setIsLoading(false);
+    await signOut();
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
     }
   };
 
-  const user: User | null = session?.user
+  const user: User | null = clerkUser
     ? {
-        id: session.user.id,
-        email: session.user.email || "",
-        name: session.user.name,
-        role: (session.user as any).role, // Cast session.user to any to access role
-      }
+      id: clerkUser.id,
+      email: clerkUser.emailAddresses[0]?.emailAddress || "",
+      name: clerkUser.fullName,
+      role: clerkUser.publicMetadata?.role as string || "user",
+    }
     : null;
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !!clerkUser,
         login,
         logout,
-        isLoading,
-        error,
+        isLoading: !isLoaded,
+        error: null,
       }}
     >
       {children}
