@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
     unoptimized: false,
     // Loader configuration for better Cloudinary integration
     loader: "default",
+    // Configure allowed quality values
+    qualities: [75, 80, 85, 90, 95, 100],
   },
   compiler: {
     // Remove all console.log messages in production builds
