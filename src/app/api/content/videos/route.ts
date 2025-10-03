@@ -5,8 +5,16 @@ export async function GET() {
     try {
         const videos = await DatabaseService.getVideos();
         return NextResponse.json(videos);
-    } catch (e) {
-        return NextResponse.json({ message: 'Failed to fetch videos' }, { status: 500 });
+    } catch (error) {
+        console.error('Failed to fetch videos:', error);
+        console.error('Videos fetch error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : 'No stack trace'
+        });
+        return NextResponse.json({
+            message: 'Failed to fetch videos',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
     }
 }
 
@@ -24,8 +32,16 @@ export async function POST(request: NextRequest) {
             isPublished: data.isPublished ?? true,
         });
         return NextResponse.json(video, { status: 201 });
-    } catch (e) {
-        return NextResponse.json({ message: 'Failed to create video' }, { status: 500 });
+    } catch (error) {
+        console.error('Failed to create video:', error);
+        console.error('Video creation error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : 'No stack trace'
+        });
+        return NextResponse.json({
+            message: 'Failed to create video',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
     }
 }
 
