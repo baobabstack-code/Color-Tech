@@ -187,8 +187,8 @@ model GalleryItem {
   isPublished    Boolean  @default(false)
   tags           String?  @db.VarChar(500)
   author         String   @db.VarChar(100)
-  createdBy      Int
-  updatedBy      Int
+  createdBy      String
+  updatedBy      String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   afterImageUrl  String?  @db.VarChar(512)

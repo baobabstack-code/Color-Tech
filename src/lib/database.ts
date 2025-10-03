@@ -18,7 +18,7 @@ export class DatabaseService {
     });
   }
 
-  static async getUserById(id: number) {
+  static async getUserById(id: string) {
     return await prisma.user.findUnique({
       where: { id },
       include: {
@@ -42,14 +42,14 @@ export class DatabaseService {
     });
   }
 
-  static async updateUser(id: number, data: any) {
+  static async updateUser(id: string, data: any) {
     return await prisma.user.update({
       where: { id },
       data,
     });
   }
 
-  static async deleteUser(id: number) {
+  static async deleteUser(id: string) {
     return await prisma.user.delete({
       where: { id },
     });
@@ -394,8 +394,8 @@ export class DatabaseService {
         tags: data.tags,
         author: data.author,
         slug: data.slug,
-        createdBy: data.createdBy,
-        updatedBy: data.updatedBy
+        createdBy: String(data.createdBy),
+        updatedBy: String(data.updatedBy)
       },
     });
   }
@@ -504,8 +504,8 @@ export class DatabaseService {
         isPublished: data.isPublished ?? false,
         tags: data.tags,
         author: data.author,
-        createdBy: data.createdBy,
-        updatedBy: data.updatedBy
+        createdBy: String(data.createdBy),
+        updatedBy: String(data.updatedBy)
       },
     });
   }

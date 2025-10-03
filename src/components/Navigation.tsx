@@ -15,13 +15,10 @@ import {
   Settings,
   Menu,
   X,
-  UserCircle,
-  ShieldCheck,
   Home,
   Mail,
   Info,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface NavLink {
@@ -33,7 +30,7 @@ interface NavLink {
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const pathname = usePathname();
 
   const publicLinks: NavLink[] = [
@@ -171,15 +168,15 @@ const Navigation = () => {
             key={link.title}
             href={link.path}
             className={`relative px-2 py-1.5 text-base lg:text-lg font-semibold transition-colors duration-200 group ${pathname === link.path
-                ? "text-sky-500 dark:text-fuchsia-400"
-                : "text-slate-800/90 dark:text-slate-100/90 hover:text-sky-500 dark:hover:text-fuchsia-400"
+              ? "text-sky-500 dark:text-fuchsia-400"
+              : "text-slate-800/90 dark:text-slate-100/90 hover:text-sky-500 dark:hover:text-fuchsia-400"
               }`}
           >
             {link.title}
             <span
               className={`absolute left-1/2 -bottom-1 h-0.5 bg-gradient-to-r from-sky-400 to-fuchsia-400 rounded-full transition-all duration-300 ${pathname === link.path
-                  ? "w-4/5 -translate-x-1/2"
-                  : "w-0 group-hover:w-4/5 group-hover:-translate-x-1/2"
+                ? "w-4/5 -translate-x-1/2"
+                : "w-0 group-hover:w-4/5 group-hover:-translate-x-1/2"
                 }`}
             ></span>
           </Link>
@@ -215,8 +212,8 @@ const Navigation = () => {
               key={link.title}
               href={link.path}
               className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 ${pathname === link.path
-                  ? "bg-primary/10 text-primary"
-                  : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
+                ? "bg-primary/10 text-primary"
+                : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
                 }`}
               onClick={() => setIsOpen(false)}
             >
@@ -232,8 +229,8 @@ const Navigation = () => {
                   key={link.title}
                   href={link.path}
                   className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 ${pathname === link.path
-                      ? "bg-primary/10 text-primary"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
+                    ? "bg-primary/10 text-primary"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
                     }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -245,7 +242,7 @@ const Navigation = () => {
                 type="button"
                 onClick={async () => {
                   try {
-                    await logout();
+                    await signOut();
                     setIsOpen(false);
                   } catch (error) {
                     console.error("Logout failed:", error);
