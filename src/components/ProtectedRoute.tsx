@@ -6,14 +6,14 @@ import { useEffect, useState } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: string[];
+  requireAdmin?: boolean;
 }
 
 export function ProtectedRoute({
   children,
-  allowedRoles,
+  requireAdmin = false,
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, isAdmin } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [showUnauthorized, setShowUnauthorized] = useState(false);
@@ -27,12 +27,7 @@ export function ProtectedRoute({
       return;
     }
 
-    if (
-      allowedRoles &&
-      user &&
-      user.role &&
-      !allowedRoles.includes(user.role)
-    ) {
+    if (requireAdmin && !isAdmin) {
       // Show unauthorized message for a moment, then redirect
       setShowUnauthorized(true);
       const timer = setTimeout(() => {
@@ -45,7 +40,7 @@ export function ProtectedRoute({
 
     // Explicitly return undefined for other cases
     return undefined;
-  }, [isAuthenticated, user, allowedRoles, router, pathname, isLoading]);
+  }, [isAuthenticated, isAdmin, requireAdmin, router, pathname, isLoading]);
 
   if (isLoading) {
     return (
@@ -62,10 +57,7 @@ export function ProtectedRoute({
     return null; // Will redirect to login
   }
 
-  if (
-    showUnauthorized ||
-    (allowedRoles && user && user.role && !allowedRoles.includes(user.role))
-  ) {
+  if (showUnauthorized || (requireAdmin && !isAdmin)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
         <div className="text-center max-w-md mx-auto p-8">
@@ -74,8 +66,7 @@ export function ProtectedRoute({
               Access Denied
             </h1>
             <p className="text-gray-300 mb-4">
-              You don't have permission to access this area. Only authorized
-              administrators can access the admin panel.
+              You don't have permission to access this area. Only the business admin email can access admin features.
             </p>
             <p className="text-sm text-gray-400">
               Redirecting to home page in a few seconds...

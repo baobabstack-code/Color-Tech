@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AdminHeader = () => {
-  const { logout, user } = useAuth();
+  const { signOut, user } = useAuth();
 
   return (
     <header className="fixed top-0 right-0 left-64 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800/50 shadow-2xl">
@@ -124,7 +124,7 @@ const AdminHeader = () => {
                 onClick={async () => {
                   console.log("Logout button clicked");
                   try {
-                    await logout();
+                    await signOut();
                     console.log("Logout completed");
                   } catch (error) {
                     console.error("Logout failed:", error);

@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { SessionProvider } from "next-auth/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -15,11 +16,13 @@ export default function LayoutWrapper({
   const isAdminRoute = pathname?.startsWith("/admin") || false;
 
   return (
-    <AuthProvider>
-      {!isAdminRoute && <Navigation />}
-      {children}
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <WhatsAppButton phoneNumber="+263781253902" />}
-    </AuthProvider>
+    <SessionProvider>
+      <AuthProvider>
+        {!isAdminRoute && <Navigation />}
+        {children}
+        {!isAdminRoute && <Footer />}
+        {!isAdminRoute && <WhatsAppButton phoneNumber="+263781253902" />}
+      </AuthProvider>
+    </SessionProvider>
   );
 }

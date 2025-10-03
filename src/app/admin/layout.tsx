@@ -1,11 +1,11 @@
 import React from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <AdminRoute>
       <AdminLayout>{children}</AdminLayout>
-    </ProtectedRoute>
+    </AdminRoute>
   );
 }

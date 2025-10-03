@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-// Removed NextAuth - using Clerk
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { getAllReviews } from "@/services/reviewService";

@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin, 
-  Mail, 
-  Phone, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
   MapPin,
   Clock
 } from "lucide-react";
@@ -76,7 +76,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.path}>
-                  <Link 
+                  <Link
                     href={link.path}
                     className="hover:text-fuchsia-500 transition-colors font-medium"
                   >
@@ -93,7 +93,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service.path}>
-                  <Link 
+                  <Link
                     href={service.path}
                     className="hover:text-fuchsia-500 transition-colors font-medium"
                   >
@@ -135,6 +135,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-xs md:text-sm opacity-80">
               © {new Date().getFullYear()} Color-Tech Panel & Paint. All rights reserved.
+              <Link href="/admin/dashboard" className="ml-1 opacity-30 hover:opacity-100 transition-opacity">
+                .
+              </Link>
             </div>
             <div className="flex space-x-6">
               <Link href="/privacy" className="text-xs md:text-sm hover:text-fuchsia-500 transition-colors">

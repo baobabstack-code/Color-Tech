@@ -1,75 +1,61 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
-import { useUser, useAuth as useClerkAuth } from "@clerk/nextjs";
-
-interface User {
-  id: string;
-  email: string;
-  name?: string | null;
-  role?: string | null;
-}
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<any>;
-  logout: () => Promise<void>;
-  isLoading: boolean;
-  error: string | null;
+    user: Session['user'] | null;
+    isLoading: boolean;
+    isAuthenticated: boolean;
+    isAdmin: boolean;
+    signIn: () => void;
+    signOut: () => void;
+    session: Session | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user: clerkUser, isLoaded } = useUser();
-  const { signOut } = useClerkAuth();
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const { data: session, status } = useSession();
+    const [isLoading, setIsLoading] = useState(true);
 
-  const login = async (email: string, password: string) => {
-    // Clerk handles login through their components
-    // This is kept for compatibility but redirects to sign-in
-    if (typeof window !== "undefined") {
-      window.location.href = "/sign-in";
+    useEffect(() => {
+        setIsLoading(status === 'loading');
+    }, [status]);
+
+    const handleSignIn = () => {
+        signIn('google');
+    };
+
+    const handleSignOut = () => {
+        signOut();
+    };
+
+    // Check if user is admin based on email
+    const isAdmin = session?.user?.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'colorterch25@gmail.com');
+
+    const value: AuthContextType = {
+        user: session?.user || null,
+        isLoading,
+        isAuthenticated: !!session,
+        isAdmin,
+        signIn: handleSignIn,
+        signOut: handleSignOut,
+        session,
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
     }
-    return Promise.resolve();
-  };
-
-  const logout = async () => {
-    await signOut();
-    if (typeof window !== "undefined") {
-      window.location.href = "/";
-    }
-  };
-
-  const user: User | null = clerkUser
-    ? {
-      id: clerkUser.id,
-      email: clerkUser.emailAddresses[0]?.emailAddress || "",
-      name: clerkUser.fullName,
-      role: clerkUser.publicMetadata?.role as string || "user",
-    }
-    : null;
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!clerkUser,
-        login,
-        logout,
-        isLoading: !isLoaded,
-        error: null,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+    return context;
+}

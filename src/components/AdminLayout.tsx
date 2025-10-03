@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Wrench, 
-  Calendar, 
-  Users, 
+import {
+  LayoutDashboard,
+  Wrench,
+  Calendar,
+  Users,
   FileText,
   Image,
   MessageSquare,
@@ -35,27 +35,27 @@ import {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const pathname = usePathname();
 
   const navItems = [
-    { 
-      title: "Dashboard", 
+    {
+      title: "Dashboard",
       path: "/admin/dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />
     },
-    { 
-      title: "Services", 
+    {
+      title: "Services",
       path: "/admin/services",
       icon: <Wrench className="h-5 w-5" />
     },
-    { 
-      title: "Bookings", 
+    {
+      title: "Bookings",
       path: "/admin/bookings",
       icon: <Calendar className="h-5 w-5" />
     },
-    { 
-      title: "Customers", 
+    {
+      title: "Customers",
       path: "/admin/customers",
       icon: <Users className="h-5 w-5" />
     },
@@ -70,13 +70,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { title: "FAQs", path: "/admin/content/faqs", icon: <HelpCircle className="h-5 w-5" /> }
       ]
     },
-    { 
-      title: "Reviews", 
+    {
+      title: "Reviews",
       path: "/admin/reviews",
       icon: <Star className="h-5 w-5" />
     },
-    { 
-      title: "Settings", 
+    {
+      title: "Settings",
       path: "/admin/settings",
       icon: <Settings className="h-5 w-5" />
     }
@@ -85,16 +85,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 z-40 h-screen transition-transform ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } bg-white border-r border-gray-200 w-64`}>
+      <aside className={`fixed top-0 left-0 z-40 h-screen transition-transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } bg-white border-r border-gray-200 w-64`}>
         <div className="flex items-center justify-between p-4 border-b">
           <h1 className="text-xl font-bold text-primary">Admin Portal</h1>
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
         </div>
-        
+
         <nav className="p-4 space-y-1">
           {navItems.map((item) => (
             <div key={item.path}>
@@ -129,11 +128,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               ) : (
                 <Link
                   href={item.path}
-                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                    pathname === item.path
-                      ? 'bg-primary text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${pathname === item.path
+                    ? 'bg-primary text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                 >
                   {item.icon}
                   <span className="ml-3">{item.title}</span>
@@ -145,16 +143,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main content */}
-      <main className={`flex-1 transition-margin ${
-        isSidebarOpen ? 'ml-64' : 'ml-0'
-      } md:ml-64`}>
+      <main className={`flex-1 transition-margin ${isSidebarOpen ? 'ml-64' : 'ml-0'
+        } md:ml-64`}>
         <div className="p-4 pt-6">
           {/* Header */}
           <header className="bg-white p-4 mb-6 rounded-lg shadow-sm flex justify-between items-center sticky top-0 z-10">
             <h1 className="text-xl font-semibold text-gray-800">
               {(() => {
                 const pathSegment = (pathname || '').split('/').pop() || '';
-                return pathSegment 
+                return pathSegment
                   ? pathSegment.charAt(0).toUpperCase() + pathSegment.slice(1)
                   : 'Dashboard';
               })()}
@@ -180,7 +177,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>
+                  <DropdownMenuItem onClick={signOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                   </DropdownMenuItem>

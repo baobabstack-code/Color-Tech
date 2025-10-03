@@ -3,7 +3,6 @@ import Script from "next/script";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { Analytics } from "@vercel/analytics/next";
-import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,42 +46,44 @@ export const metadata = {
   },
 };
 
+import Provider from "./Provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <html lang="en">
         <body
           className={`${inter.className} bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900`}
         >
-          <Script id="app-image-config" strategy="beforeInteractive">
-            {`
-              (function(){
-                try {
-                  // These can be set server-side later; for now, pull from localStorage if present
-                  window.__APP_LOGO_URL__ = localStorage.getItem('appearance.logoUrl') || '';
-                  window.__APP_HERO_URL__ = localStorage.getItem('appearance.heroImageUrl') || '';
-                  window.__APP_FALLBACK_URL__ = localStorage.getItem('appearance.fallbackImageUrl') || '';
-                  var list = (localStorage.getItem('appearance.carouselImageUrls') || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
-                  window.__APP_CAROUSEL_URLS__ = list;
-                } catch (e) {}
-              })();
-            `}
-          </Script>
+          <Provider>
+            <Script id="app-image-config" strategy="beforeInteractive">
+              {`
+                (function(){
+                  try {
+                    // These can be set server-side later; for now, pull from localStorage if present
+                    window.__APP_LOGO_URL__ = localStorage.getItem('appearance.logoUrl') || '';
+                    window.__APP_HERO_URL__ = localStorage.getItem('appearance.heroImageUrl') || '';
+                    window.__APP_FALLBACK_URL__ = localStorage.getItem('appearance.fallbackImageUrl') || '';
+                    var list = (localStorage.getItem('appearance.carouselImageUrls') || '').split(',').map(function(s){return s.trim();}).filter(Boolean);
+                    window.__APP_CAROUSEL_URLS__ = list;
+                  } catch (e) {}
+                })();
+              `}
+            </Script>
 
-          <LayoutWrapper>{children}</LayoutWrapper>
-          <Analytics />
+            <LayoutWrapper>{children}</LayoutWrapper>
+            <Analytics />
 
-          {/* Chat Bot Script */}
-          <Script
-            src="https://cdn.jotfor.ms/agent/embedjs/019875f8b9967eac80c030506c583afa433a/embed.js?skipWelcome=1&maximizable=1"
-            strategy="afterInteractive"
-          />
+            {/* Chat Bot Script */}
+            <Script
+              src="https://cdn.jotfor.ms/agent/embedjs/019875f8b9967eac80c030506c583afa433a/embed.js?skipWelcome=1&maximizable=1"
+              strategy="afterInteractive"
+            />
+          </Provider>
         </body>
       </html>
-    </ClerkProvider>
   );
 }
