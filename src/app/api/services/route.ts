@@ -16,8 +16,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(services);
   } catch (error) {
     console.error("Failed to fetch services:", error);
+    console.error("Services fetch error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return NextResponse.json(
-      { message: "Failed to fetch services" },
+      {
+        message: "Failed to fetch services",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

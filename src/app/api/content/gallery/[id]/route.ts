@@ -20,8 +20,16 @@ export async function GET(
     return NextResponse.json(galleryItem);
   } catch (error) {
     console.error("Failed to fetch gallery item:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      id: await params.then(p => p.id)
+    });
     return NextResponse.json(
-      { message: "Failed to fetch gallery item" },
+      {
+        message: "Failed to fetch gallery item",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -46,7 +54,7 @@ export async function PUT(
         isPublished: data.isPublished,
         tags: data.tags,
         author: data.author,
-        updatedBy: data.updatedBy || 1,
+        updatedBy: data.updatedBy || "1",
       }
     );
 
@@ -60,8 +68,17 @@ export async function PUT(
     return NextResponse.json(updatedGalleryItem);
   } catch (error) {
     console.error("Failed to update gallery item:", error);
+    console.error("Update error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      id: await params.then(p => p.id),
+      data: await request.json().catch(() => 'Could not parse request data')
+    });
     return NextResponse.json(
-      { message: "Failed to update gallery item" },
+      {
+        message: "Failed to update gallery item",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

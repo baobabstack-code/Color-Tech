@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
       isPublished: data.isPublished || false,
       tags: data.tags || null,
       author: data.author || "Admin",
-      createdBy: data.createdBy || 1,
-      updatedBy: data.updatedBy || 1,
+      createdBy: data.createdBy || "1",
+      updatedBy: data.updatedBy || "1",
     });
 
     return NextResponse.json(newGalleryItem, { status: 201 });

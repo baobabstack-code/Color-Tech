@@ -45,7 +45,7 @@ export async function PUT(
       tags: data.tags,
       author: data.author,
       slug: data.slug,
-      updatedBy: data.updatedBy || 1,
+      updatedBy: data.updatedBy || "1",
     });
 
     if (!updatedPost) {

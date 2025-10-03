@@ -47,7 +47,7 @@ export async function PUT(
         isPublished: body.isPublished,
         tags: body.tags,
         author: body.author,
-        updatedBy: body.updatedBy || 1,
+        updatedBy: body.updatedBy || "1",
       },
     });
     return NextResponse.json(post);

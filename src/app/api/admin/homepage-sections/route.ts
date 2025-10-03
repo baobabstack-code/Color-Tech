@@ -7,8 +7,15 @@ export async function GET() {
         return NextResponse.json(sections);
     } catch (error) {
         console.error('Error fetching homepage sections:', error);
+        console.error('Homepage sections error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : 'No stack trace'
+        });
         return NextResponse.json(
-            { message: 'Failed to fetch homepage sections' },
+            {
+                message: 'Failed to fetch homepage sections',
+                error: error instanceof Error ? error.message : 'Unknown error'
+            },
             { status: 500 }
         );
     }

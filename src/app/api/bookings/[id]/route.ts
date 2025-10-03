@@ -37,7 +37,7 @@ export async function PUT(
     const data = await request.json();
 
     const updatedBooking = await DatabaseService.updateBooking(parseInt(id), {
-      customerId: data.customerId ? parseInt(data.customerId) : undefined,
+      customerId: data.customerId ? data.customerId : undefined,
       serviceId: data.serviceId ? parseInt(data.serviceId) : undefined,
       scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : undefined,
       status: data.status,

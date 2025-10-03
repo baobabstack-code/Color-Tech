@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
       tags: data.tags || null,
       author: data.author || "Admin",
       slug: data.slug,
-      createdBy: data.createdBy || 1,
-      updatedBy: data.updatedBy || 1,
+      createdBy: data.createdBy || "1",
+      updatedBy: data.updatedBy || "1",
     });
 
     return NextResponse.json(newPost, { status: 201 });

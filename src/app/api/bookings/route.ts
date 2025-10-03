@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     // Filter bookings if needed
     if (customerId) {
       bookings = bookings.filter(
-        (b: any) => b.customerId === parseInt(customerId)
+        (b: any) => b.customerId === customerId
       );
     }
     if (status) {
@@ -23,8 +23,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(bookings);
   } catch (error) {
     console.error("Failed to fetch bookings:", error);
+    console.error("Bookings fetch error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return NextResponse.json(
-      { message: "Failed to fetch bookings" },
+      {
+        message: "Failed to fetch bookings",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -47,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newBooking = await DatabaseService.createBooking({
-      customer: { connect: { id: parseInt(data.customerId) } },
+      customer: { connect: { id: data.customerId } },
       service: { connect: { id: parseInt(data.serviceId) } },
       scheduledAt: new Date(data.scheduledAt),
       status: data.status || "pending",

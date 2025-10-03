@@ -17,8 +17,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(reviews);
   } catch (error) {
     console.error("Failed to fetch reviews:", error);
+    console.error("Reviews fetch error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return NextResponse.json(
-      { message: "Failed to fetch reviews" },
+      {
+        message: "Failed to fetch reviews",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -41,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newReview = await DatabaseService.createReview({
-      userId: parseInt(data.userId),
+      userId: data.userId,
       serviceId: parseInt(data.serviceId),
       bookingId: data.bookingId ? parseInt(data.bookingId) : null,
       rating: parseInt(data.rating),
