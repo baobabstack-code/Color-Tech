@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DatabaseService } from "@/lib/database";
+import { DatabaseService, prisma } from "@/lib/database";
 
 // GET: Fetch all gallery items
 export async function GET(request: NextRequest) {
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
+    console.log("Gallery create request data:", JSON.stringify(data, null, 2));
 
     // Basic validation
     if (!data.title || (!data.imageUrl && !data.videoUrl)) {
@@ -37,26 +38,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure we have valid values for all required fields
-    const galleryData = {
-      title: data.title || "Untitled",
-      body: data.body || null,
-      imageUrl: data.imageUrl || "",
-      videoUrl: data.videoUrl || null,
-      isPublished: Boolean(data.isPublished),
-      tags: data.tags || null,
-      author: data.author || "Admin",
-      createdBy: "1", // Use a fixed admin user ID for now
-      updatedBy: "1", // Use a fixed admin user ID for now
-    };
+    // Use raw SQL to avoid Prisma validation issues with schema
+    const newGalleryItem = await prisma.$queryRaw`
+      INSERT INTO gallery_items (
+        title, 
+        body, 
+        "imageUrl", 
+        "videoUrl", 
+        "isPublished", 
+        tags, 
+        author,
+        "createdBy",
+        "updatedBy",
+        "createdAt",
+        "updatedAt",
+        type
+      ) VALUES (
+        ${data.title || "Untitled"},
+        ${data.body || null},
+        ${data.imageUrl || ""},
+        ${data.videoUrl || null},
+        ${Boolean(data.isPublished)},
+        ${data.tags || null},
+        ${data.author || "Admin"},
+        '1',
+        '1',
+        NOW(),
+        NOW(),
+        'single_image'
+      )
+      RETURNING *
+    `;
 
-    const newGalleryItem = await DatabaseService.createGalleryItem(galleryData);
+    const result = Array.isArray(newGalleryItem) ? newGalleryItem[0] : newGalleryItem;
+    console.log("Created gallery item:", result);
 
-    return NextResponse.json(newGalleryItem, { status: 201 });
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Failed to create gallery item:", error);
+    console.error("Create error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return NextResponse.json(
-      { message: "Failed to create gallery item" },
+      {
+        message: "Failed to create gallery item",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

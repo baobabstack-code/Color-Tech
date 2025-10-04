@@ -86,10 +86,13 @@ npx vercel --prod
 2. Update `next.config.ts` with the correct hostname
 3. Redeploy
 
-### Issue: PUT /api/content/gallery/[id] returns 500
-**Cause:** Database schema validation issues
+### Issue: Gallery operations (POST/PUT/DELETE) return 500
+**Cause:** Database schema validation issues with Prisma ORM
 
-**Solution:** The updated API route now uses raw SQL to bypass Prisma validation
+**Solution:** All gallery API routes now use raw SQL to bypass Prisma validation:
+- POST `/api/content/gallery` - Create new items
+- PUT `/api/content/gallery/[id]` - Update existing items  
+- DELETE `/api/content/gallery/[id]` - Delete items
 
 ### Issue: New uploads failing
 **Cause:** Missing `BLOB_READ_WRITE_TOKEN` or incorrect token
@@ -104,7 +107,7 @@ npx vercel --prod
 | Component | Status | Details |
 |-----------|---------|---------|
 | ✅ Database | Ready | 29 items with Vercel Blob URLs |
-| ✅ API Routes | Updated | Fixed PUT method and validation |
+| ✅ API Routes | Updated | Fixed GET, POST, PUT, DELETE methods with raw SQL |
 | ✅ Image Config | Configured | Next.js optimized for Vercel Blob |
 | ✅ Build | Successful | No compilation errors |
 | ✅ Migration | Complete | All media moved to Vercel Blob |
