@@ -120,23 +120,38 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    console.log("Delete gallery item ID:", id);
 
-    const deletedGalleryItem = await DatabaseService.deleteGalleryItem(
-      parseInt(id)
-    );
+    // Use raw SQL to avoid Prisma validation issues
+    const deletedRows = await prisma.$executeRaw`
+      DELETE FROM gallery_items 
+      WHERE id = ${parseInt(id)}
+    `;
 
-    if (!deletedGalleryItem) {
+    console.log("Delete result:", deletedRows);
+
+    if (deletedRows === 0) {
       return NextResponse.json(
         { message: "Gallery item not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: "Gallery item deleted successfully" });
+    return NextResponse.json({ 
+      message: "Gallery item deleted successfully",
+      deletedCount: deletedRows
+    });
   } catch (error) {
     console.error("Failed to delete gallery item:", error);
+    console.error("Delete error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return NextResponse.json(
-      { message: "Failed to delete gallery item" },
+      {
+        message: "Failed to delete gallery item",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
