@@ -30,14 +30,35 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     console.log("Gallery create request data:", JSON.stringify(data, null, 2));
 
-    // Basic validation
-    if (!data.title || (!data.imageUrl && !data.videoUrl)) {
+    // Basic validation - for Before/After type, we need beforeImageUrl and afterImageUrl
+    // For single image, we need imageUrl or videoUrl
+    const isBeforeAfter = data.type === 'before_after';
+    if (!data.title) {
       return NextResponse.json(
-        { message: "Missing required fields: title, imageUrl or videoUrl" },
+        { message: "Missing required field: title" },
         { status: 400 }
       );
     }
+    
+    if (isBeforeAfter) {
+      if (!data.beforeImageUrl || !data.afterImageUrl) {
+        return NextResponse.json(
+          { message: "Before/After gallery items require both beforeImageUrl and afterImageUrl" },
+          { status: 400 }
+        );
+      }
+    } else {
+      if (!data.imageUrl && !data.videoUrl) {
+        return NextResponse.json(
+          { message: "Single image gallery items require imageUrl or videoUrl" },
+          { status: 400 }
+        );
+      }
+    }
 
+    // Determine the type based on whether before/after images are provided
+    const galleryType = isBeforeAfter ? 'before_after' : 'single_image';
+    
     // Use raw SQL to avoid Prisma validation issues with schema
     const newGalleryItem = await prisma.$queryRaw`
       INSERT INTO gallery_items (
@@ -52,7 +73,9 @@ export async function POST(request: NextRequest) {
         "updatedBy",
         "createdAt",
         "updatedAt",
-        type
+        type,
+        "beforeImageUrl",
+        "afterImageUrl"
       ) VALUES (
         ${data.title || "Untitled"},
         ${data.body || null},
@@ -65,7 +88,9 @@ export async function POST(request: NextRequest) {
         '1',
         NOW(),
         NOW(),
-        'single_image'
+        ${galleryType},
+        ${data.beforeImageUrl || null},
+        ${data.afterImageUrl || null}
       )
       RETURNING *
     `;

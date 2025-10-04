@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DatabaseService } from "@/lib/database";
+import { DatabaseService, prisma } from "@/lib/database";
 
 // GET: Fetch a specific blog post
 export async function GET(
@@ -35,31 +35,41 @@ export async function PUT(
   try {
     const { id } = await params;
     const data = await request.json();
+    console.log("Blog update request data:", JSON.stringify(data, null, 2));
 
-    const updatedPost = await DatabaseService.updatePost(parseInt(id), {
-      title: data.title,
-      body: data.body,
-      imageUrl: data.imageUrl,
-      videoUrl: data.videoUrl,
-      isPublished: data.isPublished,
-      tags: data.tags,
-      author: data.author,
-      slug: data.slug,
-      updatedBy: data.updatedBy || "1",
-    });
+    // Use raw SQL to avoid Prisma validation issues
+    const updatedPost = await prisma.$queryRaw`
+      UPDATE posts 
+      SET 
+        title = ${data.title},
+        body = ${data.body},
+        "imageUrl" = ${data.imageUrl || null},
+        "videoUrl" = ${data.videoUrl || null},
+        "isPublished" = ${Boolean(data.isPublished)},
+        tags = ${data.tags || null},
+        author = ${data.author || "Admin"},
+        slug = ${data.slug},
+        "updatedAt" = NOW()
+      WHERE id = ${parseInt(id)}
+      RETURNING *
+    `;
 
-    if (!updatedPost) {
+    if (!updatedPost || (Array.isArray(updatedPost) && updatedPost.length === 0)) {
       return NextResponse.json(
         { message: "Blog post not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(updatedPost);
+    const result = Array.isArray(updatedPost) ? updatedPost[0] : updatedPost;
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Failed to update blog post:", error);
     return NextResponse.json(
-      { message: "Failed to update blog post" },
+      { 
+        message: "Failed to update blog post",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -72,21 +82,32 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    console.log("Delete blog post ID:", id);
 
-    const deletedPost = await DatabaseService.deletePost(parseInt(id));
+    // Use raw SQL to avoid Prisma validation issues
+    const deletedRows = await prisma.$executeRaw`
+      DELETE FROM posts 
+      WHERE id = ${parseInt(id)}
+    `;
 
-    if (!deletedPost) {
+    if (deletedRows === 0) {
       return NextResponse.json(
         { message: "Blog post not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: "Blog post deleted successfully" });
+    return NextResponse.json({ 
+      message: "Blog post deleted successfully",
+      deletedCount: deletedRows
+    });
   } catch (error) {
     console.error("Failed to delete blog post:", error);
     return NextResponse.json(
-      { message: "Failed to delete blog post" },
+      {
+        message: "Failed to delete blog post",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
