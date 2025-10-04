@@ -489,8 +489,8 @@ export class DatabaseService {
     isPublished?: boolean;
     tags?: string;
     author: string;
-    createdBy: number;
-    updatedBy: number;
+    createdBy: string;
+    updatedBy: string;
   }) {
     return await prisma.galleryItem.create({
       data: {
@@ -504,8 +504,8 @@ export class DatabaseService {
         isPublished: data.isPublished ?? false,
         tags: data.tags,
         author: data.author,
-        createdBy: String(data.createdBy),
-        updatedBy: String(data.updatedBy)
+        createdBy: data.createdBy,
+        updatedBy: data.updatedBy
       },
     });
   }
