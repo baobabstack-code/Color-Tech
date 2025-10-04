@@ -1,25 +1,29 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
+import { list, put } from "@vercel/blob";
+import { nanoid } from "nanoid";
 
 export async function GET(): Promise<NextResponse> {
     try {
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+            return NextResponse.json(
+                { error: "BLOB_READ_WRITE_TOKEN is not configured" },
+                { status: 500 }
+            );
+        }
+
+        const { blobs } = await list({
+            prefix: 'colortech/',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
         });
 
-        const resources = await cloudinary.api.resources({
-            type: "upload",
-            resource_type: "image",
-            prefix: process.env.CLOUDINARY_FOLDER || "colortech",
-            max_results: 100,
-        });
-
-        const images = (resources.resources || []).map((r: any) => ({
-            id: r.public_id,
-            url: r.secure_url,
+        const images = blobs.map((blob) => ({
+            id: blob.pathname,
+            url: blob.url,
+            filename: blob.pathname.split('/').pop(),
+            size: blob.size,
+            uploadedAt: blob.uploadedAt,
         }));
+        
         return NextResponse.json(images);
     } catch (error: any) {
         return NextResponse.json(
@@ -31,11 +35,12 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(request: Request): Promise<NextResponse> {
     try {
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET,
-        });
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+            return NextResponse.json(
+                { error: "BLOB_READ_WRITE_TOKEN is not configured" },
+                { status: 500 }
+            );
+        }
 
         const formData = await request.formData();
         const file = formData.get("file");
@@ -48,25 +53,20 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
 
         const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        
+        // Create a unique filename to prevent conflicts
+        const uniqueFilename = `colortech/${nanoid()}-${file.name}`;
 
-        const result: any = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                {
-                    folder: process.env.CLOUDINARY_FOLDER || "colortech",
-                    public_id: `${Date.now()}-${file.name}`.replace(/\.[^/.]+$/, ""),
-                    resource_type: "image",
-                    overwrite: true,
-                },
-                (error, uploadResult) => {
-                    if (error) return reject(error);
-                    resolve(uploadResult);
-                }
-            );
-            stream.end(buffer);
+        const blob = await put(uniqueFilename, arrayBuffer, {
+            access: 'public',
+            token: process.env.BLOB_READ_WRITE_TOKEN,
         });
 
-        return NextResponse.json({ id: result.public_id, url: result.secure_url });
+        return NextResponse.json({ 
+            id: blob.pathname, 
+            url: blob.url,
+            filename: uniqueFilename
+        });
     } catch (error: any) {
         return NextResponse.json(
             {

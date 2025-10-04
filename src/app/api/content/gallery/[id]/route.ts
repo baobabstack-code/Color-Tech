@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DatabaseService } from "@/lib/database";
+import { DatabaseService, prisma } from "@/lib/database";
 
 // GET: Fetch a specific gallery item
 export async function GET(
@@ -40,55 +40,68 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let requestData: any = null;
   try {
     const { id } = await params;
-    const data = await request.json();
+    requestData = await request.json();
 
-    console.log("Gallery update request data:", JSON.stringify(data, null, 2));
+    console.log("Gallery update request data:", JSON.stringify(requestData, null, 2));
     console.log("Gallery item ID:", id);
 
     // Validate and sanitize input data
-    if (!data.title || data.title.trim() === "") {
+    if (!requestData.title || requestData.title.trim() === "") {
       return NextResponse.json(
         { message: "Title is required and cannot be empty" },
         { status: 400 }
       );
     }
 
-    // Ensure we have valid string values for required fields
-    const updateData = {
-      title: data.title.trim(),
-      body: data.body ? data.body.trim() : null,
-      imageUrl: data.imageUrl || "",
-      videoUrl: data.videoUrl || null,
-      isPublished: Boolean(data.isPublished),
-      tags: data.tags ? data.tags.trim() : null,
-      author: data.author ? data.author.trim() : "Admin",
-      updatedBy: "1", // Use a fixed admin user ID for now
-    };
+    // Use raw SQL to avoid Prisma validation issues with the schema
+    const updateQuery = `
+      UPDATE gallery_items 
+      SET 
+        title = $1,
+        body = $2,
+        "imageUrl" = $3,
+        "videoUrl" = $4,
+        "isPublished" = $5,
+        tags = $6,
+        author = $7,
+        "updatedAt" = NOW()
+      WHERE id = $8
+      RETURNING *
+    `;
 
-    console.log("Sanitized update data:", JSON.stringify(updateData, null, 2));
+    const updatedItem = await prisma.$queryRaw`
+      UPDATE gallery_items 
+      SET 
+        title = ${requestData.title.trim()},
+        body = ${requestData.body ? requestData.body.trim() : null},
+        "imageUrl" = ${requestData.imageUrl || ""},
+        "videoUrl" = ${requestData.videoUrl || null},
+        "isPublished" = ${Boolean(requestData.isPublished)},
+        tags = ${requestData.tags ? requestData.tags.trim() : null},
+        author = ${requestData.author ? requestData.author.trim() : "Admin"},
+        "updatedAt" = NOW()
+      WHERE id = ${parseInt(id)}
+      RETURNING *
+    `;
 
-    const updatedGalleryItem = await DatabaseService.updateGalleryItem(
-      parseInt(id),
-      updateData
-    );
-
-    if (!updatedGalleryItem) {
+    if (!updatedItem || (Array.isArray(updatedItem) && updatedItem.length === 0)) {
       return NextResponse.json(
         { message: "Gallery item not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(updatedGalleryItem);
+    const result = Array.isArray(updatedItem) ? updatedItem[0] : updatedItem;
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Failed to update gallery item:", error);
     console.error("Update error details:", {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : 'No stack trace',
-      id: await params.then(p => p.id),
-      data: await request.json().catch(() => 'Could not parse request data')
+      requestData: requestData || 'No request data'
     });
     return NextResponse.json(
       {

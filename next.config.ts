@@ -15,7 +15,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.public.blob.vercel-storage.com",
+        hostname: "rystv5mdesdms7cf.public.blob.vercel-storage.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
@@ -23,7 +24,6 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    domains: ["localhost"],
     // Image optimization settings for better performance
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

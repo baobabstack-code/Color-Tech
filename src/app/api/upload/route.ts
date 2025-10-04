@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
-import { Readable } from 'stream';
+import { put } from '@vercel/blob';
+import { nanoid } from 'nanoid';
 
-// Force redeploy to load environment variables
 export async function POST(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const filename = searchParams.get('filename');
@@ -11,39 +10,29 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ message: 'No file to upload.' }, { status: 400 });
   }
 
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      { message: 'BLOB_READ_WRITE_TOKEN is not configured' },
+      { status: 500 }
+    );
+  }
+
   try {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
     const arrayBuffer = await request.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    
+    // Create a unique filename to prevent conflicts
+    const fileExtension = filename.split('.').pop();
+    const uniqueFilename = `colortech/${nanoid()}-${filename}`;
 
-    const result: any = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: process.env.CLOUDINARY_FOLDER || 'colortech',
-          public_id: filename.replace(/\.[^/.]+$/, ''),
-          resource_type: 'image',
-          overwrite: true,
-        },
-        (error, uploadResult) => {
-          if (error) return reject(error);
-          resolve(uploadResult);
-        }
-      );
-
-      Readable.from(buffer).pipe(uploadStream);
+    const blob = await put(uniqueFilename, arrayBuffer, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     return NextResponse.json({
-      url: result.secure_url,
-      id: result.public_id,
-      width: result.width,
-      height: result.height,
-      format: result.format,
+      url: blob.url,
+      id: blob.pathname,
+      filename: uniqueFilename,
     });
 
   } catch (error: any) {
@@ -53,7 +42,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         message: `Failed to upload file: ${error.message}`,
         details: {
           nodeEnv: process.env.NODE_ENV,
-          provider: 'cloudinary',
+          provider: 'vercel-blob',
           errorName: error.name,
           errorStack: error.stack
         }
