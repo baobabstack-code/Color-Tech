@@ -20,6 +20,7 @@ import {
   Settings,
   Hammer,
   Paintbrush,
+  MessageCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Toaster } from "@/components/ui/sonner";
@@ -245,7 +246,7 @@ export default function HomePageClient({
                 results
               </motion.p>
               <motion.div
-                className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto"
+                className="flex flex-col sm:flex-row justify-center gap-4 max-w-2xl mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
@@ -260,6 +261,22 @@ export default function HomePageClient({
                     <PhoneCall className="h-5 w-5 text-blue" />
                     Get a Quote
                   </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-green-600/90 hover:bg-green-600 w-full sm:w-auto shadow-xl text-white hover:text-white"
+                  asChild
+                >
+                  <a 
+                    href="https://wa.me/263781253902?text=Hi%20ColorTech!%20I%27d%20like%20to%20inquire%20about%20your%20auto%20body%20repair%20services." 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    WhatsApp
+                  </a>
                 </Button>
                 <Button
                   size="lg"
