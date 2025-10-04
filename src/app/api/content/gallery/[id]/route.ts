@@ -44,18 +44,34 @@ export async function PUT(
     const { id } = await params;
     const data = await request.json();
 
+    console.log("Gallery update request data:", JSON.stringify(data, null, 2));
+    console.log("Gallery item ID:", id);
+
+    // Validate and sanitize input data
+    if (!data.title || data.title.trim() === "") {
+      return NextResponse.json(
+        { message: "Title is required and cannot be empty" },
+        { status: 400 }
+      );
+    }
+
+    // Ensure we have valid string values for required fields
+    const updateData = {
+      title: data.title.trim(),
+      body: data.body ? data.body.trim() : null,
+      imageUrl: data.imageUrl || "",
+      videoUrl: data.videoUrl || null,
+      isPublished: Boolean(data.isPublished),
+      tags: data.tags ? data.tags.trim() : null,
+      author: data.author ? data.author.trim() : "Admin",
+      updatedBy: "1", // Use a fixed admin user ID for now
+    };
+
+    console.log("Sanitized update data:", JSON.stringify(updateData, null, 2));
+
     const updatedGalleryItem = await DatabaseService.updateGalleryItem(
       parseInt(id),
-      {
-        title: data.title,
-        body: data.body,
-        imageUrl: data.imageUrl,
-        videoUrl: data.videoUrl,
-        isPublished: data.isPublished,
-        tags: data.tags,
-        author: data.author,
-        updatedBy: data.updatedBy || "1",
-      }
+      updateData
     );
 
     if (!updatedGalleryItem) {

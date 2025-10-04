@@ -37,17 +37,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newGalleryItem = await DatabaseService.createGalleryItem({
-      title: data.title,
+    // Ensure we have valid values for all required fields
+    const galleryData = {
+      title: data.title || "Untitled",
       body: data.body || null,
-      imageUrl: data.imageUrl || (data.type === 'video' ? '' : ''),
+      imageUrl: data.imageUrl || "",
       videoUrl: data.videoUrl || null,
-      isPublished: data.isPublished || false,
+      isPublished: Boolean(data.isPublished),
       tags: data.tags || null,
       author: data.author || "Admin",
-      createdBy: data.createdBy || "1",
-      updatedBy: data.updatedBy || "1",
-    });
+      createdBy: "1", // Use a fixed admin user ID for now
+      updatedBy: "1", // Use a fixed admin user ID for now
+    };
+
+    const newGalleryItem = await DatabaseService.createGalleryItem(galleryData);
 
     return NextResponse.json(newGalleryItem, { status: 201 });
   } catch (error) {
