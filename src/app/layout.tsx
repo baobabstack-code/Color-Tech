@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import JotformAgent from "@/components/JotformAgent";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
@@ -76,12 +77,9 @@ export default function RootLayout({
 
             <LayoutWrapper>{children}</LayoutWrapper>
             <Analytics />
-
-            {/* Chat Bot Script */}
-            <Script
-              src="https://cdn.jotfor.ms/agent/embedjs/019875f8b9967eac80c030506c583afa433a/embed.js?skipWelcome=1&maximizable=1"
-              strategy="afterInteractive"
-            />
+            
+            {/* Conditional Jotform Agent - only on front pages, not admin */}
+            <JotformAgent />
           </Provider>
         </body>
       </html>
