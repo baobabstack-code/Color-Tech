@@ -31,7 +31,6 @@ const mockNextConfig = {
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
         unoptimized: false,
         loader: "default",
-        loader: "default",
     },
 };
 

@@ -173,7 +173,7 @@ describe('Image Utils', () => {
         });
 
         it('should reject dangerous parameters', () => {
-            const dangerousParams = [
+            const dangerousParams: Record<string, string>[] = [
                 { script: 'javascript:alert(1)' },
                 { data: 'data:text/html,<script>alert(1)</script>' },
                 { onclick: 'alert(1)' },

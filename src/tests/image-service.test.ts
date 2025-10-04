@@ -82,7 +82,10 @@ describe('ImageErrorService', () => {
 
         it('should store errors in localStorage in production', () => {
             const originalEnv = process.env.NODE_ENV;
-            (process.env as any).NODE_ENV = 'production';
+            Object.defineProperty(process.env, 'NODE_ENV', {
+                value: 'production',
+                configurable: true
+            });
 
             localStorageMock.getItem.mockReturnValue('[]');
 
@@ -93,7 +96,10 @@ describe('ImageErrorService', () => {
                 expect.stringContaining('test.jpg')
             );
 
-            process.env.NODE_ENV = originalEnv;
+            Object.defineProperty(process.env, 'NODE_ENV', {
+                value: originalEnv,
+                configurable: true
+            });
         });
     });
 
@@ -143,7 +149,7 @@ describe('ImageErrorService', () => {
             expect(imageErrorService.hasRecentFailures(url)).toBe(false);
         });
 
-        it('should return false for old failures outside time window', () => {
+        it('should return false for old failures outside time window', async () => {
             const url = 'https://example.com/image.jpg';
 
             imageErrorService.logImageError(url, 'Test error', 'network');

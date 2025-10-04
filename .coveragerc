@@ -1,0 +1,31 @@
+[run]
+source = src/
+omit = 
+    src/tests/*
+    src/**/*.test.ts
+    src/**/*.test.tsx
+    src/**/*.spec.ts
+    src/**/*.spec.tsx
+    src/**/*.stories.ts
+    src/**/*.stories.tsx
+    src/**/__tests__/*
+    src/**/__mocks__/*
+    
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+
+[html]
+directory = coverage/html-report/
+
+[xml]
+output = coverage/coverage.xml

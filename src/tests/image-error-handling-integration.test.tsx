@@ -218,7 +218,7 @@ describe('Image Error Handling Integration', () => {
                 width={400}
                 height={300}
                 contentType="general"
-                showErrorMessage={true}
+                showErrorState={true}
             />
         );
 
