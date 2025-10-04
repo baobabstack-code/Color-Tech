@@ -303,76 +303,64 @@ export default function GalleryManagement() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
           Gallery Management
         </h1>
-        <Button onClick={() => openModal()} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
+        <Button onClick={() => openModal()} className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
-          Add Image
+          <span className="sm:inline">Add Image</span>
         </Button>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm">Total Images</p>
-              <h3 className="text-2xl font-bold text-white">{items.length}</h3>
+              <p className="text-slate-400 text-xs sm:text-sm">Total Images</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">{items.length}</h3>
             </div>
-            <ImageIcon className="h-8 w-8 text-indigo-400" />
+            <ImageIcon className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-400" />
           </div>
         </Card>
-        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6">
+        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm">Published</p>
-              <h3 className="text-2xl font-bold text-white">
+              <p className="text-slate-400 text-xs sm:text-sm">Published</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">
                 {items.filter((i) => i.isPublished).length}
               </h3>
             </div>
-            <Eye className="h-8 w-8 text-green-400" />
+            <Eye className="h-6 w-6 sm:h-8 sm:w-8 text-green-400" />
           </div>
         </Card>
-        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6">
+        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm">Before/After</p>
-              <h3 className="text-2xl font-bold text-white">
+              <p className="text-slate-400 text-xs sm:text-sm">Before/After</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">
                 {items.filter((i) => i.type === "before_after").length}
               </h3>
             </div>
-            <Camera className="h-8 w-8 text-purple-400" />
+            <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400" />
           </div>
         </Card>
-        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-6">
+        <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-400 text-sm">Tags</p>
-              <h3 className="text-2xl font-bold text-white">
+              <p className="text-slate-400 text-xs sm:text-sm">Tags</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">
                 {new Set(items.flatMap(i => i.tags ? i.tags.split(',').map(t => t.trim()) : [])).size}
               </h3>
             </div>
-            <Tag className="h-8 w-8 text-yellow-400" />
+            <Tag className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400" />
           </div>
         </Card>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex gap-4">
-        <div className="flex-1">
-          <Input
-            placeholder="Search gallery items..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-800/50 border-slate-600 text-white placeholder-slate-400"
-          />
-        </div>
-      </div>
-
       {/* Search and Filter */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-300 h-4 w-4" />
@@ -388,7 +376,7 @@ export default function GalleryManagement() {
           value={filterStatus}
           onValueChange={(value: any) => setFilterStatus(value)}
         >
-          <SelectTrigger className="w-48 bg-slate-800/50 border-slate-600 text-white">
+          <SelectTrigger className="w-full sm:w-48 bg-slate-800/50 border-slate-600 text-white">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-slate-800 border-slate-600">
@@ -428,7 +416,7 @@ export default function GalleryManagement() {
           </Button>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => (
             <Card
               key={item.id}
@@ -525,19 +513,21 @@ export default function GalleryManagement() {
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label htmlFor="title" className="text-left sm:text-right font-medium">
                 Title
               </Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="col-span-3 bg-slate-800 border-slate-600"
+                className="col-span-1 sm:col-span-3 bg-slate-800 border-slate-600"
+                placeholder="Enter title..."
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="type" className="text-right">
+            
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label htmlFor="type" className="text-left sm:text-right font-medium">
                 Type
               </Label>
               <Select
@@ -546,7 +536,7 @@ export default function GalleryManagement() {
                   setFormData({ ...formData, type: value })
                 }
               >
-                <SelectTrigger className="col-span-3 bg-slate-800 border-slate-600">
+                <SelectTrigger className="col-span-1 sm:col-span-3 bg-slate-800 border-slate-600">
                   <SelectValue placeholder="Select a type" />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 text-white">
@@ -557,11 +547,11 @@ export default function GalleryManagement() {
             </div>
 
             {formData.type === "single_image" ? (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="imageUrl" className="text-right">
+              <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+                <Label htmlFor="imageUrl" className="text-left sm:text-right font-medium">
                   Image
                 </Label>
-                <div className="col-span-3">
+                <div className="col-span-1 sm:col-span-3">
                   <div className="flex gap-2">
                     <Input
                       id="imageUrl"
@@ -599,11 +589,11 @@ export default function GalleryManagement() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="beforeImageUrl" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+                  <Label htmlFor="beforeImageUrl" className="text-left sm:text-right font-medium">
                     Before Image
                   </Label>
-                  <div className="col-span-3">
+                  <div className="col-span-1 sm:col-span-3">
                     <div className="flex gap-2">
                       <Input
                         id="beforeImageUrl"
@@ -641,11 +631,11 @@ export default function GalleryManagement() {
                     )}
                   </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="afterImageUrl" className="text-right">
+                <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+                  <Label htmlFor="afterImageUrl" className="text-left sm:text-right font-medium">
                     After Image
                   </Label>
-                  <div className="col-span-3">
+                  <div className="col-span-1 sm:col-span-3">
                     <div className="flex gap-2">
                       <Input
                         id="afterImageUrl"
@@ -686,37 +676,37 @@ export default function GalleryManagement() {
               </>
             )}
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="body" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label htmlFor="body" className="text-left sm:text-right font-medium">
                 Description
               </Label>
               <Textarea
                 id="body"
                 value={formData.body}
                 onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                className="col-span-3 bg-slate-800 border-slate-600 h-24"
+                className="col-span-1 sm:col-span-3 bg-slate-800 border-slate-600 h-24"
                 placeholder="Enter a description..."
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="tags" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label htmlFor="tags" className="text-left sm:text-right font-medium">
                 Tags
               </Label>
               <Input
                 id="tags"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="col-span-3 bg-slate-800 border-slate-600"
+                className="col-span-1 sm:col-span-3 bg-slate-800 border-slate-600"
                 placeholder="e.g., residential, commercial, interior"
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="isPublished" className="text-right">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+              <Label htmlFor="isPublished" className="text-left sm:text-right font-medium">
                 Status
               </Label>
-              <div className="col-span-3 flex items-center">
+              <div className="col-span-1 sm:col-span-3 flex items-center">
                 <input
                   type="checkbox"
                   id="isPublished"

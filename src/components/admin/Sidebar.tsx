@@ -90,7 +90,13 @@ const navItems: NavItem[] = [
   },
 ];
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile: boolean;
+}
+
+const Sidebar = ({ isOpen, onClose, isMobile }: SidebarProps) => {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>(["Content"]);
 
@@ -119,6 +125,7 @@ const Sidebar = () => {
         <div className="flex items-center">
           <Link
             href={item.href}
+            onClick={handleLinkClick}
             className={`flex items-center flex-1 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 group ${active
                 ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
                 : "text-slate-100 hover:text-white hover:bg-slate-800/50"
@@ -160,10 +167,28 @@ const Sidebar = () => {
     );
   };
 
+  const handleLinkClick = () => {
+    if (isMobile) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="fixed left-0 top-0 z-50 w-64 h-full bg-slate-900/95 backdrop-blur-xl border-r border-slate-800/50 shadow-2xl">
+    <aside className={`fixed left-0 top-0 z-50 w-64 h-full bg-slate-900/95 backdrop-blur-xl border-r border-slate-800/50 shadow-2xl transition-transform duration-300 ${
+      isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'
+    }`}>
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-800/50">
+        {isMobile && (
+          <button
+            onClick={onClose}
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors lg:hidden"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
             <Logo className="h-6 w-auto text-white" />
@@ -182,6 +207,7 @@ const Sidebar = () => {
         <Link
           href="/"
           target="_blank"
+          onClick={handleLinkClick}
           className="flex items-center w-full px-3 py-2.5 text-sm text-slate-100 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
         >
           <Home className="h-4 w-4 mr-3 text-slate-200 group-hover:text-indigo-400 transition-colors" />

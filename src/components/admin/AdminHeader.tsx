@@ -15,26 +15,45 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 
-const AdminHeader = () => {
+interface AdminHeaderProps {
+  onMenuClick: () => void;
+  isMobile: boolean;
+}
+
+const AdminHeader = ({ onMenuClick, isMobile }: AdminHeaderProps) => {
   const { signOut, user } = useAuth();
 
   return (
-    <header className="fixed top-0 right-0 left-64 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800/50 shadow-2xl">
-      <div className="flex items-center justify-between px-6 py-3 h-16">
-        {/* Left side - Search */}
+    <header className={`fixed top-0 right-0 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800/50 shadow-2xl ${
+      isMobile ? 'left-0' : 'left-64'
+    }`}>
+      <div className="flex items-center justify-between px-4 lg:px-6 py-3 h-16">
+        {/* Left side - Mobile menu button and Search */}
         <div className="flex items-center space-x-4 flex-1">
+          {isMobile && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMenuClick}
+              className="p-2 text-slate-100 hover:text-white hover:bg-slate-800/50 lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-300 h-4 w-4" />
             <Input
               type="search"
-              placeholder="Search admin..."
-              className="pl-10 pr-4 py-2 w-80 bg-slate-800/50 border-slate-700 text-white placeholder-slate-300 focus:bg-slate-800 focus:border-indigo-500 transition-colors"
+              placeholder={isMobile ? "Search..." : "Search admin..."}
+              className={`pl-10 pr-4 py-2 bg-slate-800/50 border-slate-700 text-white placeholder-slate-300 focus:bg-slate-800 focus:border-indigo-500 transition-colors ${
+                isMobile ? 'w-full max-w-xs' : 'w-80'
+              }`}
             />
           </div>
         </div>
 
         {/* Right side - Actions */}
-        <div className="flex items-center space-x-4">
+        <div className={`flex items-center ${isMobile ? 'space-x-2' : 'space-x-4'}`}>
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
