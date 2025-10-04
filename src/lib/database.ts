@@ -193,14 +193,7 @@ export class DatabaseService {
     });
   }
 
-  static async createReview(data: {
-    userId: string;
-    serviceId: number;
-    bookingId?: number | null;
-    rating: number;
-    comment?: string;
-    status?: string;
-  }) {
+  static async createReview(data: any) {
     return await prisma.review.create({
       data,
       include: {
