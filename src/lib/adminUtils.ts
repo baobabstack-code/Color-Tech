@@ -3,16 +3,27 @@
  */
 
 export function isAdminEmail(email: string | null | undefined): boolean {
-    if (!email) return false;
-    return email === process.env.ADMIN_EMAIL || email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  if (!email) return false;
+
+  const adminEmails = getAdminEmails();
+  return adminEmails.includes(email.toLowerCase());
+}
+
+export function getAdminEmails(): string[] {
+  const adminEmailsEnv =
+    process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "";
+  if (!adminEmailsEnv) return [];
+
+  return adminEmailsEnv.split(",").map((email) => email.trim().toLowerCase());
 }
 
 export function getAdminEmail(): string {
-    return process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || '';
+  const adminEmails = getAdminEmails();
+  return adminEmails[0] || "";
 }
 
 export function requireAdminAccess(userEmail: string | null | undefined): void {
-    if (!isAdminEmail(userEmail)) {
-        throw new Error('Admin access required');
-    }
+  if (!isAdminEmail(userEmail)) {
+    throw new Error("Admin access required");
+  }
 }

@@ -20,6 +20,7 @@ import {
   Info,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import AdminLoginButton from "./AdminLoginButton";
 
 interface NavLink {
   title: string;
@@ -152,7 +153,11 @@ const Navigation = () => {
       {/* Logo with vibrant gradient and subtle border */}
       <div className="flex items-center gap-2 sm:gap-3 select-none bg-white/60 dark:bg-slate-800/60 rounded-2xl px-2 py-1 sm:px-3 shadow-md border border-white/30">
         <img
-          src={(typeof window !== 'undefined' && (window as any).__APP_LOGO_URL__) || '/images/hero/colorful-car.jpg'}
+          src={
+            (typeof window !== "undefined" &&
+              (window as any).__APP_LOGO_URL__) ||
+            "/images/hero/colorful-car.jpg"
+          }
           alt="Color-Tech Logo"
           className="h-8 w-8 sm:h-10 sm:w-10 drop-shadow-lg rounded-xl"
         />
@@ -167,25 +172,27 @@ const Navigation = () => {
           <Link
             key={link.title}
             href={link.path}
-            className={`relative px-2 py-1.5 text-base lg:text-lg font-semibold transition-colors duration-200 group ${pathname === link.path
-              ? "text-sky-500 dark:text-fuchsia-400"
-              : "text-slate-800/90 dark:text-slate-100/90 hover:text-sky-500 dark:hover:text-fuchsia-400"
-              }`}
+            className={`relative px-2 py-1.5 text-base lg:text-lg font-semibold transition-colors duration-200 group ${
+              pathname === link.path
+                ? "text-sky-500 dark:text-fuchsia-400"
+                : "text-slate-800/90 dark:text-slate-100/90 hover:text-sky-500 dark:hover:text-fuchsia-400"
+            }`}
           >
             {link.title}
             <span
-              className={`absolute left-1/2 -bottom-1 h-0.5 bg-gradient-to-r from-sky-400 to-fuchsia-400 rounded-full transition-all duration-300 ${pathname === link.path
-                ? "w-4/5 -translate-x-1/2"
-                : "w-0 group-hover:w-4/5 group-hover:-translate-x-1/2"
-                }`}
+              className={`absolute left-1/2 -bottom-1 h-0.5 bg-gradient-to-r from-sky-400 to-fuchsia-400 rounded-full transition-all duration-300 ${
+                pathname === link.path
+                  ? "w-4/5 -translate-x-1/2"
+                  : "w-0 group-hover:w-4/5 group-hover:-translate-x-1/2"
+              }`}
             ></span>
           </Link>
         ))}
       </div>
 
-      {/* Reserved space for future features */}
+      {/* Admin Login Button */}
       <div className="hidden md:flex items-center gap-3 ml-auto pr-2">
-        {/* Login removed - admin access via direct URL */}
+        <AdminLoginButton />
       </div>
 
       {/* Mobile menu button (hamburger) */}
@@ -211,16 +218,21 @@ const Navigation = () => {
             <Link
               key={link.title}
               href={link.path}
-              className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 ${pathname === link.path
-                ? "bg-primary/10 text-primary"
-                : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
-                }`}
+              className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+                pathname === link.path
+                  ? "bg-primary/10 text-primary"
+                  : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
+              }`}
               onClick={() => setIsOpen(false)}
             >
               {link.icon}
               {link.title}
             </Link>
           ))}
+          {/* Admin Login for mobile */}
+          <div className="md:hidden">
+            <AdminLoginButton />
+          </div>
           {isAuthenticated && (
             <>
               <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
@@ -228,10 +240,11 @@ const Navigation = () => {
                 <Link
                   key={link.title}
                   href={link.path}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 ${pathname === link.path
-                    ? "bg-primary/10 text-primary"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-full font-medium transition-colors duration-200 ${
+                    pathname === link.path
+                      ? "bg-primary/10 text-primary"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary"
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.icon}
