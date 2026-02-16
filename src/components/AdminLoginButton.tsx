@@ -33,7 +33,19 @@ export default function AdminLoginButton() {
       const result = await signIn("credentials", {
         email,
         password,
-      await signIn("google");
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+        console.error("Login failed:", result.error);
+      } else {
+        setIsOpen(false);
+        setEmail("");
+        setPassword("");
+        // Redirect to admin dashboard or refresh to show admin state
+        window.location.href = "/admin/dashboard";
+      }
     } catch (error) {
       setError("An unexpected error occurred. Please try again.");
       console.error("Login error:", error);
