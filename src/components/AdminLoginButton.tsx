@@ -39,7 +39,7 @@ export default function AdminLoginButton() {
 
       if (result?.error) {
         setError("Invalid email or password");
-        console.error("Login failed:", result.error);
+        console.error("Login failed:", result.error); // Consider adding a state to show this error in the UI
       } else {
         setIsOpen(false);
         setEmail("");
