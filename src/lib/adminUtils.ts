@@ -13,7 +13,7 @@ export function getAdminEmails(): string[] {
   const adminEmailsEnv = process.env.ADMIN_EMAILS || "";
   if (!adminEmailsEnv) return [];
 
-  return adminEmailsEnv.split(",").map((email) => email.trim().toLowerCase());
+  return adminEmailsEnv.split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
 }
 
 export function getAdminEmail(): string {
