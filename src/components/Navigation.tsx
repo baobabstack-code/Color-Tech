@@ -192,7 +192,7 @@ const Navigation = () => {
 
       {/* Admin Login Button */}
       <div className="hidden md:flex items-center gap-3 ml-auto pr-2">
-        <AdminLoginButton />
+        {!isAuthenticated && <AdminLoginButton />}
       </div>
 
       {/* Mobile menu button (hamburger) */}
