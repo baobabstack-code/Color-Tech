@@ -10,8 +10,7 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 }
 
 export function getAdminEmails(): string[] {
-  const adminEmailsEnv =
-    process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "";
+  const adminEmailsEnv = process.env.ADMIN_EMAILS || "";
   if (!adminEmailsEnv) return [];
 
   return adminEmailsEnv.split(",").map((email) => email.trim().toLowerCase());
