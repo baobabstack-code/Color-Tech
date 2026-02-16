@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Bell, Search, User, Settings, LogOut, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,14 +131,18 @@ const AdminHeader = ({ onMenuClick, isMobile }: AdminHeaderProps) => {
                 My Account
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuItem className="text-slate-200 hover:bg-slate-700">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-slate-200 hover:bg-slate-700">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              <Link href="/admin/profile">
+                <DropdownMenuItem className="text-slate-200 hover:bg-slate-700 cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/admin/settings">
+                <DropdownMenuItem className="text-slate-200 hover:bg-slate-700 cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator className="bg-slate-700" />
               <DropdownMenuItem
                 onClick={async () => {

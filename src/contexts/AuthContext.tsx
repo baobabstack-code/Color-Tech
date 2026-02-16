@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { isAdminEmail } from '@/lib/adminUtils';
 
 interface AuthContextType {
     user: Session['user'] | null;
@@ -25,15 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [status]);
 
     const handleSignIn = () => {
-        signIn('google');
+        signIn(); // Open standard login if needed
     };
 
     const handleSignOut = () => {
         signOut();
     };
 
-    // Check if user is admin based on email
-    const isAdmin = session?.user?.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'colorterch25@gmail.com');
+    // Check if user is admin based on session data OR email check
+    const isAdmin = !!(session?.user?.isAdmin || isAdminEmail(session?.user?.email));
 
     const value: AuthContextType = {
         user: session?.user || null,

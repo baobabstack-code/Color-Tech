@@ -4,11 +4,12 @@ export default withAuth(
     function middleware(req) {
         // Check if user is trying to access admin routes
         if (req.nextUrl.pathname.startsWith("/admin")) {
-            const adminEmail = process.env.ADMIN_EMAIL;
-            const userEmail = req.nextauth.token?.email;
+            const token = req.nextauth.token;
+            
+            // Check if user has admin flag or matches admin emails
+            const isAdmin = token?.isAdmin === true;
 
-            // Only allow access if user email matches admin email
-            if (userEmail !== adminEmail) {
+            if (!isAdmin) {
                 return Response.redirect(new URL("/", req.url));
             }
         }

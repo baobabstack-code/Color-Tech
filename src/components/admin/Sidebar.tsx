@@ -15,6 +15,7 @@ import {
   ChevronRight,
   Home,
   MessageSquare,
+  User,
 } from "lucide-react";
 import Logo from "../Logo";
 
@@ -87,6 +88,11 @@ const navItems: NavItem[] = [
     name: "Settings",
     href: "/admin/settings",
     icon: <Settings className="h-5 w-5" />,
+  },
+  {
+    name: "Profile",
+    href: "/admin/profile",
+    icon: <User className="h-5 w-5" />,
   },
 ];
 

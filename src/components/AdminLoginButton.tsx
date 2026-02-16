@@ -14,19 +14,21 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Shield, Key } from "lucide-react";
+import { Shield, Key, Eye, EyeOff, Target } from "lucide-react";
 
 export default function AdminLoginButton() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const adminEmails = ["baobabstack@gmail.com", "colorterch25@gmail.com"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const result = await signIn("credentials", {
@@ -36,13 +38,17 @@ export default function AdminLoginButton() {
       });
 
       if (result?.error) {
+        setError("Invalid email or password");
         console.error("Login failed:", result.error);
       } else {
         setIsOpen(false);
         setEmail("");
         setPassword("");
+        // Redirect to admin dashboard or refresh to show admin state
+        window.location.href = "/admin/dashboard";
       }
     } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -65,6 +71,11 @@ export default function AdminLoginButton() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          {error && (
+            <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+              {error}
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -72,24 +83,36 @@ export default function AdminLoginButton() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={
-                adminEmails.length > 0
-                  ? `Admin email (${adminEmails[0]})`
-                  : "Enter admin email"
-              }
+              placeholder="Enter admin email"
               required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              required
-            />
+            <div className="relative">
+              <Target className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="pl-10 pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? (
